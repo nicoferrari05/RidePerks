@@ -10,6 +10,9 @@ Diseño y contenido alineados con la versión ya publicada en
 de colores, mismos beneficios (Combustible 20% · Comida $5 · Taller 15% ·
 Salud 10%) y la misma mecánica de "invita y sube en la fila".
 
+> ¿Vas a pasarle este proyecto a alguien más para que conecte Supabase y
+> el dominio? Empieza por **[HANDOFF.md](HANDOFF.md)**.
+
 - **Frontend:** Next.js (App Router) + TypeScript + Tailwind CSS v4
 - **Animaciones:** GSAP + ScrollTrigger (reveals al hacer scroll, sutiles)
 - **Fondo del hero:** componente `GradientWaves` (WebGL vía `ogl`), en tonos
