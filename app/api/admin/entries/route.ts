@@ -7,9 +7,11 @@ export async function GET() {
   try {
     const supabase = getSupabaseAdmin();
     const { data, error } = await supabase
-      .from("waitlist")
-      .select("id, full_name, platform, whatsapp, status, created_at")
-      .order("created_at", { ascending: false });
+      .from("waitlist_ranked")
+      .select(
+        "id, full_name, email, whatsapp, platform, status, referral_code, referred_by, referral_count, position, created_at"
+      )
+      .order("position", { ascending: true });
 
     if (error) {
       console.error("admin entries fetch error", error);

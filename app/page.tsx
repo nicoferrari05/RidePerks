@@ -4,7 +4,7 @@ import Hero from "@/components/sections/Hero";
 import Benefits from "@/components/sections/Benefits";
 import HowItWorks from "@/components/sections/HowItWorks";
 import Manifesto from "@/components/sections/Manifesto";
-import FinalCTA from "@/components/sections/FinalCTA";
+import Waitlist from "@/components/sections/Waitlist";
 import Footer from "@/components/sections/Footer";
 
 export default function Home() {
@@ -15,9 +15,9 @@ export default function Home() {
       <main>
         <Hero />
         <Benefits />
-        <HowItWorks />
         <Manifesto />
-        <FinalCTA />
+        <HowItWorks />
+        <Waitlist />
       </main>
       <Footer />
     </>

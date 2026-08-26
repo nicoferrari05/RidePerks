@@ -3,15 +3,20 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
-type Platform = "uber" | "indrive";
+type Platform = "uber" | "indrive" | "pedidosya" | "multiple";
 type EntryStatus = "pending" | "verified" | "rejected";
 
 type Entry = {
   id: string;
   full_name: string;
-  platform: Platform;
-  whatsapp: string;
+  email: string;
+  whatsapp: string | null;
+  platform: Platform | null;
   status: EntryStatus;
+  referral_code: string;
+  referred_by: string | null;
+  referral_count: number;
+  position: number;
   created_at: string;
 };
 
@@ -25,6 +30,13 @@ const STATUS_STYLE: Record<EntryStatus, string> = {
   pending: "bg-bone-2 text-mute",
   verified: "bg-verde/15 text-verde",
   rejected: "bg-ember-soft text-ember-2",
+};
+
+const PLATFORM_LABEL: Record<Platform, string> = {
+  uber: "Uber",
+  indrive: "InDrive",
+  pedidosya: "PedidosYa",
+  multiple: "Varias",
 };
 
 function formatDate(iso: string) {
@@ -46,7 +58,7 @@ export default function AdminDashboard() {
   const [entries, setEntries] = useState<Entry[] | null>(null);
   const [showCounter, setShowCounter] = useState<boolean | null>(null);
   const [query, setQuery] = useState("");
-  const [platformFilter, setPlatformFilter] = useState<"all" | Platform>("all");
+  const [platformFilter, setPlatformFilter] = useState<"all" | Platform | "none">("all");
   const [statusFilter, setStatusFilter] = useState<"all" | EntryStatus>("all");
   const [error, setError] = useState<string | null>(null);
 
@@ -112,9 +124,17 @@ export default function AdminDashboard() {
     if (!entries) return [];
     const q = query.trim().toLowerCase();
     return entries.filter((e) => {
-      if (platformFilter !== "all" && e.platform !== platformFilter) return false;
+      if (platformFilter === "none" && e.platform) return false;
+      if (platformFilter !== "all" && platformFilter !== "none" && e.platform !== platformFilter)
+        return false;
       if (statusFilter !== "all" && e.status !== statusFilter) return false;
-      if (q && !e.full_name.toLowerCase().includes(q) && !e.whatsapp.includes(q)) return false;
+      if (
+        q &&
+        !e.full_name.toLowerCase().includes(q) &&
+        !e.email.toLowerCase().includes(q) &&
+        !(e.whatsapp ?? "").includes(q)
+      )
+        return false;
       return true;
     });
   }, [entries, query, platformFilter, statusFilter]);
@@ -124,11 +144,18 @@ export default function AdminDashboard() {
       total: entries?.length ?? 0,
       verified: entries?.filter((e) => e.status === "verified").length ?? 0,
       pending: entries?.filter((e) => e.status === "pending").length ?? 0,
-      uber: entries?.filter((e) => e.platform === "uber").length ?? 0,
-      indrive: entries?.filter((e) => e.platform === "indrive").length ?? 0,
+      referrals: entries?.reduce((sum, e) => sum + (e.referral_count ?? 0), 0) ?? 0,
     }),
     [entries]
   );
+
+  const platformCounts = useMemo(() => {
+    const counts: Record<string, number> = { uber: 0, indrive: 0, pedidosya: 0, multiple: 0, none: 0 };
+    for (const e of entries ?? []) {
+      counts[e.platform ?? "none"] = (counts[e.platform ?? "none"] ?? 0) + 1;
+    }
+    return counts;
+  }, [entries]);
 
   return (
     <main className="min-h-screen bg-paper pb-24">
@@ -152,12 +179,20 @@ export default function AdminDashboard() {
           <p className="mb-4 rounded-xl bg-ember-soft px-4 py-3 text-sm text-ember-2">{error}</p>
         )}
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard label="Total en lista" value={stats.total} />
           <StatCard label="Verificados" value={stats.verified} tone="verde" />
           <StatCard label="Pendientes" value={stats.pending} />
-          <StatCard label="Uber" value={stats.uber} />
-          <StatCard label="InDrive" value={stats.indrive} />
+          <StatCard label="Referidos totales" value={stats.referrals} tone="ember" />
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-2 text-xs text-mute">
+          {(["uber", "indrive", "pedidosya", "multiple", "none"] as const).map((p) => (
+            <span key={p} className="rounded-full border border-line bg-white px-3 py-1.5">
+              {p === "none" ? "Sin especificar" : PLATFORM_LABEL[p]}{" "}
+              <span className="font-mono font-semibold text-navy">{platformCounts[p] ?? 0}</span>
+            </span>
+          ))}
         </div>
 
         <div className="mt-6 flex flex-col justify-between gap-4 rounded-2xl border border-line bg-white p-5 sm:flex-row sm:items-center">
@@ -192,7 +227,7 @@ export default function AdminDashboard() {
           <input
             id="search"
             type="search"
-            placeholder="Buscar por nombre o WhatsApp…"
+            placeholder="Buscar por nombre, email o WhatsApp…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="w-full rounded-full border border-line bg-white px-4 py-2.5 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-ember sm:max-w-xs"
@@ -205,6 +240,9 @@ export default function AdminDashboard() {
                 ["all", "Todas"],
                 ["uber", "Uber"],
                 ["indrive", "InDrive"],
+                ["pedidosya", "PedidosYa"],
+                ["multiple", "Varias"],
+                ["none", "Sin especificar"],
               ]}
             />
             <FilterGroup
@@ -221,12 +259,15 @@ export default function AdminDashboard() {
         </div>
 
         <div className="mt-4 overflow-x-auto rounded-2xl border border-line bg-white">
-          <table className="w-full min-w-[720px] text-left text-sm">
+          <table className="w-full min-w-[920px] text-left text-sm">
             <thead>
               <tr className="border-b border-line text-xs uppercase tracking-wide text-mute">
+                <th className="px-5 py-3 font-medium">#</th>
                 <th className="px-5 py-3 font-medium">Nombre</th>
+                <th className="px-5 py-3 font-medium">Email</th>
                 <th className="px-5 py-3 font-medium">Plataforma</th>
                 <th className="px-5 py-3 font-medium">WhatsApp</th>
+                <th className="px-5 py-3 font-medium">Referidos</th>
                 <th className="px-5 py-3 font-medium">Fecha</th>
                 <th className="px-5 py-3 font-medium">Estado</th>
               </tr>
@@ -234,31 +275,55 @@ export default function AdminDashboard() {
             <tbody>
               {entries === null && (
                 <tr>
-                  <td colSpan={5} className="px-5 py-10 text-center text-mute">
+                  <td colSpan={8} className="px-5 py-10 text-center text-mute">
                     Cargando…
                   </td>
                 </tr>
               )}
               {entries !== null && filtered.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-5 py-10 text-center text-mute">
+                  <td colSpan={8} className="px-5 py-10 text-center text-mute">
                     No hay conductores todavía.
                   </td>
                 </tr>
               )}
               {filtered.map((entry) => (
                 <tr key={entry.id} className="border-b border-line last:border-none">
+                  <td className="px-5 py-3.5 font-mono text-xs text-mute">{entry.position}</td>
                   <td className="px-5 py-3.5 font-medium text-navy">{entry.full_name}</td>
-                  <td className="px-5 py-3.5 capitalize text-ink">{entry.platform}</td>
                   <td className="px-5 py-3.5">
                     <a
-                      href={waLink(entry.whatsapp)}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="font-mono text-[13px] text-navy underline decoration-line underline-offset-4 hover:text-ember focus-visible:outline focus-visible:outline-2 focus-visible:outline-ember"
+                      href={`mailto:${entry.email}`}
+                      className="text-ink underline decoration-line underline-offset-4 hover:text-ember focus-visible:outline focus-visible:outline-2 focus-visible:outline-ember"
                     >
-                      {entry.whatsapp}
+                      {entry.email}
                     </a>
+                  </td>
+                  <td className="px-5 py-3.5 text-ink">
+                    {entry.platform ? PLATFORM_LABEL[entry.platform] : <span className="text-mute">—</span>}
+                  </td>
+                  <td className="px-5 py-3.5">
+                    {entry.whatsapp ? (
+                      <a
+                        href={waLink(entry.whatsapp)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="font-mono text-[13px] text-navy underline decoration-line underline-offset-4 hover:text-ember focus-visible:outline focus-visible:outline-2 focus-visible:outline-ember"
+                      >
+                        {entry.whatsapp}
+                      </a>
+                    ) : (
+                      <span className="text-mute">—</span>
+                    )}
+                  </td>
+                  <td className="px-5 py-3.5">
+                    {entry.referral_count > 0 ? (
+                      <span className="rounded-full bg-ember-soft px-2.5 py-1 font-mono text-xs font-semibold text-ember-2">
+                        {entry.referral_count}
+                      </span>
+                    ) : (
+                      <span className="text-mute">0</span>
+                    )}
                   </td>
                   <td className="whitespace-nowrap px-5 py-3.5 text-mute">
                     {formatDate(entry.created_at)}
@@ -288,13 +353,12 @@ export default function AdminDashboard() {
   );
 }
 
-function StatCard({ label, value, tone }: { label: string; value: number; tone?: "verde" }) {
+function StatCard({ label, value, tone }: { label: string; value: number; tone?: "verde" | "ember" }) {
+  const toneClass = tone === "verde" ? "text-verde" : tone === "ember" ? "text-ember" : "text-navy";
   return (
     <div className="rounded-2xl border border-line bg-white p-5">
       <p className="text-xs uppercase tracking-wide text-mute">{label}</p>
-      <p className={`mt-2 text-3xl font-semibold ${tone === "verde" ? "text-verde" : "text-navy"}`}>
-        {value}
-      </p>
+      <p className={`mt-2 text-3xl font-semibold ${toneClass}`}>{value}</p>
     </div>
   );
 }
@@ -309,7 +373,7 @@ function FilterGroup<T extends string>({
   options: [T, string][];
 }) {
   return (
-    <div className="flex gap-1 rounded-full border border-line bg-white p-1">
+    <div className="flex flex-wrap gap-1 rounded-full border border-line bg-white p-1">
       {options.map(([v, label]) => (
         <button
           key={v}

@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
-import { Fraunces, JetBrains_Mono } from "next/font/google";
+import { Geist, Fraunces, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+
+// Primary body font — matches production (rideperks.app uses Geist).
+const geist = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist",
+  display: "swap",
+});
 
 // Accent serif italic — used sparingly for the one emotional word per
 // section, per the RidePerks brand identity ("Fraunces Italic... Never
@@ -24,14 +31,17 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "RidePerks — Tu trabajo rinde más.",
   description:
-    "El club de beneficios para conductores de Uber e InDrive en Panamá. Descuentos reales en gasolina, comida, mantenimiento y más. Únete a la lista de espera.",
+    "El club de beneficios para conductores de Uber, InDrive y PedidosYa en Panamá. Descuentos reales en gasolina, comida, mantenimiento y más. Únete a la lista de espera.",
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es" className={`${fraunces.variable} ${jetbrainsMono.variable}`}>
+    <html
+      lang="es"
+      className={`${geist.variable} ${fraunces.variable} ${jetbrainsMono.variable}`}
+    >
       <body>{children}</body>
     </html>
   );
