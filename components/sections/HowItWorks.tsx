@@ -17,14 +17,31 @@ export default function HowItWorks() {
           </h2>
         </div>
 
-        <div className="mt-14 grid gap-8 sm:grid-cols-3">
-          {STEPS.map((step) => (
-            <div key={step.n} data-reveal className="border-t border-line pt-6">
-              <span className="font-mono text-sm text-ember">{step.n}</span>
-              <h3 className="mt-3 text-xl font-semibold text-navy">{step.title}</h3>
-              <p className="mt-2 text-[15px] leading-relaxed text-mute">{step.copy}</p>
-            </div>
-          ))}
+        {/* Connected stepper instead of a generic 3-up card row: a single
+            line runs through the numbered nodes, content sits offset
+            below each one. */}
+        <div data-reveal className="relative mt-20">
+          <div
+            className="absolute left-0 right-0 top-6 hidden h-px bg-line sm:block"
+            aria-hidden="true"
+          />
+          <div className="grid gap-12 sm:grid-cols-3 sm:gap-8">
+            {STEPS.map((step, i) => (
+              <div key={step.n} className="relative">
+                <div
+                  className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full font-mono text-sm font-semibold ${
+                    i === 0 ? "bg-ember text-white" : "border border-line bg-paper text-navy"
+                  }`}
+                >
+                  {step.n}
+                </div>
+                <h3 className="mt-6 text-xl font-semibold text-navy">{step.title}</h3>
+                <p className="mt-2 max-w-[26ch] text-[15px] leading-relaxed text-mute">
+                  {step.copy}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

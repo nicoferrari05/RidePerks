@@ -25,8 +25,8 @@ const PLATFORM_LABEL: Record<Platform, string> = {
 
 function fieldClass(tone: Tone) {
   return tone === "dark"
-    ? "w-full rounded-xl border border-white/10 bg-navy-2 px-4 py-3 text-[15px] text-bone placeholder:text-bone/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ember"
-    : "w-full rounded-xl border border-line bg-white px-4 py-3 text-[15px] text-ink placeholder:text-mute focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ember";
+    ? "w-full rounded-xl border border-white/10 bg-navy-2 px-4 py-3 text-[15px] text-bone placeholder:text-bone/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition-colors duration-150 ease-out focus-visible:border-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ember"
+    : "w-full rounded-xl border border-line bg-white px-4 py-3 text-[15px] text-ink placeholder:text-mute transition-colors duration-150 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ember";
 }
 
 export default function WaitlistForm({ tone = "light" }: { tone?: Tone }) {

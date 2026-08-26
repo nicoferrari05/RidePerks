@@ -23,7 +23,7 @@ export default function Benefits() {
             <div
               key={label}
               data-reveal
-              className={`rounded-2xl p-6 transition-transform duration-200 ease-out hover:-translate-y-1 ${bg} ${text}`}
+              className={`rounded-2xl p-6 shadow-[0_16px_40px_-24px_rgba(4,20,41,0.4)] transition-[transform,box-shadow] duration-200 ease-out hover:-translate-y-1 hover:shadow-[0_24px_50px_-20px_rgba(4,20,41,0.45)] ${bg} ${text}`}
             >
               <div className="font-mono text-[11px] font-medium tracking-[0.14em] opacity-80">
                 {label.toUpperCase()}

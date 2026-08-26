@@ -1,7 +1,7 @@
 export default function Nav() {
   return (
-    <nav className="sticky top-0 z-50 border-b border-line/70 bg-paper/80 backdrop-blur-md">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+    <div className="pointer-events-none fixed inset-x-0 top-4 z-50 flex justify-center px-4 sm:top-6">
+      <nav className="pointer-events-auto flex w-full max-w-3xl items-center justify-between rounded-full border border-line/70 bg-paper/85 px-3 py-2.5 shadow-[0_8px_30px_-12px_rgba(4,20,41,0.25)] backdrop-blur-md">
         <a
           href="#top"
           className="inline-flex items-center gap-2 rounded-full bg-navy px-4 py-2 text-sm font-bold tracking-tight text-bone focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ember"
@@ -14,7 +14,7 @@ export default function Nav() {
         >
           Únete
         </a>
-      </div>
-    </nav>
+      </nav>
+    </div>
   );
 }

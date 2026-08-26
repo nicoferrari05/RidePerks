@@ -26,3 +26,10 @@ next-env.d.ts
 
 # vercel
 .vercel
+
+# AI coding tool config — local to this machine, not project source
+# (installed via `npx skills add ...`; keeps other repos/collaborators
+# from inheriting an unrelated tool's skill library)
+/.agents/
+/.claude/skills/
+/skills-lock.json
