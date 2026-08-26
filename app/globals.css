@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+@theme {
+  /* RidePerks brand tokens — from RidePerks Brand Identity.html */
+  --color-ember: #e8502a;
+  --color-ember-2: #c7411f;
+  --color-ember-soft: #fbe4d8;
+  --color-navy: #0f1b3d;
+  --color-navy-2: #1b2a56;
+  --color-bone: #f5f1ea;
+  --color-bone-2: #ede7dc;
+  --color-paper: #faf7f2;
+  --color-ink: #111520;
+  --color-mute: #6b6a66;
+  --color-line: #d9d3c7;
+  --color-sol: #f2b73b;
+  --color-verde: #2f8f6e;
+
+  /* Body copy stays on a real Helvetica stack (no webfont download). */
+  --font-sans:
+    "Helvetica Neue", Helvetica, Arial, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  /* Reserved accent + mono faces, loaded via next/font in app/layout.tsx */
+  --font-accent: var(--font-fraunces), Georgia, serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--color-ember);
+  color: var(--color-bone);
+}
+
+/* Only hide scroll-reveal targets when JS can actually run the reveal
+   animation — otherwise (no JS / crawlers) the content is visible by
+   default and nothing is ever permanently hidden. */
+@media (scripting: enabled) {
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
