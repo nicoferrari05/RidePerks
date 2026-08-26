@@ -14,22 +14,22 @@ export default function Hero() {
           waveColor="#0F1B3D"
           crestColor="#E8502A"
           speed={0.05}
-          amplitude={1.4}
+          amplitude={2.0}
           waveScale={0.5}
           waveRatio={0.85}
-          swell={16}
-          turbulence={8}
+          swell={24}
+          turbulence={12}
           tilt={1.18}
           zoom={1.05}
           height={5.9}
           fogDepth={12}
           detail="medium"
           brightness={1.0}
-          opacity={0.5}
+          opacity={0.85}
           mouseInteraction={false}
           grain={false}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-paper/10 via-paper/60 to-paper" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,transparent_55%,var(--color-paper)_100%)]" />
       </div>
 
       <div className="relative mx-auto flex max-w-6xl flex-col items-start px-6 pb-20 pt-20 sm:pb-28 sm:pt-28">

@@ -66,7 +66,11 @@ export default function AdminDashboard() {
       setEntries(entriesData.entries ?? []);
       setShowCounter(Boolean(settingsData.showCounter));
     } catch {
-      setError("No pudimos cargar los datos.");
+      // Network-level failure (fetch itself rejected, e.g. Supabase env vars
+      // misconfigured). Fall back to empty state instead of spinning forever.
+      setEntries((prev) => prev ?? []);
+      setShowCounter((prev) => prev ?? false);
+      setError("No pudimos cargar los datos. Revisa la configuración de Supabase.");
     }
   }
 

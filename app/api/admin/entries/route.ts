@@ -4,18 +4,23 @@ import { getSupabaseAdmin } from "@/lib/supabase-server";
 // Protected by middleware.ts (requires a valid rp_admin session cookie).
 
 export async function GET() {
-  const supabase = getSupabaseAdmin();
-  const { data, error } = await supabase
-    .from("waitlist")
-    .select("id, full_name, platform, whatsapp, status, created_at")
-    .order("created_at", { ascending: false });
+  try {
+    const supabase = getSupabaseAdmin();
+    const { data, error } = await supabase
+      .from("waitlist")
+      .select("id, full_name, platform, whatsapp, status, created_at")
+      .order("created_at", { ascending: false });
 
-  if (error) {
-    console.error("admin entries fetch error", error);
-    return NextResponse.json({ error: "No pudimos cargar la lista." }, { status: 500 });
+    if (error) {
+      console.error("admin entries fetch error", error);
+      return NextResponse.json({ error: "No pudimos cargar la lista." }, { status: 500 });
+    }
+
+    return NextResponse.json({ entries: data ?? [] });
+  } catch (err) {
+    console.error("admin entries fetch failed", err);
+    return NextResponse.json({ error: "No pudimos conectar con la base de datos." }, { status: 500 });
   }
-
-  return NextResponse.json({ entries: data ?? [] });
 }
 
 const STATUSES = new Set(["pending", "verified", "rejected"]);
@@ -33,13 +38,18 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: "Datos inválidos." }, { status: 400 });
   }
 
-  const supabase = getSupabaseAdmin();
-  const { error } = await supabase.from("waitlist").update({ status }).eq("id", id);
+  try {
+    const supabase = getSupabaseAdmin();
+    const { error } = await supabase.from("waitlist").update({ status }).eq("id", id);
 
-  if (error) {
-    console.error("admin entries update error", error);
-    return NextResponse.json({ error: "No pudimos actualizar el registro." }, { status: 500 });
+    if (error) {
+      console.error("admin entries update error", error);
+      return NextResponse.json({ error: "No pudimos actualizar el registro." }, { status: 500 });
+    }
+
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error("admin entries update failed", err);
+    return NextResponse.json({ error: "No pudimos conectar con la base de datos." }, { status: 500 });
   }
-
-  return NextResponse.json({ ok: true });
 }

@@ -37,27 +37,35 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Ese número de WhatsApp no parece válido." }, { status: 400 });
   }
 
-  const supabase = getSupabaseAdmin();
-  const { error } = await supabase.from("waitlist").insert({
-    full_name: fullName.trim(),
-    platform,
-    whatsapp: normalizedWhatsapp,
-  });
+  try {
+    const supabase = getSupabaseAdmin();
+    const { error } = await supabase.from("waitlist").insert({
+      full_name: fullName.trim(),
+      platform,
+      whatsapp: normalizedWhatsapp,
+    });
 
-  if (error) {
-    // Postgres unique_violation on the whatsapp column.
-    if (error.code === "23505") {
+    if (error) {
+      // Postgres unique_violation on the whatsapp column.
+      if (error.code === "23505") {
+        return NextResponse.json(
+          { error: "Ese número ya está en la lista de espera." },
+          { status: 409 }
+        );
+      }
+      console.error("waitlist insert error", error);
       return NextResponse.json(
-        { error: "Ese número ya está en la lista de espera." },
-        { status: 409 }
+        { error: "No pudimos guardar tu registro. Intenta de nuevo." },
+        { status: 500 }
       );
     }
-    console.error("waitlist insert error", error);
+
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error("waitlist insert failed", err);
     return NextResponse.json(
       { error: "No pudimos guardar tu registro. Intenta de nuevo." },
       { status: 500 }
     );
   }
-
-  return NextResponse.json({ ok: true });
 }
