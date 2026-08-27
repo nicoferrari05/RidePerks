@@ -18,7 +18,7 @@ create table if not exists waitlist (
 
   -- Cola de referidos: cada inscrito recibe un código propio para
   -- compartir (?ref=CODIGO). Quien invita más gente sube en la fila.
-  referral_code text not null,
+  referral_code text not null unique,
   referred_by text references waitlist (referral_code) on delete set null,
 
   -- "pending" hasta que alguien del equipo confirme al conductor
