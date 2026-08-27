@@ -6,7 +6,7 @@ const STEPS = [
 
 export default function HowItWorks() {
   return (
-    <section id="como-funciona" className="scroll-mt-20 border-b border-line px-6 py-20 sm:py-28">
+    <section id="como-funciona" className="scroll-mt-20 border-b border-line px-6 py-14 sm:py-28">
       <div className="mx-auto max-w-6xl">
         <div data-reveal className="max-w-xl">
           <span className="font-mono text-xs font-medium tracking-[0.14em] text-ember">
@@ -20,7 +20,7 @@ export default function HowItWorks() {
         {/* Connected stepper instead of a generic 3-up card row: a single
             line runs through the numbered nodes, content sits offset
             below each one. */}
-        <div data-reveal className="relative mt-20">
+        <div data-reveal className="relative mt-12 sm:mt-20">
           <div
             className="absolute left-0 right-0 top-6 hidden h-px bg-line sm:block"
             aria-hidden="true"

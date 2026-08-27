@@ -1,6 +1,6 @@
 export default function AboutHero() {
   return (
-    <section className="relative overflow-hidden border-b border-line px-6 pb-16 pt-32 sm:pb-20 sm:pt-40">
+    <section className="relative overflow-hidden border-b border-line px-6 pb-12 pt-28 sm:pb-20 sm:pt-40">
       <div
         className="pointer-events-none absolute -left-24 top-10 h-80 w-80 rounded-full opacity-60"
         style={{ background: "radial-gradient(circle, rgba(207,59,24,0.16), transparent 70%)" }}

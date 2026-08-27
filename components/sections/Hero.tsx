@@ -32,7 +32,7 @@ export default function Hero() {
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_0%,transparent_55%,var(--color-paper)_100%)]" />
       </div>
 
-      <div className="relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-16 px-6 pb-20 pt-32 sm:pb-28 sm:pt-40 lg:grid-cols-[1.15fr_1fr] lg:gap-12">
+      <div className="relative mx-auto grid max-w-6xl grid-cols-1 items-center gap-16 px-6 pb-14 pt-28 sm:pb-28 sm:pt-40 lg:grid-cols-[1.15fr_1fr] lg:gap-12">
         <div className="flex flex-col items-start">
           <span className="font-mono text-xs font-medium tracking-[0.14em] text-ember">
             CLUB DE CONDUCTORES · PANAMÁ
@@ -59,8 +59,11 @@ export default function Hero() {
 
         {/* Membership card — the same "plate" motif from the brand
             identity board, brought into the hero so the split isn't just
-            text-over-background. */}
-        <div data-reveal className="mx-auto w-full max-w-[340px] lg:mx-0 lg:ml-auto">
+            text-over-background. Hidden below lg: it only sits beside the
+            copy for free there (2-col grid); on phone/tablet it would
+            stack below the text and add a screen's worth of scroll before
+            Beneficios even starts, for a purely decorative payoff. */}
+        <div data-reveal className="hidden w-full max-w-[340px] lg:block lg:ml-auto">
           <div className="relative aspect-[3/4] overflow-hidden rounded-[28px] bg-navy p-7 text-bone shadow-[0_40px_90px_-30px_rgba(4,20,41,0.55)]">
             <div
               className="pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full opacity-90"

@@ -27,7 +27,7 @@ const PLATFORMS = ["Uber", "InDrive", "PedidosYa", "Y las que sigan"];
 
 export default function AboutHelp() {
   return (
-    <section className="border-b border-line bg-bone px-6 py-20 sm:py-28">
+    <section className="border-b border-line bg-bone px-6 py-14 sm:py-28">
       <div className="mx-auto max-w-4xl">
         <div data-reveal className="max-w-xl">
           <span className="font-mono text-xs font-medium tracking-[0.14em] text-ember">
@@ -38,7 +38,7 @@ export default function AboutHelp() {
           </h2>
         </div>
 
-        <div className="mt-14 flex flex-col divide-y divide-line">
+        <div className="mt-8 flex flex-col divide-y divide-line sm:mt-14">
           {AREAS.map(({ label, Icon, copy }) => (
             <div key={label} data-reveal className="flex items-start gap-5 py-6 first:pt-0 last:pb-0">
               <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-ember-soft text-ember">
@@ -52,7 +52,7 @@ export default function AboutHelp() {
           ))}
         </div>
 
-        <div data-reveal className="mt-16 rounded-2xl border border-line bg-paper p-7">
+        <div data-reveal className="mt-10 rounded-2xl border border-line bg-paper p-7 sm:mt-16">
           <span className="font-mono text-xs font-medium tracking-[0.14em] text-ember">
             PARA QUIÉN ES
           </span>

@@ -1,5 +1,6 @@
 import Nav from "@/components/Nav";
 import ScrollAnimations from "@/components/ScrollAnimations";
+import MobileCTA from "@/components/MobileCTA";
 import Hero from "@/components/sections/Hero";
 import Benefits from "@/components/sections/Benefits";
 import HowItWorks from "@/components/sections/HowItWorks";
@@ -22,6 +23,7 @@ export default function Home() {
         <Waitlist />
       </main>
       <Footer />
+      <MobileCTA />
     </>
   );
 }

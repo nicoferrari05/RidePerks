@@ -13,7 +13,7 @@ const BENEFITS = [
 
 export default function Benefits() {
   return (
-    <section id="beneficios" className="scroll-mt-20 border-b border-line bg-bone px-6 py-20 sm:py-28">
+    <section id="beneficios" className="scroll-mt-20 border-b border-line bg-bone px-6 py-14 sm:py-28">
       <div className="mx-auto max-w-6xl">
         <div data-reveal className="max-w-xl">
           <span className="font-mono text-xs font-medium tracking-[0.14em] text-ember">
@@ -24,7 +24,7 @@ export default function Benefits() {
           </h2>
         </div>
 
-        <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-8 grid gap-4 sm:mt-14 sm:grid-cols-2 lg:grid-cols-4">
           {BENEFITS.map(({ label, Icon, bg, text, chip }) => (
             <div
               key={label}

@@ -1,6 +1,6 @@
 export default function AboutStory() {
   return (
-    <section className="border-b border-white/10 bg-navy px-6 py-20 sm:py-28">
+    <section className="border-b border-white/10 bg-navy px-6 py-14 sm:py-28">
       <div className="mx-auto max-w-3xl">
         <div data-reveal>
           <span className="font-mono text-xs font-medium tracking-[0.14em] text-ember">

@@ -18,7 +18,7 @@ const FOOTER_LINKS = [
 
 export default function Footer() {
   return (
-    <footer className="border-t border-white/10 bg-navy px-6 py-16 text-bone">
+    <footer className="border-t border-white/10 bg-navy px-6 py-12 text-bone sm:py-16">
       <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
         <span className="mb-8 text-lg font-bold tracking-tight">
           RIDE<span className="text-ember">PERKS</span>

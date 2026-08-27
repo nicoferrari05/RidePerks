@@ -200,12 +200,17 @@ const GradientWaves = ({
     const container = containerRef.current;
     if (!container) return;
 
+    // Raymarching cost scales with pixel count (width * height * dpr²), so
+    // on narrow/phone viewports cap the device pixel ratio at 1x instead of
+    // 2x — a barely-there background doesn't need retina sharpness, and
+    // this is the single biggest lever against GPU jank on phones.
+    const isNarrowViewport = window.innerWidth < 640;
     const renderer = new Renderer({
       webgl: 2,
       alpha: true,
       premultipliedAlpha: true,
       antialias: false,
-      dpr: Math.min(window.devicePixelRatio || 1, 2),
+      dpr: Math.min(window.devicePixelRatio || 1, isNarrowViewport ? 1 : 2),
     });
 
     const gl = renderer.gl;
@@ -363,7 +368,8 @@ const GradientWaves = ({
     u.uZoom.value = zoom;
     u.uHeight.value = height;
     u.uFogDepth.value = fogDepth;
-    u.uSteps.value = detailToSteps(detail);
+    const isNarrowViewport = typeof window !== "undefined" && window.innerWidth < 640;
+    u.uSteps.value = isNarrowViewport ? Math.min(detailToSteps(detail), 40) : detailToSteps(detail);
     u.uBrightness.value = brightness;
     u.uOpacity.value = opacity;
     u.uGrain.value = grain ? 1.0 : 0.0;

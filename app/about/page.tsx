@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Nav from "@/components/Nav";
 import ScrollAnimations from "@/components/ScrollAnimations";
+import MobileCTA from "@/components/MobileCTA";
 import AboutHero from "@/components/sections/AboutHero";
 import AboutStory from "@/components/sections/AboutStory";
 import AboutHelp from "@/components/sections/AboutHelp";
@@ -25,6 +26,7 @@ export default function AboutPage() {
         <Waitlist />
       </main>
       <Footer />
+      <MobileCTA />
     </>
   );
 }

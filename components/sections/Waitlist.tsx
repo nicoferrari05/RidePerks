@@ -2,7 +2,7 @@ import WaitlistForm from "@/components/WaitlistForm";
 
 export default function Waitlist() {
   return (
-    <section id="waitlist" className="scroll-mt-20 bg-navy px-6 py-20 sm:py-28">
+    <section id="waitlist" className="scroll-mt-20 bg-navy px-6 py-14 sm:py-28">
       <div data-reveal className="mx-auto flex max-w-6xl flex-col items-start gap-10 sm:flex-row sm:items-center sm:justify-between">
         <div className="max-w-md">
           <span className="font-mono text-xs font-medium tracking-[0.14em] text-ember">

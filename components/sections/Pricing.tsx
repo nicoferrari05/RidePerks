@@ -41,7 +41,7 @@ const PLANS = [
 
 export default function Pricing() {
   return (
-    <section id="planes" className="scroll-mt-20 relative overflow-hidden border-b border-white/10 bg-navy px-6 py-24 sm:py-32">
+    <section id="planes" className="scroll-mt-20 relative overflow-hidden border-b border-white/10 bg-navy px-6 py-16 sm:py-32">
       <div
         className="pointer-events-none absolute -right-20 top-0 h-72 w-72 rounded-full opacity-70"
         style={{ background: "radial-gradient(circle, rgba(207,59,24,0.28), transparent 70%)" }}
@@ -62,7 +62,7 @@ export default function Pricing() {
           </p>
         </div>
 
-        <div data-reveal className="relative mt-16">
+        <div data-reveal className="relative mt-10 sm:mt-16">
           {/* Non-interactive preview — real content, just not live yet. */}
           <div
             aria-hidden="true"
