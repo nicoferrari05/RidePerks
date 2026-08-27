@@ -6,7 +6,7 @@
 // dropped in favor of a link straight into the waitlist section already
 // on the page, so there's only one signup flow instead of two.
 import Link from "next/link";
-import { InstagramIcon, SteeringWheelIcon } from "@/components/icons";
+import { InstagramIcon } from "@/components/icons";
 
 const FOOTER_LINKS = [
   { label: "Inicio", href: "/#top" },
@@ -20,9 +20,6 @@ export default function Footer() {
   return (
     <footer className="border-t border-white/10 bg-navy px-6 py-16 text-bone">
       <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
-        <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-ember/15">
-          <SteeringWheelIcon className="h-7 w-7 text-ember" />
-        </div>
         <span className="mb-8 text-lg font-bold tracking-tight">
           RIDE<span className="text-ember">PERKS</span>
         </span>
