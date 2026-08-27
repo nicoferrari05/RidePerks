@@ -7,7 +7,7 @@ export default function AboutStory() {
             POR QUÉ EXISTIMOS
           </span>
           <h2 className="mt-4 text-balance text-3xl font-semibold tracking-tight text-bone sm:text-4xl">
-            Manejar para Uber, InDrive o PedidosYa ya es el trabajo duro.
+            Manejar ya tiene suficientes gastos.
           </h2>
         </div>
 
@@ -16,20 +16,18 @@ export default function AboutStory() {
           className="mt-8 flex flex-col gap-5 text-pretty text-[17px] leading-relaxed text-bone/70 sm:text-lg"
         >
           <p>
-            Gasolina, comida en la calle, mantenimiento del carro o la moto, un chequeo médico que
-            se sigue posponiendo: todo eso sale del mismo bolsillo que llenás viaje a viaje.
-            Cuando sube el precio de la gasolina, no sube tu tarifa. El margen que te queda es el
-            que absorbe todo.
+            Gasolina, comida, mantenimiento, llantas, farmacia… son gastos que salen de lo que
+            ganas todos los días.
           </p>
+          <p>Por eso creamos RidePerks.</p>
           <p>
-            RidePerks nació para pelear esa parte del problema. Negociamos descuentos reales con
-            comercios aliados (gasolineras, restaurantes, talleres, servicios de salud) y se los
-            pasamos directo a los conductores que se registran. No es una promesa de más viajes ni
-            un algoritmo nuevo. Es plata que dejás de gastar en lo que ya ibas a gastar de todos
-            modos.
+            Nos aliamos con comercios para conseguir beneficios que realmente le sirvan al
+            conductor en su día a día. Tú te registras, accedes a los beneficios disponibles y
+            ahorras en gastos que probablemente ya ibas a tener.
           </p>
+          <p>Sin puntos. Sin complicaciones. Sin cambiar la forma en la que trabajas.</p>
           <p className="text-bone">
-            Tú manejas para ganar más.{" "}
+            Tú manejas para ganar.{" "}
             <em className="font-accent italic text-ember">RidePerks te ayuda a gastar menos.</em>
           </p>
         </div>

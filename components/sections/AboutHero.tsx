@@ -18,13 +18,19 @@ export default function AboutHero() {
           data-reveal
           className="mt-5 text-balance text-[clamp(2.5rem,6vw,4.25rem)] font-bold leading-[1.02] tracking-tight text-navy"
         >
-          Un club de beneficios,{" "}
-          <em className="font-accent italic text-ember">no otra app de viajes.</em>
+          Un club de beneficios para{" "}
+          <em className="font-accent italic text-ember">conductores.</em>
         </h1>
-        <p data-reveal className="mx-auto mt-6 max-w-xl text-pretty text-lg text-ink/75 sm:text-xl">
-          RidePerks no te consigue más viajes. Hace que lo que ya ganas rinda más: descuentos
-          reales en lo que ya gastas cada semana para trabajar.
-        </p>
+        <div
+          data-reveal
+          className="mx-auto mt-6 flex max-w-xl flex-col gap-4 text-pretty text-lg text-ink/75 sm:text-xl"
+        >
+          <p>
+            RidePerks reúne descuentos y beneficios pensados para personas que trabajan manejando
+            con plataformas como Uber, InDrive y PedidosYa.
+          </p>
+          <p>No buscamos conseguirte más viajes. Buscamos ayudarte a gastar menos mientras trabajas.</p>
+        </div>
       </div>
     </section>
   );
