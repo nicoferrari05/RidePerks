@@ -140,3 +140,61 @@ export function WhatsAppIcon({ className }: IconProps) {
     </svg>
   );
 }
+
+export function InstagramIcon({ className }: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <rect x="3" y="3" width="18" height="18" rx="5.5" />
+      <circle cx="12" cy="12" r="4.2" />
+      <path d="M17.2 6.8h.01" />
+    </svg>
+  );
+}
+
+// Discount/offer tag — used in place of made-up percentages when a card
+// just needs to say "there's a deal here" without a specific number.
+export function TagIcon({ className }: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M11.3 3H6a3 3 0 0 0-3 3v5.3a2 2 0 0 0 .59 1.41l8.7 8.7a2 2 0 0 0 2.82 0l6.7-6.7a2 2 0 0 0 0-2.82l-8.7-8.7A2 2 0 0 0 11.3 3Z" />
+      <path d="M8.3 8.3h.01" />
+    </svg>
+  );
+}
+
+// Used on the "coming soon" pricing preview.
+export function LockIcon({ className }: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <rect x="4.5" y="10.5" width="15" height="10" rx="2.4" />
+      <path d="M7.5 10.5V7a4.5 4.5 0 0 1 9 0v3.5" />
+    </svg>
+  );
+}

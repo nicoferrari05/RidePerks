@@ -161,8 +161,10 @@ export default function AdminDashboard() {
     <main className="min-h-screen bg-paper pb-24">
       <header className="sticky top-0 z-10 flex items-center justify-between border-b border-line bg-paper/90 px-6 py-4 backdrop-blur">
         <div className="inline-flex items-center gap-2 rounded-full bg-navy px-4 py-2 text-sm font-bold tracking-tight text-bone">
-          RIDE<span className="text-ember">PERKS</span>
-          <span className="ml-1 rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-medium tracking-widest text-bone/70">
+          <span>
+            RIDE<span className="text-ember">PERKS</span>
+          </span>
+          <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-medium tracking-widest text-bone/70">
             ADMIN
           </span>
         </div>
@@ -300,7 +302,7 @@ export default function AdminDashboard() {
                     </a>
                   </td>
                   <td className="px-5 py-3.5 text-ink">
-                    {entry.platform ? PLATFORM_LABEL[entry.platform] : <span className="text-mute">—</span>}
+                    {entry.platform ? PLATFORM_LABEL[entry.platform] : <span className="text-mute">-</span>}
                   </td>
                   <td className="px-5 py-3.5">
                     {entry.whatsapp ? (
@@ -313,7 +315,7 @@ export default function AdminDashboard() {
                         {entry.whatsapp}
                       </a>
                     ) : (
-                      <span className="text-mute">—</span>
+                      <span className="text-mute">-</span>
                     )}
                   </td>
                   <td className="px-5 py-3.5">

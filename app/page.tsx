@@ -4,6 +4,7 @@ import Hero from "@/components/sections/Hero";
 import Benefits from "@/components/sections/Benefits";
 import HowItWorks from "@/components/sections/HowItWorks";
 import Manifesto from "@/components/sections/Manifesto";
+import Pricing from "@/components/sections/Pricing";
 import Waitlist from "@/components/sections/Waitlist";
 import Footer from "@/components/sections/Footer";
 
@@ -17,6 +18,7 @@ export default function Home() {
         <Benefits />
         <Manifesto />
         <HowItWorks />
+        <Pricing />
         <Waitlist />
       </main>
       <Footer />

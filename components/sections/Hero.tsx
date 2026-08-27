@@ -38,11 +38,11 @@ export default function Hero() {
             CLUB DE CONDUCTORES · PANAMÁ
           </span>
 
-          <h1 className="mt-5 text-[clamp(2.75rem,7vw,5.5rem)] font-bold leading-[0.95] tracking-tight text-navy">
+          <h1 className="mt-5 text-balance text-[clamp(2.75rem,7vw,5.5rem)] font-bold leading-[0.95] tracking-tight text-navy">
             Tu trabajo rinde <em className="font-accent italic text-ember">más.</em>
           </h1>
 
-          <p className="mt-6 max-w-lg text-lg text-ink/80 sm:text-xl">
+          <p className="mt-6 max-w-lg text-pretty text-lg text-ink/80 sm:text-xl">
             Descuentos reales en gasolina, comida y mantenimiento. En lo que ya gastas cada semana.
           </p>
 

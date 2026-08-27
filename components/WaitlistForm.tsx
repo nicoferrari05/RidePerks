@@ -129,7 +129,7 @@ export default function WaitlistForm({ tone = "light" }: { tone?: Tone }) {
   if (status === "success" && success) {
     const origin = typeof window !== "undefined" ? window.location.origin : "";
     const link = `${origin}/?ref=${success.referralCode}`;
-    const shareText = `Me uní a la lista de espera de RidePerks — el club de beneficios para conductores. Únete con mi link: ${link}`;
+    const shareText = `Me uní a la lista de espera de RidePerks, el club de beneficios para conductores. Únete con mi link: ${link}`;
 
     return (
       <div
@@ -283,7 +283,7 @@ export default function WaitlistForm({ tone = "light" }: { tone?: Tone }) {
         <button
           type="submit"
           disabled={status === "submitting"}
-          className="mt-1 w-full cursor-pointer rounded-xl bg-ember px-6 py-3 text-[15px] font-semibold text-white transition-[transform,background-color] duration-150 ease-out hover:bg-ember-2 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-70"
+          className="mt-1 w-full cursor-pointer rounded-xl bg-ember px-6 py-3 text-[15px] font-semibold text-white transition-[transform,background-color] duration-150 ease-out hover:bg-ember-2 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ember"
         >
           {status === "submitting" ? "Enviando…" : "Únete a la lista"}
         </button>

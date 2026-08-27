@@ -6,13 +6,13 @@ const STEPS = [
 
 export default function HowItWorks() {
   return (
-    <section className="border-b border-line px-6 py-20 sm:py-28">
+    <section id="como-funciona" className="scroll-mt-20 border-b border-line px-6 py-20 sm:py-28">
       <div className="mx-auto max-w-6xl">
         <div data-reveal className="max-w-xl">
           <span className="font-mono text-xs font-medium tracking-[0.14em] text-ember">
             CÓMO FUNCIONA
           </span>
-          <h2 className="mt-4 text-4xl font-semibold tracking-tight text-navy sm:text-5xl">
+          <h2 className="mt-4 text-balance text-4xl font-semibold tracking-tight text-navy sm:text-5xl">
             Tres pasos. Ya.
           </h2>
         </div>

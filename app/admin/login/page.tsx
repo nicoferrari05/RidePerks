@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import LoginForm from "./LoginForm";
 
-export const metadata: Metadata = { title: "Admin — RidePerks" };
+export const metadata: Metadata = { title: "Admin · RidePerks" };
 
 export default function AdminLoginPage() {
   return (

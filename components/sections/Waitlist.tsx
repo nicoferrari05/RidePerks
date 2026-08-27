@@ -8,10 +8,10 @@ export default function Waitlist() {
           <span className="font-mono text-xs font-medium tracking-[0.14em] text-ember">
             ACCESO ANTICIPADO
           </span>
-          <h2 className="mt-4 text-4xl font-semibold tracking-tight text-bone sm:text-5xl">
+          <h2 className="mt-4 text-balance text-4xl font-semibold tracking-tight text-bone sm:text-5xl">
             Anótate a la lista de espera.
           </h2>
-          <p className="mt-4 text-[15px] leading-relaxed text-bone/60">
+          <p className="mt-4 text-pretty text-[15px] leading-relaxed text-bone/60">
             Te avisamos apenas la app esté lista. Invita a otros conductores para subir en la fila.
           </p>
         </div>

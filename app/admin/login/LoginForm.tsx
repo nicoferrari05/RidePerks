@@ -129,8 +129,10 @@ export default function LoginForm() {
                 animate={cardControls}
                 className="w-full max-w-sm rounded-3xl border border-white/10 bg-navy-2/80 p-8 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.6)] backdrop-blur-md [box-shadow:inset_0_1px_0_rgba(255,255,255,0.06),0_30px_80px_-30px_rgba(0,0,0,0.6)]"
               >
-                <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-navy px-4 py-2 text-sm font-bold tracking-tight text-bone">
-                  RIDE<span className="text-ember">PERKS</span>
+                <div className="mb-6 inline-flex items-center rounded-full bg-navy px-4 py-2 text-sm font-bold tracking-tight text-bone">
+                  <span>
+                    RIDE<span className="text-ember">PERKS</span>
+                  </span>
                 </div>
                 <h1 className="text-xl font-semibold text-bone">Panel de administración</h1>
                 <p className="mt-1 text-sm text-bone/50">
