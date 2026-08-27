@@ -235,29 +235,33 @@ export default function WaitlistForm({ tone = "light" }: { tone?: Tone }) {
         />
 
         <label htmlFor={whatsappId} className="sr-only">
-          WhatsApp (opcional)
+          WhatsApp
         </label>
         <input
           id={whatsappId}
           type="tel"
+          required
           autoComplete="tel"
-          placeholder="WhatsApp (opcional)"
+          placeholder="WhatsApp"
           value={whatsapp}
           onChange={(e) => setWhatsapp(e.target.value)}
           className={fieldClass(tone)}
         />
 
         <label htmlFor={platformId} className="sr-only">
-          Plataforma (opcional)
+          Plataforma
         </label>
         <div className="relative">
           <select
             id={platformId}
+            required
             value={platform}
             onChange={(e) => setPlatform(e.target.value)}
             className={`${fieldClass(tone)} appearance-none pr-10`}
           >
-            <option value="">¿En qué plataforma trabajas? (opcional)</option>
+            <option value="" disabled>
+              ¿En qué plataforma trabajas?
+            </option>
             {(Object.keys(PLATFORM_LABEL) as Platform[]).map((p) => (
               <option key={p} value={p}>
                 {PLATFORM_LABEL[p]}

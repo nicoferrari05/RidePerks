@@ -29,22 +29,22 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Escribe un correo válido." }, { status: 400 });
   }
 
-  let normalizedWhatsapp: string | null = null;
-  if (typeof whatsapp === "string" && whatsapp.trim().length > 0) {
-    normalizedWhatsapp = normalizeWhatsapp(whatsapp);
-    const digitsOnly = normalizedWhatsapp.replace(/\D/g, "");
-    if (digitsOnly.length < 7 || digitsOnly.length > 15) {
-      return NextResponse.json({ error: "Ese número de WhatsApp no parece válido." }, { status: 400 });
-    }
+  if (typeof whatsapp !== "string" || whatsapp.trim().length === 0) {
+    return NextResponse.json({ error: "Escribe tu número de WhatsApp." }, { status: 400 });
+  }
+  const normalizedWhatsapp = normalizeWhatsapp(whatsapp);
+  const digitsOnly = normalizedWhatsapp.replace(/\D/g, "");
+  if (digitsOnly.length < 7 || digitsOnly.length > 15) {
+    return NextResponse.json({ error: "Ese número de WhatsApp no parece válido." }, { status: 400 });
   }
 
-  let normalizedPlatform: string | null = null;
-  if (typeof platform === "string" && platform.trim().length > 0) {
-    if (!PLATFORMS.has(platform)) {
-      return NextResponse.json({ error: "Plataforma inválida." }, { status: 400 });
-    }
-    normalizedPlatform = platform;
+  if (typeof platform !== "string" || platform.trim().length === 0) {
+    return NextResponse.json({ error: "Selecciona en qué plataforma trabajas." }, { status: 400 });
   }
+  if (!PLATFORMS.has(platform)) {
+    return NextResponse.json({ error: "Plataforma inválida." }, { status: 400 });
+  }
+  const normalizedPlatform = platform;
 
   try {
     const supabase = getSupabaseAdmin();
