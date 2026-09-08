@@ -1,7 +1,14 @@
+import { createHash } from "node:crypto";
+import { rateLimit } from "@/lib/platform/data";
 import { NextRequest, NextResponse } from "next/server";
 import { ADMIN_COOKIE_NAME, createSessionToken, verifyPassword } from "@/lib/adminAuth";
 
 export async function POST(request: NextRequest) {
+  if (request.headers.get("origin") !== request.nextUrl.origin) return NextResponse.json({ error: "Solicitud no autorizada." }, { status: 403 });
+  try {
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    await rateLimit("admin:" + createHash("sha256").update(ip).digest("hex"), 10, 600);
+  } catch { return NextResponse.json({ error: "Demasiados intentos o servicio no disponible. Intenta más tarde." }, { status: 429 }); }
   let body: unknown;
   try {
     body = await request.json();
@@ -22,7 +29,7 @@ export async function POST(request: NextRequest) {
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
-    maxAge: 60 * 60 * 24 * 30, // 30 days
+    maxAge: 60 * 60 * 12, // 12 hours, also enforced in the signed token
   });
   return response;
 }

@@ -52,6 +52,8 @@ export default function WaitlistForm({ tone = "light" }: { tone?: Tone }) {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const ref = params.get("ref");
+    // Synchronize the referral URL after hydration.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (ref) setRefCode(ref);
 
     const savedCode = window.localStorage.getItem(STORAGE_KEY);
