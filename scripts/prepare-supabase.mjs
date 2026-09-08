@@ -1,0 +1,31 @@
+// Build one copy/paste file from the canonical migrations; contains no credentials.
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+const migrations = [
+  "202609080001_driver_platform.sql",
+  "202609080002_waitlist_privacy.sql",
+];
+const parts = await Promise.all(
+  migrations.map(
+    async (name) =>
+      "-- " +
+      name +
+      "\n" +
+      (await readFile(
+        new URL("../supabase/migrations/" + name, import.meta.url),
+        "utf8",
+      )),
+  ),
+);
+const directory = new URL("../artifacts/", import.meta.url);
+await mkdir(directory, { recursive: true });
+await writeFile(
+  new URL("ACTIVAR_RIDEPERKS.sql", directory),
+  "-- RidePerks: ejecutar TODO este archivo en Supabase > SQL Editor > Run.\n" +
+    "-- Proyecto: hiwjqsopvpzjgyzlyeht. Incluye las dos migraciones verificadas.\n" +
+    "-- Se puede ejecutar nuevamente si la primera migracion ya fue aplicada.\n\n" +
+    parts.join("\n\n") +
+    "\n\nselect to_regclass('public.rp_profiles') as perfiles,\n" +
+    "to_regclass('public.rp_settings') as configuracion,\n" +
+    "has_table_privilege('anon', 'public.waitlist_ranked', 'select') as acceso_publico_waitlist;\n",
+);
+console.log("Ready: artifacts/ACTIVAR_RIDEPERKS.sql");

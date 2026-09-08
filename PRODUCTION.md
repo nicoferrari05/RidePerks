@@ -7,6 +7,7 @@ La plataforma vive en este repositorio junto al landing y la lista de espera. La
 1. En el mismo proyecto de Supabase de la lista de espera, ejecutar en orden:
    - `supabase/migrations/202609080001_driver_platform.sql`
    - `supabase/migrations/202609080002_waitlist_privacy.sql`
+   Para copiar ambos en un solo paso, ejecutar `node scripts/prepare-supabase.mjs` y abrir `artifacts/ACTIVAR_RIDEPERKS.sql`. Pegar todo en SQL Editor y ejecutar Run. El archivo se genera directamente de las migraciones anteriores y no contiene claves. La consulta final debe mostrar `rp_profiles`, `rp_settings` y `false` para el acceso público a la vista de la lista de espera.
 2. En el proyecto existente de Vercel, conservar `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `ADMIN_PASSWORD` y `ADMIN_SESSION_SECRET`. El secreto de sesión debe tener al menos 32 caracteres.
 3. Agregar `SUPABASE_ANON_KEY`, la clave pública anon del mismo proyecto.
 4. Configurar `SITE_URL=https://rideperks.app` (también es el valor predeterminado).
