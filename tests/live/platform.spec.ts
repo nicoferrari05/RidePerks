@@ -29,6 +29,17 @@ async function signIn(page: Page, mail: string) {
   });
 }
 test.beforeAll(async () => {
+  // Fail before creating fixtures when the target is unconfigured or protected by SSO.
+  const origin = process.env.TEST_BASE_URL || "http://localhost:3100";
+  const health = await fetch(new URL("/api/health", origin), {
+    redirect: "manual",
+    signal: AbortSignal.timeout(15000),
+  });
+  const status = health.ok ? await health.json().catch(() => null) : null;
+  if (status?.status !== "ok")
+    throw new Error(
+      "Target application is unavailable or protected. Configure it before live tests.",
+    );
   const check = await db.from("rp_settings").select("key").limit(1);
   if (check.error)
     throw new Error("Apply the platform migration before live tests.");
@@ -125,13 +136,11 @@ test("driver onboarding, private verification, admin approval and merchant redem
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aMj8AAAAASUVORK5CYII=",
     "base64",
   );
-  await page
-    .getByLabel("Captura de tu perfil de conductor")
-    .setInputFiles({
-      name: "qa-profile.png",
-      mimeType: "image/png",
-      buffer: png,
-    });
+  await page.getByLabel("Captura de tu perfil de conductor").setInputFiles({
+    name: "qa-profile.png",
+    mimeType: "image/png",
+    buffer: png,
+  });
   await page.getByRole("button", { name: "Enviar para revisión" }).click();
   await expect(
     page.getByRole("heading", { name: "Estamos revisando tu solicitud" }),
@@ -148,19 +157,21 @@ test("driver onboarding, private verification, admin approval and merchant redem
       verification.data!.photo_path,
   );
   expect(publicPhoto.ok()).toBe(false);
-  const admin = await browser.newContext();
+  const adminOrigin =
+    process.env.TEST_ADMIN_BASE_URL ||
+    process.env.TEST_BASE_URL ||
+    "http://localhost:3100";
+  const admin = await browser.newContext({ baseURL: adminOrigin });
   const adminPage = await admin.newPage();
   const adminLogin = await adminPage.request.post("/api/admin/login", {
-    headers: { Origin: process.env.TEST_BASE_URL || "http://localhost:3100" },
+    headers: { Origin: adminOrigin },
     data: { password: process.env.ADMIN_PASSWORD },
   });
   expect(adminLogin.ok()).toBe(true);
   await adminPage.goto("/admin/platform");
-  const card = adminPage
-    .locator("article")
-    .filter({
-      has: adminPage.getByRole("heading", { name: "Prueba QA Conductor" }),
-    });
+  const card = adminPage.locator("article").filter({
+    has: adminPage.getByRole("heading", { name: "Prueba QA Conductor" }),
+  });
   await card.getByRole("button", { name: "Aprobar verificación" }).click();
   await expect(card).toHaveCount(0, { timeout: 15000 });
   await page.goto("/driver/benefits/" + benefitId);
