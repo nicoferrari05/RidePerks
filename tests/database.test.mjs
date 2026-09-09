@@ -4,22 +4,26 @@ import { readFileSync } from "node:fs";
 import { randomUUID } from "node:crypto";
 import { PGlite } from "@electric-sql/pglite";
 let db;
-const migration = readFileSync(
-  new URL(
-    "../supabase/migrations/202609080001_driver_platform.sql",
-    import.meta.url,
-  ),
-  "utf8",
+const migrationFiles = [
+  "202609080001_driver_platform.sql",
+  "202609090001_qr_short_codes.sql",
+];
+const migrations = migrationFiles.map((name) =>
+  readFileSync(new URL("../supabase/migrations/" + name, import.meta.url), "utf8"),
 );
 before(async () => {
   db = new PGlite();
   await db.exec(
     "create role anon; create role authenticated; create role service_role bypassrls; create schema auth; create table auth.users(id uuid primary key,raw_user_meta_data jsonb default '{}'); create schema storage; create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);",
   );
-  try {
-    await db.exec(migration);
-  } catch (e) {
-    throw new Error(e.message + " at character " + e.position);
+  for (const [i, migration] of migrations.entries()) {
+    try {
+      await db.exec(migration);
+    } catch (e) {
+      throw new Error(
+        migrationFiles[i] + ": " + e.message + " at character " + e.position,
+      );
+    }
   }
 });
 after(async () => {
@@ -72,7 +76,7 @@ async function redeem(f, token) {
   ).rows[0].value;
 }
 test("migration is idempotent and preserves settings", async () => {
-  await db.exec(migration);
+  for (const migration of migrations) await db.exec(migration);
   assert.equal(
     (await db.query("select value from rp_settings where key='free_access'"))
       .rows[0].value,
@@ -124,6 +128,25 @@ test("repeated generation reuses an unexpired code", async () => {
     b = await issue(f);
   assert.equal(a.token, b.token);
   assert.ok(new Date(a.expires_at).getTime() - Date.now() <= 120000);
+});
+test("short code is six hex characters and resolves to the same pending token", async () => {
+  const f = await fixture();
+  const a = await issue(f);
+  assert.match(a.short_code, /^[0-9A-F]{6}$/);
+  const resolved = (
+    await db.query(
+      "select token from rp_qr_tokens where short_code=$1 and status='pending'",
+      [a.short_code],
+    )
+  ).rows[0];
+  assert.equal(resolved.token, a.token);
+});
+test("two drivers issuing at the same time get distinct short codes", async () => {
+  const f = await fixture(),
+    other = await fixture();
+  const a = await issue(f),
+    b = await issue(other);
+  assert.notEqual(a.short_code, b.short_code);
 });
 test("only the benefit's own business can redeem", async () => {
   const f = await fixture(),

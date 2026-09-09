@@ -89,8 +89,8 @@ export default function BusinessScanner() {
       <div className="rp-panel rp-stack">
         <h2>Validar un beneficio</h2>
         <p className="rp-muted">
-          Escanea el QR o pega el código del conductor. Confirma únicamente
-          cuando vayas a aplicar el descuento.
+          Escanea el QR o escribe el código de 6 caracteres que te dicte el
+          conductor. Confirma únicamente cuando vayas a aplicar el descuento.
         </p>
         <div
           id="rp-scanner"
@@ -114,9 +114,9 @@ export default function BusinessScanner() {
               value={token}
               onChange={(e) => setToken(e.target.value)}
               autoComplete="off"
-              autoCapitalize="none"
+              autoCapitalize="characters"
               spellCheck={false}
-              placeholder="Pega el código de un solo uso"
+              placeholder="Ej: F3A9B2"
               required
               maxLength={36}
             />

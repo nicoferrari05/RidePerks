@@ -3,7 +3,12 @@ import { useEffect, useState } from "react";
 import QRCode from "react-qr-code";
 import Link from "next/link";
 import { CheckCircle2, QrCode, Copy } from "lucide-react";
-type Token = { token: string; expires_at: string; status: string };
+type Token = {
+  token: string;
+  short_code?: string;
+  expires_at: string;
+  status: string;
+};
 export default function BenefitCode({
   benefitId,
   verified,
@@ -131,14 +136,19 @@ export default function BenefitCode({
             </strong>
           </p>
           <p className="rp-muted">
-            Si la cámara no funciona, comparte este código con el comercio:
+            Si la cámara no funciona, dicta o escribe este código en el
+            comercio:
           </p>
-          <code>{code.token}</code>
+          <code className="rp-short-code">
+            {code.short_code || code.token}
+          </code>
           <button
             className="rp-text-link"
             onClick={async () => {
               try {
-                await navigator.clipboard.writeText(code.token);
+                await navigator.clipboard.writeText(
+                  code.short_code || code.token,
+                );
                 setCopied(true);
               } catch {
                 setError("Selecciona y copia el código que aparece arriba.");

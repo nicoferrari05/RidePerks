@@ -67,7 +67,7 @@ export default function Hero() {
           <div className="relative overflow-hidden rounded-[24px] bg-navy text-bone shadow-[0_30px_70px_-28px_rgba(4,20,41,0.45)]">
             <div className="flex items-center justify-between border-b border-white/15 px-7 py-6">
               <span className="text-lg font-extrabold tracking-tight">
-                RIDE<span className="text-[#ff9478]">PERKS</span>
+                RIDE<span className="text-ember">PERKS</span>
               </span>
               <span className="rounded-full border border-white/25 px-3 py-1 text-xs font-medium">
                 Acceso gratuito
@@ -90,7 +90,7 @@ export default function Hero() {
                     <Icon
                       size={24}
                       strokeWidth={1.8}
-                      className="text-[#ff9478]"
+                      className="text-ember"
                       aria-hidden="true"
                     />
                     <span>{label}</span>

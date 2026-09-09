@@ -1,24 +1,28 @@
-import { FuelIcon, FoodIcon, WrenchIcon, HeartPulseIcon } from "@/components/icons";
+import { Fuel, UtensilsCrossed, Wrench, HeartPulse } from "lucide-react";
 
+// Same icon set as Hero/Benefits on the landing page — keep the whole site
+// on one consistent icon system instead of mixing it with the hand-drawn
+// set (still used standalone in components/icons.tsx for things like the
+// footer's Instagram glyph).
 const AREAS = [
   {
     label: "Combustible",
-    Icon: FuelIcon,
+    Icon: Fuel,
     copy: "Descuentos en gasolineras aliadas, donde ya cargás cada semana.",
   },
   {
     label: "Comida",
-    Icon: FoodIcon,
+    Icon: UtensilsCrossed,
     copy: "Precios especiales en los lugares donde comés entre viaje y viaje.",
   },
   {
     label: "Taller",
-    Icon: WrenchIcon,
+    Icon: Wrench,
     copy: "Mantenimiento y repuestos más baratos para el carro o la moto que es tu herramienta de trabajo.",
   },
   {
     label: "Salud",
-    Icon: HeartPulseIcon,
+    Icon: HeartPulse,
     copy: "Acceso a chequeos y servicios de salud sin que te espante el precio.",
   },
 ];

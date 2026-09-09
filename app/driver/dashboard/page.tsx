@@ -5,15 +5,18 @@ import {
   getBenefits,
   getRedemptions,
   getMonthlySavings,
+  getTotalSavings,
 } from "@/lib/platform/data";
 import { money, dateLabel, platforms, statuses } from "@/lib/platform/types";
 import { BenefitCard, Empty, Logo } from "@/components/platform/ui";
+import SavingsCard from "@/components/platform/SavingsCard";
 export default async function Page() {
   const p = await requireDriver();
-  const [benefits, history, monthly] = await Promise.all([
+  const [benefits, history, monthly, total] = await Promise.all([
     getBenefits(),
     getRedemptions(p.id),
     getMonthlySavings(p.id),
+    getTotalSavings(p.id),
   ]);
   return (
     <div className="rp-stack">
@@ -60,22 +63,7 @@ export default async function Page() {
         </div>
       )}
       <div className="rp-summary">
-        <section className="rp-balance" aria-label="Ahorro de este mes">
-          <p>Tu ahorro registrado este mes</p>
-          <strong>{money(monthly.total)}</strong>
-          <p>
-            {monthly.count}{" "}
-            {monthly.count === 1
-              ? "beneficio utilizado"
-              : "beneficios utilizados"}
-          </p>
-          <div className="rp-balance-foot">
-            <span>Solo usos confirmados por comercios</span>
-            <Link className="rp-text-link" href="/driver/history">
-              Ver historial <ArrowRight size={16} />
-            </Link>
-          </div>
-        </section>
+        <SavingsCard monthly={monthly} total={total} />
         <section className="rp-panel rp-member">
           <Logo />
           <div>

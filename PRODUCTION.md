@@ -9,7 +9,8 @@ El dominio `rideperks.app` / `www.rideperks.app` está asignado al proyecto de V
 1. En el mismo proyecto de Supabase de la lista de espera, ejecutar en orden:
    - `supabase/migrations/202609080001_driver_platform.sql`
    - `supabase/migrations/202609080002_waitlist_privacy.sql`
-     Para copiar ambos en un solo paso, ejecutar `node scripts/prepare-supabase.mjs` y abrir `artifacts/ACTIVAR_RIDEPERKS.sql`. Pegar todo en SQL Editor y ejecutar Run. El archivo se genera directamente de las migraciones anteriores y no contiene claves. La consulta final debe mostrar `rp_profiles`, `rp_settings` y `false` para el acceso público a la vista de la lista de espera.
+   - `supabase/migrations/202609090001_qr_short_codes.sql` (agrega el código corto de 6 caracteres para cuando falla la cámara; sin esta migración, generar códigos falla hasta aplicarla)
+     Para copiar las tres en un solo paso, ejecutar `node scripts/prepare-supabase.mjs` y abrir `artifacts/ACTIVAR_RIDEPERKS.sql`. Pegar todo en SQL Editor y ejecutar Run. El archivo se genera directamente de las migraciones anteriores y no contiene claves. La consulta final debe mostrar `rp_profiles`, `rp_settings` y `false` para el acceso público a la vista de la lista de espera.
 2. En el proyecto existente de Vercel, conservar `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `ADMIN_PASSWORD` y `ADMIN_SESSION_SECRET`. El secreto de sesión debe tener al menos 32 caracteres.
 3. Agregar `SUPABASE_ANON_KEY`, la clave pública anon del mismo proyecto.
 4. Configurar `SITE_URL=https://rideperks.app` (también es el valor predeterminado).
@@ -29,7 +30,7 @@ Las claves reales se guardan solo en variables de entorno. No copiar `.env.local
 - Administración: `/admin` mantiene la lista de espera. `/admin/platform` gestiona verificaciones, conductores, comercios, beneficios y ayuda.
 - Crear comercios reales antes de crear sus beneficios. Los montos deben corresponder a lo acordado con el comercio.
 - El responsable se registra en `/business/register` e inicia sesión en `/business/login`. En Administración → Comercios se crea el negocio y se selecciona la cuenta responsable por su nombre. El ID se genera automáticamente. También se permite guardar sin responsable y vincularlo después. Hasta la vinculación no puede canjear.
-- El comercio escanea o pega el código y confirma el beneficio. No usa contraseñas compartidas ni códigos de comercio en URLs.
+- El comercio escanea el QR o escribe el código corto de 6 caracteres (alternativa si falla la cámara) y confirma el beneficio. No usa contraseñas compartidas ni códigos de comercio en URLs.
 - El ahorro mostrado corresponde al monto fijo guardado en cada canje. Los descuentos variables se muestran como usos confirmados sin estimar un ahorro.
 - Atender las solicitudes de soporte y privacidad desde Ayuda en administración. Marcar una solicitud como atendida no elimina una cuenta automáticamente.
 - Los registros se pausan; no hay botones que borren comercios o beneficios con historial.

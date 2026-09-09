@@ -28,7 +28,7 @@ export function CategoryIcon({ category }: { category: string }) {
       } as Record<string, typeof Fuel>
     )[category] || Gift;
   return (
-    <div className="rp-category-icon">
+    <div className={"rp-category-icon " + category}>
       <Icon size={21} aria-hidden="true" />
     </div>
   );

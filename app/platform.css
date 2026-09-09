@@ -314,6 +314,31 @@
 .rp-balance a {
   color: #f8b098;
 }
+.rp-savings-switch {
+  display: flex;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 4px;
+  margin-bottom: 14px;
+}
+.rp-savings-switch button {
+  flex: 1;
+  min-height: 36px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #bcc7d1;
+  cursor: pointer;
+  transition:
+    background-color 180ms,
+    color 180ms;
+}
+.rp-savings-switch button[aria-selected="true"] {
+  background: #cf3b18;
+  color: #fff;
+}
 .rp-member {
   display: flex;
   flex-direction: column;
@@ -359,6 +384,26 @@
   background: #eae4da;
   border-radius: 10px;
   color: #514e49;
+  flex-shrink: 0;
+}
+/* One tint per benefit category, reusing the same soft-tile/saturated-icon
+   pairs already used elsewhere in this file (.rp-callout, .rp-badge.good),
+   so a driver can tell categories apart at a glance in any list. */
+.rp-category-icon.combustible {
+  background: #faf0d8;
+  color: #8a6413;
+}
+.rp-category-icon.comida {
+  background: #e0eee4;
+  color: #216546;
+}
+.rp-category-icon.mantenimiento {
+  background: #ffe0d8;
+  color: #ab2a09;
+}
+.rp-category-icon.salud {
+  background: #e3e7ee;
+  color: #041429;
 }
 .rp-benefit h3 {
   font-size: 1.1rem;
@@ -621,6 +666,13 @@
   overflow-wrap: anywhere;
   font-size: 0.8rem;
   line-height: 1.8;
+}
+.rp-short-code {
+  display: block;
+  font-size: 2rem;
+  font-weight: 650;
+  letter-spacing: 0.18em;
+  padding: 4px 0;
 }
 .rp-steps {
   counter-reset: steps;

@@ -111,26 +111,21 @@ export async function rateLimit(key: string, limit = 10, seconds = 600) {
     );
 }
 
-export async function getMonthlySavings(driverId: string) {
-  if ((await requireDriver()).id !== driverId)
-    throw new Error("No autorizado.");
+async function sumSavings(driverId: string, since: string | null, errorMessage: string) {
   const until = new Date().toISOString();
-  const month = new Date(Date.now() - 5 * 60 * 60 * 1000)
-    .toISOString()
-    .slice(0, 7);
-  const start = month + "-01T00:00:00-05:00";
   let total = 0,
     count = 0;
   for (let offset = 0; ; offset += 500) {
-    const { data, error } = await getSupabaseAdmin()
+    let query = getSupabaseAdmin()
       .from("rp_redemptions")
       .select("savings_amount")
       .eq("driver_id", driverId)
-      .gte("redeemed_at", start)
       .lte("redeemed_at", until)
       .order("id")
       .range(offset, offset + 499);
-    if (error) throw new Error("No pudimos calcular el ahorro del mes.");
+    if (since) query = query.gte("redeemed_at", since);
+    const { data, error } = await query;
+    if (error) throw new Error(errorMessage);
     for (const row of data) {
       total += Number(row.savings_amount || 0);
       count++;
@@ -138,4 +133,20 @@ export async function getMonthlySavings(driverId: string) {
     if (data.length < 500) break;
   }
   return { total, count };
+}
+
+export async function getMonthlySavings(driverId: string) {
+  if ((await requireDriver()).id !== driverId)
+    throw new Error("No autorizado.");
+  const month = new Date(Date.now() - 5 * 60 * 60 * 1000)
+    .toISOString()
+    .slice(0, 7);
+  const start = month + "-01T00:00:00-05:00";
+  return sumSavings(driverId, start, "No pudimos calcular el ahorro del mes.");
+}
+
+export async function getTotalSavings(driverId: string) {
+  if ((await requireDriver()).id !== driverId)
+    throw new Error("No autorizado.");
+  return sumSavings(driverId, null, "No pudimos calcular el ahorro total.");
 }
