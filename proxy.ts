@@ -43,11 +43,18 @@ export async function proxy(request: NextRequest) {
   const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key =
     process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const businessPublic =
+    pathname === "/business/login" || pathname === "/business/register";
+  const loginPath = pathname.startsWith("/business")
+    ? "/business/login"
+    : "/login";
   const protectedPath =
-    pathname.startsWith("/driver") || pathname.startsWith("/business") || pathname.startsWith("/account");
+    pathname.startsWith("/driver") ||
+    (pathname.startsWith("/business") && !businessPublic) ||
+    pathname.startsWith("/account");
   if (!url || !key) {
     if (protectedPath)
-      return NextResponse.redirect(new URL("/login", request.url));
+      return NextResponse.redirect(new URL(loginPath, request.url));
     return NextResponse.next();
   }
   let response = NextResponse.next({ request });
@@ -61,7 +68,7 @@ export async function proxy(request: NextRequest) {
           response.cookies.set(name, value, {
             ...options,
             sameSite: "lax",
-              httpOnly: true,
+            httpOnly: true,
             secure: process.env.NODE_ENV === "production",
           }),
         );
@@ -72,7 +79,7 @@ export async function proxy(request: NextRequest) {
     data: { user },
   } = await auth.auth.getUser();
   if (!user && protectedPath) {
-    const target = new URL("/login", request.url);
+    const target = new URL(loginPath, request.url);
     target.searchParams.set("next", pathname);
     const redirect = NextResponse.redirect(target);
     response.cookies.getAll().forEach((c) => redirect.cookies.set(c));

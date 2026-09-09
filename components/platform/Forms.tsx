@@ -5,6 +5,7 @@ import { Eye, EyeOff, ArrowRight } from "lucide-react";
 import {
   login,
   signup,
+  signupBusiness,
   recover,
   changePassword,
 } from "@/lib/platform/auth-actions";
@@ -121,18 +122,35 @@ export function PlatformField({ value }: { value?: string }) {
 export function AuthForm({
   mode,
   next = "/driver/dashboard",
+  audience = "driver",
 }: {
   mode: "login" | "register" | "recover";
   next?: string;
+  audience?: "driver" | "business";
 }) {
   const action =
-    mode === "login" ? login : mode === "register" ? signup : recover;
+    mode === "login"
+      ? login
+      : mode === "register"
+        ? audience === "business"
+          ? signupBusiness
+          : signup
+        : recover;
   const [state, formAction, pending] = useActionState(action, {});
   return (
     <form action={formAction} className="rp-form">
       <input type="hidden" name="next" value={next} />
+      <input type="hidden" name="audience" value={audience} />
       {mode === "register" && (
-        <Field label="Nombre completo" name="full_name" autoComplete="name" />
+        <Field
+          label={
+            audience === "business"
+              ? "Nombre del responsable"
+              : "Nombre completo"
+          }
+          name="full_name"
+          autoComplete="name"
+        />
       )}
       <Field
         label="Correo electrónico"
@@ -151,7 +169,7 @@ export function AuthForm({
             autoComplete="tel"
             placeholder="+507 6000 0000"
           />
-          <PlatformField />
+          {audience === "driver" && <PlatformField />}
           <label className="rp-check">
             <input name="terms" type="checkbox" required />
             <span>
@@ -175,7 +193,9 @@ export function AuthForm({
           : mode === "login"
             ? "Iniciar sesión"
             : mode === "register"
-              ? "Crear mi cuenta gratis"
+              ? audience === "business"
+                ? "Crear cuenta de comercio"
+                : "Crear mi cuenta gratis"
               : "Enviar enlace"}
         {!pending && <ArrowRight size={18} aria-hidden="true" />}
       </button>

@@ -17,6 +17,7 @@ import {
   type Verification,
   statuses,
   dateLabel,
+  platforms,
 } from "@/lib/platform/types";
 import "../../platform.css";
 export const metadata = {
@@ -96,6 +97,31 @@ export default async function Page({
     if (row.error) throw new Error("No pudimos cargar el registro.");
     edit = row.data || undefined;
   }
+  let accountOptions: {
+    id: string;
+    full_name: string;
+    phone: string;
+    role: string;
+  }[] = [];
+  if (tab === "businesses") {
+    const accounts = await db
+      .from("rp_profiles")
+      .select("id,full_name,phone,role")
+      .order("full_name")
+      .limit(500);
+    if (accounts.error)
+      throw new Error("No pudimos cargar las cuentas responsables.");
+    accountOptions = accounts.data || [];
+    const owner = (edit as Business | undefined)?.owner_user_id;
+    if (owner && !accountOptions.some((account) => account.id === owner)) {
+      const current = await db
+        .from("rp_profiles")
+        .select("id,full_name,phone,role")
+        .eq("id", owner)
+        .maybeSingle();
+      if (current.data) accountOptions.push(current.data);
+    }
+  }
   const rows = result.data || [];
   const verificationRows =
     tab === "verifications"
@@ -107,13 +133,16 @@ export default async function Page({
                 .createSignedUrl(v.photo_path, 300),
               db
                 .from("rp_profiles")
-                .select("full_name")
+                .select("full_name,platform")
                 .eq("id", v.driver_id)
                 .single(),
             ]);
             return {
               ...v,
               name: p.data?.full_name || "Conductor",
+              platform: p.data?.platform
+                ? platforms[p.data.platform as keyof typeof platforms]
+                : "Plataforma no indicada",
               url: signed.data?.signedUrl,
             };
           }),
@@ -145,7 +174,7 @@ export default async function Page({
         <nav className="rp-subnav" aria-label="Administración">
           {[
             ["verifications", "Verificaciones"],
-            ["drivers", "Conductores"],
+            ["drivers", "Cuentas"],
             ["businesses", "Comercios"],
             ["benefits", "Beneficios"],
             ["support", "Ayuda"],
@@ -159,6 +188,27 @@ export default async function Page({
             </Link>
           ))}
         </nav>
+        {tab === "verifications" && (
+          <section className="rp-panel">
+            <h2>Verificación manual de conductores</h2>
+            <ol className="rp-steps">
+              <li>
+                Abre la captura y comprueba que corresponde al perfil de una app
+                de conductores.
+              </li>
+              <li>
+                Compara el nombre y la plataforma con la cuenta registrada.
+              </li>
+              <li>
+                Aprueba la solicitud o pide una corrección con un mensaje claro.
+              </li>
+            </ol>
+            <p className="rp-muted">
+              Subir una imagen no aprueba la cuenta automáticamente. Solo
+              después de tu aprobación podrá generar códigos de beneficio.
+            </p>
+          </section>
+        )}
         <div
           className={
             tab === "benefits" || tab === "businesses"
@@ -281,8 +331,8 @@ export default async function Page({
                   </p>
                   <p className="my-4 whitespace-pre-line">{r.message}</p>
                   <p className="rp-muted mb-4">
-                    Busca el ID en Conductores para contactar por WhatsApp.
-                    Resolver esta solicitud no elimina datos automáticamente.
+                    Busca el ID en Cuentas para contactar por WhatsApp. Resolver
+                    esta solicitud no elimina datos automáticamente.
                   </p>
                   <ResolveSupport id={r.id} />
                 </article>
@@ -291,8 +341,17 @@ export default async function Page({
               <article className="rp-panel" key={v.id}>
                 <h2>{v.name}</h2>
                 <p className="rp-muted mb-3">
-                  Enviada el {dateLabel(v.created_at)}
+                  {v.platform} · Enviada el {dateLabel(v.created_at)}
                 </p>
+                {v.url && (
+                  // The private signed URL must not be cached by the public image optimizer.
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={v.url}
+                    alt={"Captura del perfil de " + v.name}
+                    className="rp-verification-preview"
+                  />
+                )}
                 {v.url ? (
                   <a
                     className="rp-text-link"
@@ -348,6 +407,7 @@ export default async function Page({
                 <BusinessForm
                   key={edit?.id || "new"}
                   business={edit as Business | undefined}
+                  accounts={accountOptions}
                 />
               ) : (
                 <BenefitForm

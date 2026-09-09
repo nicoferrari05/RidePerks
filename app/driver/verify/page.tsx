@@ -32,7 +32,7 @@ export default async function Page() {
               : suspended
                 ? "Contacta al equipo desde Ayuda para revisar tu caso."
                 : pending
-                  ? "Tu imagen se envió correctamente. Cuando el equipo la revise, verás el resultado aquí."
+                  ? "Tu imagen se envió correctamente. El equipo revisará tu nombre y plataforma manualmente; subirla no activa los beneficios de forma automática."
                   : "Sube una captura de tu perfil de Uber, inDrive o PedidosYa donde se vea tu nombre y la plataforma."}
           </p>
           {v?.status === "rejected" && (
@@ -54,8 +54,8 @@ export default async function Page() {
             <li>Oculta datos de pasajeros, pagos y documentos de identidad.</li>
           </ol>
           <p className="rp-muted">
-            Tu imagen es privada. Solo el equipo de RidePerks puede revisarla
-            para verificar tu cuenta.
+            La aprobación es manual. Tu imagen es privada. Solo el equipo de
+            RidePerks puede revisarla para verificar tu cuenta.
           </p>
         </aside>
       </div>

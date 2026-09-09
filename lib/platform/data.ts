@@ -36,7 +36,7 @@ export async function requireDriver() {
 }
 export async function requireBusiness() {
   const profile = await currentProfile();
-  if (!profile) redirect("/login?next=/business");
+  if (!profile) redirect("/business/login");
   if (profile.role !== "business") redirect("/driver/dashboard");
   if (profile.status === "suspended") return { profile, business: null };
   const { data, error } = await getSupabaseAdmin()

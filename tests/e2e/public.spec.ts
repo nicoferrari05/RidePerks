@@ -14,7 +14,13 @@ test("landing keeps waitlist and links to driver login", async ({ page }) => {
 for (const width of [320, 375, 430, 1440]) {
   test("auth screens fit viewport " + width, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
-    for (const path of ["/login", "/register", "/recover"]) {
+    for (const path of [
+      "/login",
+      "/register",
+      "/recover",
+      "/business/login",
+      "/business/register",
+    ]) {
       await page.goto(path);
       await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
       expect(
@@ -32,7 +38,12 @@ for (const width of [320, 375, 430, 1440]) {
             .evaluate((el) => parseFloat(getComputedStyle(el).fontSize)),
         ).toBeGreaterThanOrEqual(16);
       await page.screenshot({
-        path: "artifacts/" + path.slice(1) + "-" + width + ".png",
+        path:
+          "artifacts/" +
+          path.slice(1).replaceAll("/", "-") +
+          "-" +
+          width +
+          ".png",
         fullPage: true,
       });
     }
@@ -104,4 +115,23 @@ test("legal pages and offline fallback render", async ({ page, request }) => {
   const manifest = await request.get("/manifest.webmanifest");
   expect(manifest.ok()).toBe(true);
   expect((await manifest.json()).start_url).toBe("/driver/dashboard");
+});
+
+test("landing redesign and merchant entry are visible", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto("/");
+  await expect(page.getByText("Carlos Rodriguez", { exact: true })).toHaveCount(
+    0,
+  );
+  await expect(
+    page.getByRole("heading", { name: "Tus beneficios, a mano." }),
+  ).toBeVisible();
+  await page.screenshot({ path: "artifacts/landing-hero-new.png" });
+  await page.locator("#beneficios").scrollIntoViewIfNeeded();
+  await page.screenshot({ path: "artifacts/landing-benefits-new.png" });
+  await page.goto("/business/register");
+  await expect(page.locator("[name=platform]")).toHaveCount(0);
+  await expect(page.getByLabel("Nombre del responsable")).toBeVisible();
+  await page.getByRole("link", { name: "Conductor", exact: true }).click();
+  await expect(page).toHaveURL(/\/register$/);
 });
