@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
 
-// Protected by middleware.ts (requires a valid rp_admin session cookie).
+// Protected by proxy.ts (requires a valid rp_admin session cookie).
 
 export async function GET() {
   try {

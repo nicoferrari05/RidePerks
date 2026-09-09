@@ -136,7 +136,7 @@ export default function WaitlistForm({ tone = "light" }: { tone?: Tone }) {
     return (
       <div
         role="status"
-        className={`w-full max-w-md rounded-3xl border p-6 shadow-[0_20px_60px_-30px_rgba(4,20,41,0.4)] transition-all duration-300 ease-out ${
+        className={`w-full max-w-md scale-100 rounded-3xl border p-6 opacity-100 shadow-[0_20px_60px_-30px_rgba(4,20,41,0.4)] transition-[opacity,transform] duration-300 ease-out starting:scale-95 starting:opacity-0 ${
           tone === "dark" ? "border-white/10 bg-navy-2 text-bone" : "border-line bg-white text-navy"
         }`}
       >
