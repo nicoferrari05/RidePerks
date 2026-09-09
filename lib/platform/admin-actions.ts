@@ -12,7 +12,13 @@ const category = z.enum([
   "salud",
   "otros",
 ]);
-const optionalId = z.union([z.literal(""), z.uuid()]);
+const optionalId = z
+  .string()
+  .trim()
+  .refine(
+    (v) => v === "" || uuidSchema.safeParse(v).success,
+    "Selecciona una cuenta responsable válida de la lista.",
+  );
 const businessSchema = z.object({
   id: optionalId,
   name: z.string().trim().min(2).max(120),

@@ -1,6 +1,7 @@
 import GradientWaves from "@/components/GradientWaves";
 import Counter from "@/components/Counter";
-import { SteeringWheelIcon } from "@/components/icons";
+import Link from "next/link";
+import { Fuel, UtensilsCrossed, Wrench, ArrowUpRight } from "lucide-react";
 
 export default function Hero() {
   return (
@@ -39,11 +40,13 @@ export default function Hero() {
           </span>
 
           <h1 className="mt-5 text-balance text-[clamp(2.75rem,7vw,5.5rem)] font-bold leading-[0.95] tracking-tight text-navy">
-            Tu trabajo rinde <em className="font-accent italic text-ember">más.</em>
+            Tu trabajo rinde{" "}
+            <em className="font-accent italic text-ember">más.</em>
           </h1>
 
           <p className="mt-6 max-w-lg text-pretty text-lg text-ink/80 sm:text-xl">
-            Descuentos reales en gasolina, comida y mantenimiento. En lo que ya gastas cada semana.
+            Descuentos reales en gasolina, comida y mantenimiento. En lo que ya
+            gastas cada semana.
           </p>
 
           <div className="mt-10 flex flex-col items-start gap-5 sm:flex-row sm:items-center">
@@ -57,48 +60,55 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Membership card — the same "plate" motif from the brand
-            identity board, brought into the hero so the split isn't just
-            text-over-background. Hidden below lg: it only sits beside the
-            copy for free there (2-col grid); on phone/tablet it would
-            stack below the text and add a screen's worth of scroll before
-            Beneficios even starts, for a purely decorative payoff. */}
-        <div data-reveal className="hidden w-full max-w-[340px] lg:block lg:ml-auto">
-          <div className="relative aspect-[3/4] overflow-hidden rounded-[28px] bg-navy p-7 text-bone shadow-[0_40px_90px_-30px_rgba(4,20,41,0.55)]">
-            <div
-              className="pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full opacity-90"
-              style={{ background: "radial-gradient(circle, rgba(207,59,24,0.55), transparent 70%)" }}
-              aria-hidden="true"
-            />
-            <div className="relative flex h-full flex-col justify-between">
-              <div className="flex items-start justify-between">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-ember">
-                  <SteeringWheelIcon className="h-5 w-5 text-white" />
-                </div>
-                <span className="font-mono text-[10px] tracking-[0.15em] text-bone/50">
-                  N° 001 · FOUNDERS
-                </span>
-              </div>
-
-              <div>
-                <span className="font-mono text-[11px] tracking-[0.15em] text-bone/50">MEMBER</span>
-                <h2 className="mt-2 text-3xl font-semibold leading-tight tracking-tight">
-                  Carlos
-                  <br />
-                  Rodríguez
-                </h2>
-                <div className="mt-6 flex items-end justify-between">
-                  <div>
-                    <div className="font-mono text-[10px] tracking-[0.1em] text-bone/50">
-                      DRIVER · UBER · INDRIVE
-                    </div>
-                    <div className="mt-1 font-mono text-sm">PA-0420-2601</div>
+        <div
+          data-reveal
+          className="hidden w-full max-w-[420px] lg:ml-auto lg:block"
+        >
+          <div className="relative overflow-hidden rounded-[24px] bg-navy text-bone shadow-[0_30px_70px_-28px_rgba(4,20,41,0.45)]">
+            <div className="flex items-center justify-between border-b border-white/15 px-7 py-6">
+              <span className="text-lg font-extrabold tracking-tight">
+                RIDE<span className="text-[#ff9478]">PERKS</span>
+              </span>
+              <span className="rounded-full border border-white/25 px-3 py-1 text-xs font-medium">
+                Acceso gratuito
+              </span>
+            </div>
+            <div className="px-7 py-8">
+              <h2 className="max-w-[12ch] text-[2.3rem] font-semibold leading-[1.12] tracking-tight">
+                Tus beneficios, a mano.
+              </h2>
+              <p className="mt-4 max-w-[28ch] text-sm leading-relaxed text-[#c4cbd4]">
+                Un solo pase para las paradas de todos los días.
+              </p>
+              <div className="mt-8 flex gap-6 border-t border-white/15 pt-6">
+                {[
+                  { Icon: Fuel, label: "Gasolina" },
+                  { Icon: UtensilsCrossed, label: "Comida" },
+                  { Icon: Wrench, label: "Taller" },
+                ].map(({ Icon, label }) => (
+                  <div key={label} className="flex flex-col gap-2 text-sm">
+                    <Icon
+                      size={24}
+                      strokeWidth={1.8}
+                      className="text-[#ff9478]"
+                      aria-hidden="true"
+                    />
+                    <span>{label}</span>
                   </div>
-                  <span className="font-accent italic text-bone/70">rideperks.app</span>
-                </div>
+                ))}
               </div>
             </div>
+            <Link
+              href="/register"
+              className="flex items-center justify-between bg-ember px-7 py-4 text-sm font-semibold text-white transition-colors hover:bg-ember-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-5px] focus-visible:outline-white"
+            >
+              Crear mi cuenta
+              <ArrowUpRight size={20} aria-hidden="true" />
+            </Link>
           </div>
+          <p className="mt-4 text-right text-xs text-navy/75">
+            Para quienes mueven Panamá.
+          </p>
         </div>
       </div>
     </section>

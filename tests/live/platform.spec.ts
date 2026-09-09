@@ -18,7 +18,7 @@ let driverId = "",
   benefitId = "";
 const users: string[] = [];
 async function signIn(page: Page, mail: string) {
-  await page.goto("/login");
+  await page.goto(mail === businessEmail ? "/business/login" : "/login");
   await page.getByLabel("Correo electrónico").fill(mail);
   await page.getByLabel("Contraseña", { exact: true }).fill(password);
   await page

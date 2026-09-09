@@ -11,6 +11,7 @@ import {
   safeNext,
 } from "./validation";
 import { rateLimit } from "./data";
+import { getSupabaseAdmin } from "@/lib/supabase-server";
 import type { ActionState } from "./types";
 function siteUrl() {
   return process.env.SITE_URL || "https://rideperks.app";
@@ -48,9 +49,33 @@ export async function login(
     });
     if (error)
       return {
-        error:
-          "No pudimos iniciar sesión. Revisa tus datos y confirma tu correo.",
+        error: "No pudimos iniciar sesión. Revisa tu correo y contraseña.",
       };
+    const {
+      data: { user },
+    } = await auth.auth.getUser();
+    const profile = user
+      ? await getSupabaseAdmin()
+          .from("rp_profiles")
+          .select("role")
+          .eq("id", user.id)
+          .single()
+      : null;
+    if (!profile?.data || profile.error) {
+      await auth.auth.signOut({ scope: "local" });
+      return { error: "No pudimos cargar tu cuenta. Intenta nuevamente." };
+    }
+    const audience =
+      form.get("audience") === "business" ? "business" : "driver";
+    if (profile.data.role !== audience) {
+      await auth.auth.signOut({ scope: "local" });
+      return {
+        error:
+          profile.data.role === "business"
+            ? "Esta cuenta es de comercio. Selecciona Comercio para entrar."
+            : "Esta cuenta es de conductor. Selecciona Conductor para entrar.",
+      };
+    }
   } catch (e) {
     return {
       error:
@@ -61,40 +86,75 @@ export async function login(
   }
   redirect(safeNext(form.get("next")));
 }
-export async function signup(
-  _: ActionState,
+// Launch decision: web registration creates confirmed email identities without sending email.
+// Driver verification and permission to redeem remain a separate manual process.
+async function registerAccount(
   form: FormData,
+  audience: "driver" | "business",
 ): Promise<ActionState> {
-  const parsed = signupSchema.safeParse(Object.fromEntries(form));
+  const raw = Object.fromEntries(form);
+  const parsed = signupSchema.safeParse(
+    audience === "business" ? { ...raw, platform: "multiple" } : raw,
+  );
   if (!parsed.success) return { error: firstError(parsed.error) };
   if (!authConfigured())
     return { error: "El registro aún no está habilitado. Intenta más tarde." };
   try {
     await authLimit(parsed.data.email);
-    const auth = await createAuthClient();
     const { email, password, full_name, phone, platform } = parsed.data;
-    const { data, error } = await auth.auth.signUp({
+    const db = getSupabaseAdmin();
+    // createUser rejects duplicates. Never confirm or modify an existing account here.
+    const { data, error } = await db.auth.admin.createUser({
       email,
       password,
-      options: {
-        data: { full_name, phone, platform },
-        emailRedirectTo: siteUrl() + "/auth/callback",
-      },
+      email_confirm: true,
+      user_metadata: { full_name, phone, platform },
     });
-    if (error)
+    if (error || !data.user)
       return {
         error:
-          "No pudimos crear la cuenta. Intenta más tarde o recupera tu contraseña si ya estás registrado.",
+          "No pudimos crear la cuenta. Si ya estás registrado, inicia sesión con tu contraseña.",
       };
-    if (!data.session)
+    if (audience === "business") {
+      const assigned = await db
+        .from("rp_profiles")
+        .update({ role: "business" })
+        .eq("id", data.user.id);
+      if (assigned.error) {
+        await db.auth.admin.deleteUser(data.user.id);
+        return {
+          error: "No pudimos crear la cuenta del comercio. Intenta nuevamente.",
+        };
+      }
+    }
+    const auth = await createAuthClient();
+    const signed = await auth.auth.signInWithPassword({ email, password });
+    if (signed.error)
       return {
         success:
-          "Revisa tu correo para confirmar tu cuenta. Si ya tienes una cuenta, inicia sesión o recupera tu contraseña.",
+          "Tu cuenta está creada. Ya puedes iniciar sesión con tu correo y contraseña.",
       };
   } catch (e) {
-    return { error: e instanceof Error ? e.message : "No pudimos conectar." };
+    return {
+      error:
+        e instanceof Error
+          ? e.message
+          : "No pudimos conectar. Intenta nuevamente.",
+    };
   }
-  redirect("/driver/dashboard");
+  redirect(audience === "business" ? "/business" : "/driver/dashboard");
+}
+export async function signup(
+  _: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  return registerAccount(form, "driver");
+}
+export async function signupBusiness(
+  _: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  return registerAccount(form, "business");
 }
 export async function recover(
   _: ActionState,
@@ -147,10 +207,10 @@ export async function changePassword(
     return { error: "No pudimos conectar. Intenta nuevamente." };
   }
 }
-export async function logout() {
+export async function logout(form: FormData) {
   const auth = await createAuthClient();
   const { error } = await auth.auth.signOut({ scope: "local" });
   if (error)
     throw new Error("No pudimos cerrar la sesión. Intenta nuevamente.");
-  redirect("/login");
+  redirect(form.get("audience") === "business" ? "/business/login" : "/login");
 }

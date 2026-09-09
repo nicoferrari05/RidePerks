@@ -14,6 +14,12 @@ export default function Nav() {
         </Link>
         <div className="flex items-center gap-2 sm:gap-5">
           <Link
+            href="/business/login"
+            className="hidden min-[390px]:inline text-sm font-medium text-ink/80 hover:text-ember focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ember"
+          >
+            Comercios
+          </Link>
+          <Link
             href="/about"
             className="hidden sm:inline text-sm font-medium text-ink/70 transition-colors duration-150 ease-out hover:text-ember focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ember"
           >

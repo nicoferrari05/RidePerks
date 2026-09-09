@@ -66,7 +66,13 @@ function Category({ value }: { value?: string }) {
     </div>
   );
 }
-export function BusinessForm({ business: b }: { business?: Business }) {
+export function BusinessForm({
+  business: b,
+  accounts,
+}: {
+  business?: Business;
+  accounts: { id: string; full_name: string; phone: string; role: string }[];
+}) {
   const [state, action, pending] = useActionState(saveBusiness, {});
   return (
     <form className="rp-form" action={action}>
@@ -82,16 +88,33 @@ export function BusinessForm({ business: b }: { business?: Business }) {
         value={b?.phone || ""}
         required={false}
       />
-      <Input
-        name="owner_user_id"
-        label="ID de la cuenta del comercio"
-        value={b?.owner_user_id || ""}
-        required={false}
-      />
+      <div className="rp-field">
+        <label htmlFor="owner_user_id">Cuenta responsable (opcional)</label>
+        <select
+          id="owner_user_id"
+          name="owner_user_id"
+          defaultValue={b?.owner_user_id || ""}
+        >
+          <option value="">Vincular una cuenta después</option>
+          {accounts.map((account) => (
+            <option key={account.id} value={account.id}>
+              {account.full_name || "Sin nombre"} · {account.phone} (
+              {account.role === "business" ? "comercio" : "conductor"})
+            </option>
+          ))}
+        </select>
+      </div>
       <p className="rp-muted">
-        El responsable debe registrarse primero. Copia su ID desde Conductores;
-        al vincularlo tendrá acceso al portal de este comercio.
+        El responsable crea su cuenta en el acceso de Comercios. Después
+        selecciónalo aquí por su nombre. El identificador se asigna
+        automáticamente; no tienes que escribir ningún código.
       </p>
+      {!accounts.length && (
+        <p className="rp-muted">
+          Aún no hay cuentas responsables. Puedes guardar el comercio ahora y
+          vincular una cuenta más adelante.
+        </p>
+      )}
       <Feedback state={state} />
       <button className="rp-button" disabled={pending}>
         {pending ? "Guardando…" : "Guardar comercio"}
