@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Fraunces, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -33,6 +33,8 @@ const description =
   "El club de beneficios para conductores de Uber, InDrive y PedidosYa en Panamá. Descuentos reales en gasolina, comida, mantenimiento y más. Únete a la lista de espera.";
 
 export const metadata: Metadata = {
+  appleWebApp: { capable: true, title: "RidePerks", statusBarStyle: "default" },
+  icons: { apple: "/apple-touch-icon.png" },
   metadataBase: new URL("https://rideperks.app"),
   title,
   description,
@@ -59,6 +61,8 @@ export const metadata: Metadata = {
     images: ["/og-image.jpg"],
   },
 };
+
+export const viewport: Viewport = { width: "device-width", initialScale: 1, viewportFit: "cover", themeColor: "#041429" };
 
 export default function RootLayout({
   children,

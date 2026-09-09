@@ -87,6 +87,8 @@ export default function AdminDashboard() {
   }
 
   useEffect(() => {
+    // Loads remote data on mount; subsequent updates are asynchronous.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadAll();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

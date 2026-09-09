@@ -1,64 +1,54 @@
-// Minimal shared-password auth for the /admin portal.
-//
-// Design: one password (ADMIN_PASSWORD env var). On successful login we set
-// an httpOnly cookie whose value is an HMAC token derived from a secret
-// (ADMIN_SESSION_SECRET). Middleware recomputes the same HMAC on every
-// request to /admin and /api/admin and compares it — nothing is stored in
-// a database, and the cookie can't be forged without the secret.
-//
-// Uses Web Crypto (crypto.subtle) only, so this file runs unchanged in
-// both the Edge middleware runtime and normal Node.js API routes.
-
 export const ADMIN_COOKIE_NAME = "rp_admin";
-
-const SESSION_MESSAGE = "rideperks-admin-session-v1";
 const encoder = new TextEncoder();
-
-function toHex(buffer: ArrayBuffer): string {
-  return Array.from(new Uint8Array(buffer))
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-}
-
-function getSecret(): string {
-  const secret = process.env.ADMIN_SESSION_SECRET || process.env.ADMIN_PASSWORD;
-  if (!secret) {
+const MAX_AGE = 60 * 60 * 12;
+function getSecret() {
+  const secret = process.env.ADMIN_SESSION_SECRET;
+  if (!secret || secret.length < 32)
     throw new Error(
-      "Falta ADMIN_SESSION_SECRET (o al menos ADMIN_PASSWORD) en las variables de entorno."
+      "Configura ADMIN_SESSION_SECRET con al menos 32 caracteres.",
     );
-  }
   return secret;
 }
-
-export function timingSafeEqual(a: string, b: string): boolean {
+export function timingSafeEqual(a: string, b: string) {
   if (a.length !== b.length) return false;
   let mismatch = 0;
-  for (let i = 0; i < a.length; i++) {
+  for (let i = 0; i < a.length; i++)
     mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  }
   return mismatch === 0;
 }
-
-export async function createSessionToken(): Promise<string> {
+async function sign(message: string) {
   const key = await crypto.subtle.importKey(
     "raw",
     encoder.encode(getSecret()),
     { name: "HMAC", hash: "SHA-256" },
     false,
-    ["sign"]
+    ["sign"],
   );
-  const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(SESSION_MESSAGE));
-  return toHex(signature);
+  const result = await crypto.subtle.sign("HMAC", key, encoder.encode(message));
+  return Array.from(new Uint8Array(result))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 }
-
-export async function verifyPassword(password: string): Promise<boolean> {
+export async function createSessionToken() {
+  const expires = Math.floor(Date.now() / 1000) + MAX_AGE;
+  const payload = "v2." + expires + "." + crypto.randomUUID();
+  return payload + "." + (await sign(payload));
+}
+export async function verifyPassword(password: string) {
   const expected = process.env.ADMIN_PASSWORD;
-  if (!expected) return false;
-  return timingSafeEqual(password, expected);
+  return Boolean(expected && timingSafeEqual(password, expected));
 }
-
-export async function verifySessionToken(token: string | undefined | null): Promise<boolean> {
-  if (!token) return false;
-  const expected = await createSessionToken();
-  return timingSafeEqual(token, expected);
+export async function verifySessionToken(token: string | undefined | null) {
+  if (!token || token.length > 200) return false;
+  const parts = token.split(".");
+  if (parts.length !== 4 || parts[0] !== "v2") return false;
+  const expires = Number(parts[1]),
+    now = Math.floor(Date.now() / 1000);
+  if (!Number.isInteger(expires) || expires <= now || expires > now + MAX_AGE)
+    return false;
+  try {
+    return timingSafeEqual(parts[3], await sign(parts.slice(0, 3).join(".")));
+  } catch {
+    return false;
+  }
 }

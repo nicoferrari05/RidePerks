@@ -1,4 +1,6 @@
 "use client";
+import Link from "next/link";
+
 
 import { FormEvent, useEffect, useState } from "react";
 import { motion, AnimatePresence, useAnimation } from "framer-motion";
@@ -30,7 +32,8 @@ export default function LoginForm() {
   useEffect(() => {
     if (status !== "success") return;
     const t = setTimeout(() => {
-      const next = searchParams.get("next") || "/admin";
+      const candidate = searchParams.get("next") || "/admin";
+      const next = /^\/admin(?:\/|$)/.test(candidate) && !candidate.includes("\\") ? candidate : "/admin";
       router.replace(next);
       router.refresh();
     }, 1400);
@@ -93,12 +96,11 @@ export default function LoginForm() {
 
       <div className="relative z-10 flex flex-1 flex-col">
         <div className="px-6 py-6 sm:px-10 sm:py-8">
-          <a
-            href="/"
+          <Link href="/"
             className="inline-flex items-center gap-1.5 font-mono text-xs tracking-wide text-bone/50 transition-colors duration-150 hover:text-bone focus-visible:outline focus-visible:outline-2 focus-visible:outline-ember"
           >
             ← rideperks.app
-          </a>
+          </Link>
         </div>
 
         <div className="flex flex-1 items-center justify-center px-6 pb-16">

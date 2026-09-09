@@ -12,18 +12,18 @@ export default function Nav() {
             RIDE<span className="text-ember">PERKS</span>
           </span>
         </Link>
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-2 sm:gap-5">
           <Link
             href="/about"
-            className="text-sm font-medium text-ink/70 transition-colors duration-150 ease-out hover:text-ember focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ember"
+            className="hidden sm:inline text-sm font-medium text-ink/70 transition-colors duration-150 ease-out hover:text-ember focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ember"
           >
             Nosotros
           </Link>
           <Link
-            href="/#waitlist"
+            href="/login"
             className="cursor-pointer rounded-full bg-ember px-5 py-2.5 text-sm font-semibold text-white transition-[transform,background-color] duration-150 ease-out hover:bg-ember-2 active:scale-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy"
           >
-            Únete
+            Iniciar sesión
           </Link>
         </div>
       </nav>
