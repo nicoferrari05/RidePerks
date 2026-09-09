@@ -2,6 +2,8 @@
 
 La plataforma vive en este repositorio junto al landing y la lista de espera. La guía funcional es `nicoferrari05/rideperks-platform`; no se modificó ese repositorio. El lanzamiento es gratuito, sin Yappy ni cargos automáticos.
 
+El dominio `rideperks.app` / `www.rideperks.app` está asignado al proyecto de Vercel **`ride-perks`** del equipo `nicoferraric-icloudcoms-projects`. Los proyectos `rideperks` y `rideperks-landing` son proyectos distintos: cambiar sus variables no modifica este dominio.
+
 ## Configuración antes del push a main
 
 1. En el mismo proyecto de Supabase de la lista de espera, ejecutar en orden:
@@ -16,7 +18,7 @@ La plataforma vive en este repositorio junto al landing y la lista de espera. La
    - Redirect URLs: `https://rideperks.app/auth/callback` y `https://rideperks.app/auth/callback?next=/account/password`.
    - Para pruebas locales, agregar los equivalentes en `http://localhost:3100`.
 6. Mantener habilitado el proveedor Email y la confirmación del correo. Configurar SMTP de producción en Supabase para poder enviar confirmaciones y recuperación a los conductores; probar la entrega a una cuenta del equipo.
-7. Publicar mediante GitHub. Vercel despliega el repositorio conectado al actualizar `main`.
+7. Publicar mediante GitHub. Vercel despliega el repositorio conectado al actualizar `main`. Si solo cambias variables, volver a desplegar el despliegue **Production / Current** de `main` en `ride-perks`; un Redeploy de Preview no actualiza el dominio.
 
 Las claves reales se guardan solo en variables de entorno. No copiar `.env.local` a Git. `SUPPORT_EMAIL` es opcional; el formulario de Ayuda guarda las solicitudes en el panel aunque no se configure un correo.
 
@@ -62,7 +64,7 @@ Prueba integrada contra Supabase, solo cuando ambas migraciones están aplicadas
 npm run test:e2e:live
 ```
 
-Crea cuentas confirmadas sin enviar correos, un comercio y un beneficio temporales, verifica el flujo conductor/admin/comercio y elimina los registros identificados por los IDs de esa ejecución. Las capturas van a `artifacts/`, excluido de Git. No apunta al sitio público por defecto; usa la app local y el Supabase configurado.
+Crea cuentas confirmadas sin enviar correos, un comercio y un beneficio temporales, verifica el flujo conductor/admin/comercio y elimina los registros identificados por los IDs de esa ejecución. Las capturas van a `artifacts/`, excluido de Git. No apunta al sitio público por defecto; usa la app local y el Supabase configurado. Comprueba primero `/api/health` y no crea datos de prueba si el destino no está disponible. Para probar los portales publicados, usar `TEST_BASE_URL=https://www.rideperks.app`; `TEST_ADMIN_BASE_URL=http://localhost:3100` permite aprobar la verificación desde la app local conectada a la misma base, sin descargar contraseñas de producción.
 
 Después del despliegue:
 
