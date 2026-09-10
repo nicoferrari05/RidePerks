@@ -31,9 +31,14 @@ export default function Page() {
         <div>
           <h2>¿RidePerks tiene algún costo?</h2>
           <p className="rp-muted mt-2">
-            El acceso es gratuito durante el lanzamiento. No solicitamos datos
-            de pago ni hacemos cargos automáticos.
+            El registro es gratuito y la membresía cuesta $15.00 al mes. Cada
+            renovación se confirma con Yappy, sin cargos automáticos. Consulta
+            Mi membresía para ver si sigue activo el acceso gratuito de
+            lanzamiento.
           </p>
+          <Link className="rp-text-link" href="/driver/membership">
+            Mi membresía →
+          </Link>
         </div>
         <div>
           <h2>¿No aparece mi ahorro?</h2>

@@ -215,6 +215,7 @@ test("driver onboarding, private verification, admin approval and merchant redem
       "/driver/directory",
       "/driver/history",
       "/driver/profile",
+      "/driver/membership",
       "/driver/verify",
       "/driver/help",
     ]) {

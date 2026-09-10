@@ -1,10 +1,12 @@
 # RidePerks: publicación de la plataforma
 
-La plataforma vive en este repositorio junto al landing y la lista de espera. La guía funcional es `nicoferrari05/rideperks-platform`; no se modificó ese repositorio. El lanzamiento es gratuito, sin Yappy ni cargos automáticos.
+La plataforma vive en este repositorio junto al landing y la lista de espera. La guía funcional es `nicoferrari05/rideperks-platform`; no se modificó ese repositorio. La membresía definida el 10 de septiembre de 2026 cuesta $15.00 al mes, con renovación manual mediante Yappy. Consulta YAPPY.md para configurar y activar pagos. No hay cargos automáticos.
 
 El dominio `rideperks.app` / `www.rideperks.app` está asignado al proyecto de Vercel **`ride-perks`** del equipo `nicoferraric-icloudcoms-projects`. Los proyectos `rideperks` y `rideperks-landing` son proyectos distintos: cambiar sus variables no modifica este dominio.
 
 ## Configuración antes del push a main
+
+Para pagos aplicar también `supabase/migrations/202609100001_yappy_memberships.sql` y seguir `YAPPY.md`. La migración conserva el acceso gratuito hasta completar la configuración.
 
 1. En el mismo proyecto de Supabase de la lista de espera, ejecutar en orden:
    - `supabase/migrations/202609080001_driver_platform.sql`
@@ -81,4 +83,4 @@ Revertir el commit de aplicación en GitHub y dejar que Vercel reconstruya. Cons
 
 ## Alcance de esta versión
 
-Incluye landing con entrada al login, registro sin confirmación por correo, recuperación pendiente de SMTP, inicio del conductor, catálogo y condiciones, códigos de uso, directorio, historial, perfil, verificación, soporte, administración y portal de canje del comercio. No incluye cobros: el acceso gratuito fue la decisión del lanzamiento. No se publican comercios ni descuentos ficticios.
+Incluye landing con entrada al login, registro sin confirmación por correo, recuperación pendiente de SMTP, inicio del conductor, catálogo y condiciones, códigos de uso, directorio, historial, perfil, verificación, soporte, administración y portal de canje del comercio. Incluye membresías Yappy; free_access conserva el acceso gratuito hasta activar el plan. No se publican comercios ni descuentos ficticios.

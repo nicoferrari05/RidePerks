@@ -70,7 +70,7 @@ export default function Hero() {
                 RIDE<span className="text-ember">PERKS</span>
               </span>
               <span className="rounded-full border border-white/25 px-3 py-1 text-xs font-medium">
-                Acceso gratuito
+                Club de conductores
               </span>
             </div>
             <div className="px-7 py-8">

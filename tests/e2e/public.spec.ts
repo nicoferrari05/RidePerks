@@ -82,6 +82,7 @@ test("cross-site mutations are rejected", async ({ request }) => {
   for (const path of [
     "/api/platform/token",
     "/api/platform/redeem",
+    "/api/payments/yappy",
     "/api/admin/login",
   ]) {
     const response = await request.post(path, {

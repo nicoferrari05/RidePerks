@@ -158,9 +158,11 @@ export default async function Page({
       </header>
       <main className="rp-main rp-stack">
         <Heading title="Tu plataforma, al día">
-          Gestiona los aliados, beneficios y verificaciones de RidePerks. Acceso
-          gratuito al lanzamiento.
+          Gestiona los aliados, beneficios y verificaciones de RidePerks.
         </Heading>
+        <Link className="rp-text-link" href="/admin/payments">
+          Pagos de membresías →
+        </Link>
         {tab === "drivers" && (
           <form className="rp-filters">
             <input type="hidden" name="tab" value="drivers" />

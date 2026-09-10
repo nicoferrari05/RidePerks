@@ -87,7 +87,7 @@ export default function AuthPage({
                 </li>
                 <li>
                   <ShieldCheck size={20} />
-                  Acceso gratuito durante el lanzamiento
+                  Registro gratuito · Membresía de $15 al mes
                 </li>
               </>
             )}
