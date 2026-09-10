@@ -61,6 +61,11 @@ test.beforeAll(async () => {
     users.push(result.data.user.id);
   }
   [driverId, ownerId] = users;
+  const membership = await db.from("rp_memberships").insert({
+    driver_id: driverId,
+    valid_until: new Date(Date.now() + 3600000).toISOString(),
+  });
+  if (membership.error) throw new Error(membership.error.message);
   const shop = await db.rpc("rp_save_business", {
     p_id: null,
     p_values: {
@@ -108,6 +113,13 @@ test.afterAll(async () => {
   }
   if (benefitId) await db.from("rp_benefits").delete().eq("id", benefitId);
   if (shopId) await db.from("rp_businesses").delete().eq("id", shopId);
+  if (driverId)
+    await db.from("rp_memberships").delete().eq("driver_id", driverId);
+  if (ownerId)
+    await db
+      .from("rp_rate_limits")
+      .delete()
+      .eq("key", "redeem:" + ownerId);
   for (const id of users) await db.auth.admin.deleteUser(id);
   if (shopId) await db.from("rp_admin_audit").delete().eq("subject_id", shopId);
 });
@@ -198,6 +210,23 @@ test("driver onboarding, private verification, admin approval and merchant redem
     data: { token },
   });
   expect(second.status()).toBe(400);
+  const limit = await db
+    .from("rp_rate_limits")
+    .upsert({
+      key: "redeem:" + ownerId,
+      hits: 60,
+      window_start: new Date().toISOString(),
+    });
+  expect(limit.error).toBeNull();
+  const limited = await merchantPage.request.post("/api/platform/redeem", {
+    headers: { Origin: process.env.TEST_BASE_URL || "http://localhost:3100" },
+    data: { token: "ZZZZZZ" },
+  });
+  expect(limited.status()).toBe(429);
+  await db
+    .from("rp_rate_limits")
+    .delete()
+    .eq("key", "redeem:" + ownerId);
   await page.goto("/driver/history");
   await expect(
     page.getByRole("heading", { name: /2,?\.00|2,00/ }),

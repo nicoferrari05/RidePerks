@@ -14,6 +14,16 @@ export async function POST(request: NextRequest) {
       { error: "Inicia sesión como comercio." },
       { status: 401 },
     );
+  try {
+    await rateLimit("redeem:" + profile.id, 60, 600);
+  } catch {
+    return NextResponse.json(
+      {
+        error: "Demasiados intentos. Espera unos minutos y vuelve a intentar.",
+      },
+      { status: 429 },
+    );
+  }
   let body;
   try {
     body = await request.json();
@@ -40,7 +50,6 @@ export async function POST(request: NextRequest) {
   if (!parsed.success)
     return NextResponse.json({ error: "Código inválido." }, { status: 400 });
   try {
-    await rateLimit("redeem:" + profile.id, 60, 600);
     const { data, error } = await getSupabaseAdmin().rpc("rp_redeem_token", {
       p_owner: profile.id,
       p_token: parsed.data,
