@@ -9,7 +9,7 @@ export default function Page() {
         <Logo />
         <h1>Términos de uso</h1>
         <p className="rp-muted">
-          Última actualización: 8 de septiembre de 2026.
+          Última actualización: 10 de septiembre de 2026.
         </p>
         <section className="rp-stack">
           <div>
@@ -31,11 +31,15 @@ export default function Page() {
             </p>
           </div>
           <div>
-            <h2>Acceso gratuito</h2>
+            <h2>Membresía y pagos</h2>
             <p className="rp-muted">
-              Durante el lanzamiento, el acceso es gratuito. No solicitamos
-              datos de pago ni realizamos cargos automáticos. Cualquier futuro
-              plan de pago requerirá información previa y tu aceptación.
+              El registro es gratuito. La membresía cuesta $15.00 por mes, con
+              renovación manual mediante Yappy y sin cargos automáticos. El mes
+              comienza cuando se confirma el pago; una renovación anticipada
+              añade un mes al vencimiento actual. Mientras el acceso gratuito
+              promocional siga activo, la plataforma no solicita pagos. Consulta
+              tu vigencia y las condiciones antes de pagar en Mi membresía. Si
+              necesitas ayuda con un cobro, utiliza Ayuda y soporte.
             </p>
           </div>
           <div>

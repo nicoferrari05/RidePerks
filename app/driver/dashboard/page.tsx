@@ -80,7 +80,9 @@ export default async function Page() {
             >
               {statuses[p.status]}
             </span>
-            <span className="rp-muted">Acceso gratuito</span>
+            <Link className="rp-text-link" href="/driver/membership">
+              Ver mi membresía →
+            </Link>
           </div>
         </section>
       </div>

@@ -7,9 +7,13 @@ let db;
 const migrationFiles = [
   "202609080001_driver_platform.sql",
   "202609090001_qr_short_codes.sql",
+  "202609100001_yappy_memberships.sql",
 ];
 const migrations = migrationFiles.map((name) =>
-  readFileSync(new URL("../supabase/migrations/" + name, import.meta.url), "utf8"),
+  readFileSync(
+    new URL("../supabase/migrations/" + name, import.meta.url),
+    "utf8",
+  ),
 );
 before(async () => {
   db = new PGlite();
@@ -286,8 +290,8 @@ test("free access gate is checked at issue and redemption", async () => {
     "update rp_settings set value='false' where key='free_access'",
   );
   try {
-    await assert.rejects(issue(f), /no está habilitado/);
-    await assert.rejects(redeem(f, t.token), /no está habilitado/);
+    await assert.rejects(issue(f), /membresía/);
+    await assert.rejects(redeem(f, t.token), /membresía/);
   } finally {
     await db.query(
       "update rp_settings set value='true' where key='free_access'",
@@ -295,10 +299,183 @@ test("free access gate is checked at issue and redemption", async () => {
   }
 });
 
-test("existing waitlist view is private while server retains access",async()=>{
- await db.exec("create view public.waitlist_ranked as select 1 as id; grant select on public.waitlist_ranked to anon,authenticated;");
- const privacy=readFileSync(new URL("../supabase/migrations/202609080002_waitlist_privacy.sql",import.meta.url),"utf8");
- await db.exec(privacy);await db.exec(privacy);
- for(const role of ["anon","authenticated"]){await db.exec("set role "+role);try{await assert.rejects(db.query("select * from public.waitlist_ranked"),/permission denied/);}finally{await db.exec("reset role");}}
- await db.exec("set role service_role");try{assert.equal((await db.query("select * from public.waitlist_ranked")).rows.length,1);}finally{await db.exec("reset role");}
+test("existing waitlist view is private while server retains access", async () => {
+  await db.exec(
+    "create view public.waitlist_ranked as select 1 as id; grant select on public.waitlist_ranked to anon,authenticated;",
+  );
+  const privacy = readFileSync(
+    new URL(
+      "../supabase/migrations/202609080002_waitlist_privacy.sql",
+      import.meta.url,
+    ),
+    "utf8",
+  );
+  await db.exec(privacy);
+  await db.exec(privacy);
+  for (const role of ["anon", "authenticated"]) {
+    await db.exec("set role " + role);
+    try {
+      await assert.rejects(
+        db.query("select * from public.waitlist_ranked"),
+        /permission denied/,
+      );
+    } finally {
+      await db.exec("reset role");
+    }
+  }
+  await db.exec("set role service_role");
+  try {
+    assert.equal(
+      (await db.query("select * from public.waitlist_ranked")).rows.length,
+      1,
+    );
+  } finally {
+    await db.exec("reset role");
+  }
+});
+
+test("payment tables and RPCs are inaccessible to browser database roles", async () => {
+  for (const role of ["anon", "authenticated"]) {
+    await db.exec("set role " + role);
+    try {
+      for (const table of ["rp_memberships", "rp_payment_orders"])
+        await assert.rejects(
+          db.query("select * from " + table),
+          /permission denied/,
+        );
+      await assert.rejects(
+        db.query(
+          "select rp_apply_payment('x','E','https://www.rideperks.app')",
+        ),
+        /permission denied/,
+      );
+    } finally {
+      await db.exec("reset role");
+    }
+  }
+});
+test("Yappy confirmed payment grants exactly one month, repeated callbacks are idempotent", async () => {
+  const f = await fixture();
+  const id = "pay" + randomUUID().replaceAll("-", "").slice(0, 12);
+  await db.exec("update rp_settings set value='false' where key='free_access'");
+  try {
+    await db.query("select rp_create_payment($1,$2,$3)", [
+      f.driver,
+      id,
+      "https://www.rideperks.app",
+    ]);
+    await assert.rejects(issue(f), /membresía/);
+    await assert.rejects(
+      db.query("select rp_create_payment($1,$2,$3)", [
+        f.driver,
+        id + "x",
+        "https://www.rideperks.app",
+      ]),
+      /pago en proceso/,
+    );
+    await db.query("select rp_apply_payment($1,'E',$2)", [
+      id,
+      "https://www.rideperks.app",
+    ]);
+    const first = (
+      await db.query("select * from rp_memberships where driver_id=$1", [
+        f.driver,
+      ])
+    ).rows[0];
+    assert.ok(new Date(first.valid_until) > new Date());
+    await db.query("select rp_apply_payment($1,'E',$2)", [
+      id,
+      "https://www.rideperks.app",
+    ]);
+    await db.query("select rp_apply_payment($1,'C',$2)", [
+      id,
+      "https://www.rideperks.app",
+    ]);
+    const second = (
+      await db.query("select * from rp_memberships where driver_id=$1", [
+        f.driver,
+      ])
+    ).rows[0];
+    assert.equal(String(first.valid_until), String(second.valid_until));
+    const token = await issue(f);
+    await redeem(f, token.token);
+    await db.query(
+      "update rp_memberships set valid_until=now()-interval '1 second' where driver_id=$1",
+      [f.driver],
+    );
+    await assert.rejects(issue(f), /membresía/);
+  } finally {
+    await db.exec(
+      "update rp_settings set value='true' where key='free_access'",
+    );
+  }
+});
+test("failed notifications do not grant access; a delayed valid payment is recorded", async () => {
+  const f = await fixture(),
+    id = "pay" + randomUUID().replaceAll("-", "").slice(0, 12);
+  await db.exec("update rp_settings set value='false' where key='free_access'");
+  try {
+    await db.query("select rp_create_payment($1,$2,$3)", [
+      f.driver,
+      id,
+      "https://www.rideperks.app",
+    ]);
+    for (const state of ["R", "C", "X"]) {
+      await db.query("select rp_apply_payment($1,$2,$3)", [
+        id,
+        state,
+        "https://www.rideperks.app",
+      ]);
+      await assert.rejects(issue(f), /membresía/);
+    }
+    await assert.rejects(
+      db.query("select rp_apply_payment($1,'E','https://bad.invalid')", [id]),
+      /Dominio/,
+    );
+    await db.query("select rp_apply_payment($1,'E',$2)", [
+      id,
+      "https://www.rideperks.app",
+    ]);
+    assert.ok((await issue(f)).token);
+  } finally {
+    await db.exec(
+      "update rp_settings set value='true' where key='free_access'",
+    );
+  }
+});
+test("membership renewal extends remaining time and payment cannot override driver suspension", async () => {
+  const f = await fixture(),
+    id = "pay" + randomUUID().replaceAll("-", "").slice(0, 12);
+  await db.exec("update rp_settings set value='false' where key='free_access'");
+  try {
+    await db.query(
+      "insert into rp_memberships(driver_id,valid_until) values($1,now()+interval '5 days')",
+      [f.driver],
+    );
+    await db.query("select rp_create_payment($1,$2,$3)", [
+      f.driver,
+      id,
+      "https://www.rideperks.app",
+    ]);
+    await db.query("select rp_apply_payment($1,'E',$2)", [
+      id,
+      "https://www.rideperks.app",
+    ]);
+    const period = (
+      await db.query(
+        "select period_end=(((period_start at time zone 'America/Panama')+interval '1 month') at time zone 'America/Panama') as correct, period_start>now() as preserves from rp_payment_orders where id=$1",
+        [id],
+      )
+    ).rows[0];
+    assert.equal(period.correct, true);
+    assert.equal(period.preserves, true);
+    await db.query("update rp_profiles set status='suspended' where id=$1", [
+      f.driver,
+    ]);
+    await assert.rejects(issue(f), /Verifica/);
+  } finally {
+    await db.exec(
+      "update rp_settings set value='true' where key='free_access'",
+    );
+  }
 });

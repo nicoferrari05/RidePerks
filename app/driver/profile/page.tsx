@@ -21,8 +21,8 @@ export default async function Page() {
           <section className="rp-panel">
             <h2>Tu acceso a RidePerks</h2>
             <p className="rp-muted my-3">
-              Gratuito durante el lanzamiento. No tienes una suscripción de pago
-              ni cargos automáticos.
+              Consulta tu membresía, su vigencia y tus pagos. Las renovaciones
+              se confirman con Yappy y no generan cargos automáticos.
             </p>
             <span
               className={
@@ -32,6 +32,10 @@ export default async function Page() {
               {statuses[p.status]}
             </span>
             <div className="mt-4">
+              <Link className="rp-text-link" href="/driver/membership">
+                Mi membresía · $15 al mes →
+              </Link>
+              <br />
               <Link className="rp-text-link" href="/driver/verify">
                 Ver estado de verificación →
               </Link>

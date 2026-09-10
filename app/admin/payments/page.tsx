@@ -1,0 +1,73 @@
+import Link from "next/link";
+import { requireAdmin } from "@/lib/platform/data";
+import { getSupabaseAdmin } from "@/lib/supabase-server";
+import { Heading } from "@/components/platform/ui";
+import { money, dateLabel } from "@/lib/platform/types";
+import "../../platform.css";
+export const metadata = {
+  title: "Pagos de membresías · RidePerks",
+  robots: { index: false, follow: false },
+};
+export default async function Page() {
+  await requireAdmin();
+  const db = getSupabaseAdmin();
+  const { data, error } = await db
+    .from("rp_payment_orders")
+    .select(
+      "id,status,amount_cents,created_at,paid_at,period_end,rp_profiles(full_name)",
+    )
+    .order("created_at", { ascending: false })
+    .limit(100);
+  if (error) throw new Error("No pudimos cargar los pagos.");
+  const labels: Record<string, string> = {
+    pending: "Pendiente",
+    paid: "Pagado",
+    rejected: "Rechazado",
+    cancelled: "Cancelado",
+    expired: "Vencido",
+  };
+  return (
+    <div className="rp-app">
+      <main className="rp-main rp-stack">
+        <Link className="rp-text-link" href="/admin/platform">
+          ← Administración
+        </Link>
+        <Heading title="Pagos de membresías">
+          Últimas 100 órdenes. Solo una confirmación válida de Yappy activa la
+          membresía.
+        </Heading>
+        <div className="rp-list">
+          {data.length ? (
+            data.map((o) => (
+              <article className="rp-list-row" key={o.id}>
+                <div>
+                  <h2>
+                    {(o.rp_profiles as unknown as { full_name: string })
+                      ?.full_name || "Conductor"}
+                  </h2>
+                  <p>
+                    {money(o.amount_cents / 100)} · {labels[o.status]}
+                  </p>
+                  <p className="rp-muted">
+                    Referencia: {o.id} · {dateLabel(o.created_at)}
+                  </p>
+                  {o.period_end && (
+                    <p className="rp-muted">
+                      Vigencia otorgada hasta {dateLabel(o.period_end)}
+                    </p>
+                  )}
+                </div>
+              </article>
+            ))
+          ) : (
+            <p className="rp-muted">Todavía no hay órdenes.</p>
+          )}
+        </div>
+        <p className="rp-muted">
+          Para investigar un cobro, compara la referencia con Yappy Comercial.
+          Este panel no ejecuta devoluciones.
+        </p>
+      </main>
+    </div>
+  );
+}
