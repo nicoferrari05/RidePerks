@@ -9,6 +9,7 @@ import {
 } from "@/lib/platform/data";
 import { money, dateLabel, platforms, statuses } from "@/lib/platform/types";
 import { BenefitCard, Empty, Logo } from "@/components/platform/ui";
+import { getSupabaseAdmin } from "@/lib/supabase-server";
 import SavingsCard from "@/components/platform/SavingsCard";
 export default async function Page() {
   const p = await requireDriver();
@@ -18,6 +19,10 @@ export default async function Page() {
     getMonthlySavings(p.id),
     getTotalSavings(p.id),
   ]);
+  const access = await getSupabaseAdmin().rpc("rp_has_access", {
+    p_driver: p.id,
+  });
+  if (access.error) throw new Error("No pudimos consultar tu membresía.");
   return (
     <div className="rp-stack">
       <div className="rp-heading">
@@ -61,6 +66,20 @@ export default async function Page() {
             </Link>
           </div>
         </div>
+      )}
+      {p.status === "verified" && !access.data && (
+        <section className="rp-callout">
+          <div>
+            <h2>Activa tu membresía</h2>
+            <p>
+              Accede a los canjes por $15 al mes. Cada renovación se confirma
+              con Yappy.
+            </p>
+            <Link className="rp-button" href="/driver/membership">
+              Ver mi membresía →
+            </Link>
+          </div>
+        </section>
       )}
       <div className="rp-summary">
         <SavingsCard monthly={monthly} total={total} />

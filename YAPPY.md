@@ -38,3 +38,7 @@ npm test incluye firmas manipuladas, dominio incorrecto, permisos, duplicados, e
 
 Fuente oficial consultada:
 https://www.yappy.com.pa/comercial/desarrolladores/boton-de-pago-yappy-nueva-integracion/
+
+## Prueba de interfaz sin cobros
+
+`node scripts/check-yappy-ui.mjs` usa por defecto el dominio de producción, crea una cuenta QA temporal y sustituye las solicitudes de pago por respuestas simuladas en el navegador. Comprueba el tema naranja oficial, aceptación de condiciones, recuperación tras error, estado pendiente y rechazo de notificaciones falsas. No llama al servicio bancario para generar pagos y elimina la cuenta QA al terminar. Requiere membresías activadas. Para local usar TEST_BASE_URL=http://localhost:3100.

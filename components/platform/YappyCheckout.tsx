@@ -32,6 +32,7 @@ export default function YappyCheckout({
   const [ready, setReady] = useState(false),
     [summary, setSummary] = useState<Summary | null>(null);
   const [pending, setPending] = useState(false);
+  const [buttonVersion, setButtonVersion] = useState(0);
   const host = useRef<HTMLDivElement>(null);
   const latest = useRef({ phone, consent, pending });
   useEffect(() => {
@@ -72,6 +73,19 @@ export default function YappyCheckout({
     ) as ButtonElement | null;
     if (!button) return;
     let inFlight = false;
+    const captureClick = (event: Event) => {
+      if (inFlight || latest.current.pending) return;
+      const invalid = !latest.current.consent
+        ? "Acepta el precio y las condiciones antes de continuar."
+        : !/^6\d{7}$/.test(latest.current.phone)
+          ? "Escribe tu número de Yappy de 8 dígitos."
+          : "";
+      if (invalid) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        setMessage(invalid);
+      }
+    };
     const click = async () => {
       if (inFlight) return;
       if (latest.current.pending) {
@@ -113,6 +127,7 @@ export default function YappyCheckout({
         setMessage(
           e instanceof Error ? e.message : "No pudimos conectar con Yappy.",
         );
+        setButtonVersion((v) => v + 1);
       } finally {
         inFlight = false;
         setBusy(false);
@@ -130,15 +145,17 @@ export default function YappyCheckout({
         "El proceso de Yappy se interrumpió. Revisa el estado del pago antes de intentarlo nuevamente.",
       );
     };
+    button.addEventListener("click", captureClick, true);
     button.addEventListener("eventClick", click);
     button.addEventListener("eventSuccess", success);
     button.addEventListener("eventError", error);
     return () => {
+      button.removeEventListener("click", captureClick, true);
       button.removeEventListener("eventClick", click);
       button.removeEventListener("eventSuccess", success);
       button.removeEventListener("eventError", error);
     };
-  }, [ready]);
+  }, [ready, buttonVersion]);
   const active =
     summary?.validUntil && new Date(summary.validUntil).getTime() > observedAt;
   const renew =
@@ -215,7 +232,10 @@ export default function YappyCheckout({
             </p>
           )}
           <div ref={host}>
-            {createElement("btn-yappy", { theme: "orange" })}
+            {createElement("btn-yappy", {
+              key: buttonVersion,
+              theme: "orange",
+            })}
           </div>
           {!ready && !pending && <p className="rp-muted">Cargando Yappy…</p>}
         </section>
