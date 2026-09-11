@@ -5,6 +5,9 @@ import {
   Wrench,
   HeartPulse,
   ArrowUpRight,
+  Store,
+  BadgePercent,
+  ScanLine,
 } from "lucide-react";
 const BENEFITS = [
   {
@@ -75,6 +78,65 @@ export default function Benefits() {
               </div>
             </Link>
           ))}
+        </div>
+
+        <div
+          data-reveal
+          className="mt-6 flex flex-col gap-8 rounded-2xl border border-line bg-white p-7 sm:mt-8 sm:flex-row sm:items-center sm:justify-between sm:p-10"
+        >
+          <div className="max-w-sm">
+            <span className="font-mono text-xs font-medium tracking-[0.14em] text-ember">
+              PARA COMERCIOS
+            </span>
+            <h3 className="mt-3 text-2xl font-semibold tracking-tight text-navy">
+              ¿Tenés un comercio? <em className="font-accent italic text-ember">Sumate.</em>
+            </h3>
+            <p className="mt-3 text-sm leading-relaxed text-navy/60">
+              A vos no te cuesta nada unirte — el conductor paga su membresía, no tu negocio. Vos
+              elegís el descuento y las condiciones.
+            </p>
+            <Link
+              href="/business/register"
+              className="mt-6 inline-flex items-center gap-2 rounded-full bg-navy px-6 py-3 text-sm font-semibold text-bone transition-transform duration-150 ease-out hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy"
+            >
+              Registra tu comercio
+            </Link>
+          </div>
+          <ul className="flex flex-col gap-5">
+            <li className="flex items-start gap-3">
+              <Store
+                size={20}
+                strokeWidth={1.8}
+                className="mt-0.5 shrink-0 text-ember"
+                aria-hidden="true"
+              />
+              <span className="text-sm leading-relaxed text-navy/70">
+                Accedés a conductores que ya buscan dónde gastar en tu categoría.
+              </span>
+            </li>
+            <li className="flex items-start gap-3">
+              <BadgePercent
+                size={20}
+                strokeWidth={1.8}
+                className="mt-0.5 shrink-0 text-ember"
+                aria-hidden="true"
+              />
+              <span className="text-sm leading-relaxed text-navy/70">
+                Vos proponés el beneficio; nuestro equipo lo revisa antes de publicarlo.
+              </span>
+            </li>
+            <li className="flex items-start gap-3">
+              <ScanLine
+                size={20}
+                strokeWidth={1.8}
+                className="mt-0.5 shrink-0 text-ember"
+                aria-hidden="true"
+              />
+              <span className="text-sm leading-relaxed text-navy/70">
+                Confirmás el canje escaneando un código — sin cambiar cómo cobrás.
+              </span>
+            </li>
+          </ul>
         </div>
       </div>
     </section>

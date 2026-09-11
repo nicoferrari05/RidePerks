@@ -1,42 +1,15 @@
-// Adapted from a generic dark SaaS "pricing-section" community component,
-// ported to this project's brand tokens (navy/ember/bone instead of
-// black/white) and voice. Tiers below are illustrative placeholders tied
-// to the same categories as the Beneficios section — no real prices yet,
-// so the whole preview is blurred and locked behind a "Próximamente"
-// overlay rather than presented as a real, orderable plan.
+// Real, single membership plan: $15.00/month, manual renewal via Yappy (see
+// YAPPY.md / app/driver/membership/page.tsx). Previously a blurred
+// "coming soon" preview with illustrative tiered plans — replaced now that a
+// real plan/price exists, per PRODUCT.md's "never invent numbers" principle.
 import Link from "next/link";
-import { CheckIcon, LockIcon } from "@/components/icons";
+import { CheckIcon } from "@/components/icons";
 
-const PLANS = [
-  {
-    name: "Arranque",
-    tagline: "Para empezar a ahorrar desde el día uno.",
-    price: "Por confirmar",
-    features: ["Descuentos en combustible", "Descuentos en comida", "Soporte por WhatsApp"],
-  },
-  {
-    name: "Ruta Pro",
-    tagline: "El plan pensado para quien maneja a diario.",
-    price: "Por confirmar",
-    featured: true,
-    features: [
-      "Todo lo de Arranque",
-      "Descuentos en taller y repuestos",
-      "Descuentos en salud",
-      "Soporte prioritario",
-    ],
-  },
-  {
-    name: "Flota",
-    tagline: "Para equipos y flotas de varios conductores.",
-    price: "Por confirmar",
-    features: [
-      "Todo lo de Ruta Pro",
-      "Panel para varios conductores",
-      "Facturación centralizada",
-      "Asesor de cuenta dedicado",
-    ],
-  },
+const FEATURES = [
+  "Acceso a todos los beneficios activos: combustible, comida, taller y salud.",
+  "Un mes de acceso desde la confirmación del pago.",
+  "Renovación manual con Yappy — vos decidís cuándo pagar, sin cargos automáticos.",
+  "Renovás antes del vencimiento y el mes se suma al tiempo que te queda.",
 ];
 
 export default function Pricing() {
@@ -54,63 +27,41 @@ export default function Pricing() {
             PLANES Y PRECIOS
           </span>
           <h2 className="mt-4 text-balance text-4xl font-semibold tracking-tight text-bone sm:text-5xl">
-            Elige tu ritmo de <em className="font-accent italic text-ember">ahorro.</em>
+            Un precio. Sin <em className="font-accent italic text-ember">sorpresas.</em>
           </h2>
           <p className="mt-4 text-pretty text-[15px] leading-relaxed text-bone/60">
-            Estamos afinando los planes junto con los primeros conductores de la lista. Así se van
-            a ver.
+            Una sola membresía, con acceso a todos los beneficios activos.
           </p>
         </div>
 
-        <div data-reveal className="relative mt-10 sm:mt-16">
-          {/* Non-interactive preview — real content, just not live yet. */}
-          <div
-            aria-hidden="true"
-            className="pointer-events-none grid select-none gap-4 opacity-40 blur-[3px] sm:grid-cols-3"
-          >
-            {PLANS.map((plan) => (
-              <div
-                key={plan.name}
-                className={`flex flex-col rounded-2xl border p-7 ${
-                  plan.featured ? "border-ember/60 bg-navy-2" : "border-white/10 bg-navy-2/60"
-                }`}
-              >
-                <h3 className="text-lg font-semibold text-bone">{plan.name}</h3>
-                <p className="mt-2 text-sm text-bone/50">{plan.tagline}</p>
-                <div className="mt-6 text-3xl font-semibold tracking-tight text-bone">
-                  {plan.price}
-                </div>
-                <div className="mt-6 h-px w-full bg-white/10" />
-                <ul className="mt-6 flex flex-col gap-3 text-sm text-bone/70">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-2.5">
-                      <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-ember" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-
-          {/* Overlay — the only interactive thing in this section. */}
-          <div className="absolute inset-0 flex items-center justify-center px-4">
-            <div className="flex max-w-xs flex-col items-center gap-4 rounded-3xl border border-white/10 bg-navy-2/95 px-8 py-9 text-center shadow-[0_30px_80px_-30px_rgba(0,0,0,0.6)] backdrop-blur-sm">
-              <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 font-mono text-[11px] tracking-[0.14em] text-bone/70">
-                <LockIcon className="h-3.5 w-3.5" />
-                PRÓXIMAMENTE
-              </span>
-              <p className="text-[15px] leading-relaxed text-bone/70">
-                Los planes se activan cuando lancemos la app. Únete a la lista y sé de los primeros
-                en verlos.
-              </p>
-              <Link
-                href="/#waitlist"
-                className="cursor-pointer rounded-full bg-ember px-6 py-3 text-sm font-semibold text-white transition-[transform,background-color] duration-150 ease-out hover:bg-ember-2 active:scale-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bone"
-              >
-                Avísenme cuando estén listos
-              </Link>
+        <div data-reveal className="mx-auto mt-10 max-w-md sm:mt-16">
+          <div className="flex flex-col rounded-2xl border border-ember/60 bg-navy-2 p-8">
+            <h3 className="text-lg font-semibold text-bone">Membresía RidePerks</h3>
+            <p className="mt-2 text-sm text-bone/50">
+              Para conductores verificados de Uber, InDrive y PedidosYa.
+            </p>
+            <div className="mt-6 flex items-baseline gap-1 text-bone">
+              <span className="text-4xl font-semibold tracking-tight">$15.00</span>
+              <span className="text-sm text-bone/50">/ mes</span>
             </div>
+            <div className="mt-6 h-px w-full bg-white/10" />
+            <ul className="mt-6 flex flex-col gap-3 text-sm text-bone/70">
+              {FEATURES.map((feature) => (
+                <li key={feature} className="flex items-start gap-2.5">
+                  <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-ember" />
+                  <span>{feature}</span>
+                </li>
+              ))}
+            </ul>
+            <Link
+              href="/register"
+              className="mt-8 cursor-pointer rounded-full bg-ember px-6 py-3 text-center text-sm font-semibold text-white transition-[transform,background-color] duration-150 ease-out hover:bg-ember-2 active:scale-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bone"
+            >
+              Únete y empieza a ahorrar
+            </Link>
+            <p className="mt-4 text-center text-xs text-bone/40">
+              Necesitás verificar tu perfil de conductor para canjear beneficios.
+            </p>
           </div>
         </div>
       </div>

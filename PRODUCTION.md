@@ -83,4 +83,4 @@ Revertir el commit de aplicación en GitHub y dejar que Vercel reconstruya. Cons
 
 ## Alcance de esta versión
 
-Incluye landing con entrada al login, registro sin confirmación por correo, recuperación pendiente de SMTP, inicio del conductor, catálogo y condiciones, códigos de uso, directorio, historial, perfil, verificación, soporte, administración y portal de canje del comercio. Incluye membresías Yappy; free_access conserva el acceso gratuito hasta activar el plan. No se publican comercios ni descuentos ficticios.
+Incluye landing con entrada al login, registro sin confirmación por correo, recuperación pendiente de SMTP, inicio del conductor, catálogo y condiciones, códigos de uso, directorio, historial, perfil, verificación, soporte, administración y portal de canje del comercio. Incluye membresías Yappy; free_access se desactivó (pasó a `false`) el 10/11 de septiembre de 2026 — el plan pago ya está activo y es requisito real para el acceso. No se publican comercios ni descuentos ficticios.

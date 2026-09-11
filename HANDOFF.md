@@ -62,10 +62,16 @@ of payment.
 
 **Payments** (`lib/payments/*`, `app/api/payments/yappy/*`): Yappy's Botón de
 Pago, $15.00/month, manual renewal only (no auto-charging), HMAC-SHA256
-signature-verified IPN webhook. **`rp_settings.free_access` is still `true`** —
-nobody is being charged yet. That single row is the switch; flipping it to
-`false` is the actual "go live with billing" moment (see YAPPY.md's
-Activación section).
+signature-verified IPN webhook. **`rp_settings.free_access` was flipped to
+`false` on 2026-09-10/11** — billing is live; drivers must pay to get access
+(confirmed intentional, not a bug — see YAPPY.md's Activación section for
+what that switch does). As of 2026-09-11 no driver has completed a paid
+membership yet (`rp_memberships` empty); one checkout was abandoned/pending
+and one was cancelled via a real, signature-verified IPN, which confirms the
+webhook path itself works end to end. Separately, nobody has self-enrolled
+in `rp_admin_users` via `/admin/access` yet, so manual access grants
+(trial/courtesy/lifetime) aren't usable by anyone until someone does that
+one-time step.
 
 **Access model**: `rp_has_access()` / `rp_access_state()` (SQL) resolve to true
 if `free_access` is on, OR the driver has an active paid membership, OR an
