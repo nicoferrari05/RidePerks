@@ -336,16 +336,34 @@ export default function AdminDashboard() {
                     <label className="sr-only" htmlFor={`status-${entry.id}`}>
                       Estado de {entry.full_name}
                     </label>
-                    <select
-                      id={`status-${entry.id}`}
-                      value={entry.status}
-                      onChange={(e) => updateStatus(entry.id, e.target.value as EntryStatus)}
-                      className={`cursor-pointer rounded-full border-none px-3 py-1.5 text-xs font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-ember ${STATUS_STYLE[entry.status]}`}
-                    >
-                      <option value="pending">{STATUS_LABEL.pending}</option>
-                      <option value="verified">{STATUS_LABEL.verified}</option>
-                      <option value="rejected">{STATUS_LABEL.rejected}</option>
-                    </select>
+                    <div className={`relative inline-flex rounded-full ${STATUS_STYLE[entry.status]}`}>
+                      <select
+                        id={`status-${entry.id}`}
+                        value={entry.status}
+                        onChange={(e) => updateStatus(entry.id, e.target.value as EntryStatus)}
+                        className="cursor-pointer appearance-none rounded-full bg-transparent py-1.5 pl-3 pr-7 text-xs font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-ember"
+                      >
+                        <option value="pending">{STATUS_LABEL.pending}</option>
+                        <option value="verified">{STATUS_LABEL.verified}</option>
+                        <option value="rejected">{STATUS_LABEL.rejected}</option>
+                      </select>
+                      {/* Native select arrows look inconsistent across
+                          browsers and clash with the pill shape; same
+                          custom-chevron treatment as the platform select in
+                          WaitlistForm.tsx. */}
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="pointer-events-none absolute right-2.5 top-1/2 h-3 w-3 -translate-y-1/2"
+                        aria-hidden="true"
+                      >
+                        <path d="m6 9 6 6 6-6" />
+                      </svg>
+                    </div>
                   </td>
                 </tr>
               ))}

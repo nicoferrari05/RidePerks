@@ -150,7 +150,7 @@ export default async function Page({
       : [];
   return (
     <div className="rp-app">
-      <header className="rp-mobile-header" style={{ display: "flex" }}>
+      <header className="rp-page-header">
         <Logo />
         <Link className="rp-text-link" href="/admin">
           Lista de espera →
