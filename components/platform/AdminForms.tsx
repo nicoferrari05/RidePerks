@@ -6,6 +6,7 @@ import {
   reviewVerification,
   toggleRecord,
   setDriverStatus,
+  closeProfile,
 } from "@/lib/platform/admin-actions";
 import { Feedback } from "./Forms";
 import { categories, type Business, type Benefit } from "@/lib/platform/types";
@@ -277,5 +278,44 @@ export function DriverStatusForm({
       </button>
       <Feedback state={state} />
     </form>
+  );
+}
+// For privacy/deletion requests: blocks login and scrubs the name, phone and
+// platform on this profile. Redemptions and payments already on record are
+// never touched, so a business's stats and RidePerks' own audit trail don't
+// lose data because someone closed their account.
+export function CloseProfileForm({ id }: { id: string }) {
+  const [state, action, pending] = useActionState(closeProfile, {});
+  return (
+    <details className="mt-3">
+      <summary className="rp-text-link">Cerrar cuenta (privacidad) →</summary>
+      <form
+        action={action}
+        className="rp-form mt-3"
+        onSubmit={(e) => {
+          if (
+            !confirm(
+              "Esto bloquea el inicio de sesión y borra el nombre, teléfono y plataforma de esta cuenta. Los canjes y pagos ya registrados se conservan sin cambios. ¿Continuar?",
+            )
+          )
+            e.preventDefault();
+        }}
+      >
+        <input type="hidden" name="id" value={id} />
+        <div className="rp-field">
+          <label htmlFor={"close-reason-" + id}>Motivo del cierre</label>
+          <textarea
+            id={"close-reason-" + id}
+            name="reason"
+            maxLength={1000}
+            required
+          />
+        </div>
+        <Feedback state={state} />
+        <button className="rp-button secondary" disabled={pending}>
+          {pending ? "Cerrando…" : "Confirmar cierre de cuenta"}
+        </button>
+      </form>
+    </details>
   );
 }

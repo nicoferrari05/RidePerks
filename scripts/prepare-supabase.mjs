@@ -7,6 +7,7 @@ const migrations = [
   "202609100001_yappy_memberships.sql",
   "202609110001_merchant_roles.sql",
   "202609110002_access_and_review.sql",
+  "202609110003_close_profile.sql",
 ];
 const parts = await Promise.all(
   migrations.map(

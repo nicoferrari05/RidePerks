@@ -10,6 +10,7 @@ const migrationFiles = [
   "202609100001_yappy_memberships.sql",
   "202609110001_merchant_roles.sql",
   "202609110002_access_and_review.sql",
+  "202609110003_close_profile.sql",
 ];
 const migrations = migrationFiles.map((name) =>
   readFileSync(
@@ -732,4 +733,62 @@ test("new management tables and functions cannot be accessed by browser roles", 
     );
     await db.exec("reset role");
   }
+});
+test("closing a profile scrubs personal data, revokes staff access and preserves redemption history", async () => {
+  const f = await fixture(),
+    staff = await user({ full_name: "Personal" });
+  await db.query("update rp_profiles set role='business' where id=$1", [
+    staff,
+  ]);
+  await db.query(
+    "insert into rp_business_members(business_id,user_id,role) values($1,$2,'staff')",
+    [f.shop, staff],
+  );
+  const code = await issue(f);
+  await redeem(f, code.token);
+  await assert.rejects(
+    db.query("select rp_close_profile($1,$2)", [f.driver, "  "]),
+    /motivo/,
+  );
+  await db.query("select rp_close_profile($1,$2)", [
+    f.driver,
+    "Solicitud de privacidad del conductor.",
+  ]);
+  const closed = (
+    await db.query(
+      "select full_name,phone,platform,status,closed_at from rp_profiles where id=$1",
+      [f.driver],
+    )
+  ).rows[0];
+  assert.equal(closed.full_name, "");
+  assert.equal(closed.phone, null);
+  assert.equal(closed.platform, null);
+  assert.equal(closed.status, "suspended");
+  assert.ok(closed.closed_at);
+  assert.equal(
+    (
+      await db.query(
+        "select count(*) as n from rp_redemptions where driver_id=$1",
+        [f.driver],
+      )
+    ).rows[0].n,
+    1,
+  );
+  await db.query("select rp_close_profile($1,$2)", [
+    staff,
+    "Solicitud de privacidad del personal.",
+  ]);
+  assert.equal(
+    (
+      await db.query(
+        "select is_active from rp_business_members where business_id=$1 and user_id=$2",
+        [f.shop, staff],
+      )
+    ).rows[0].is_active,
+    false,
+  );
+  await assert.rejects(
+    db.query("select rp_close_profile($1,$2)", [randomUUID(), "Cuenta inexistente."]),
+    /inexistente/,
+  );
 });

@@ -9,6 +9,7 @@ import {
   ToggleForm,
   ReviewForm,
   DriverStatusForm,
+  CloseProfileForm,
 } from "@/components/platform/AdminForms";
 import {
   type Business,
@@ -298,7 +299,11 @@ export default async function Page({
                   <div className="rp-heading">
                     <h2>{p.full_name || "Cuenta sin nombre"}</h2>
                     <span className="rp-badge">
-                      {p.role === "business" ? "Comercio" : statuses[p.status]}
+                      {p.closed_at
+                        ? "Cuenta cerrada"
+                        : p.role === "business"
+                          ? "Comercio"
+                          : statuses[p.status]}
                     </span>
                   </div>
                   <p className="rp-muted mt-2">
@@ -307,7 +312,7 @@ export default async function Page({
                   <p className="rp-muted break-all my-3">
                     ID de cuenta: {p.id}
                   </p>
-                  {p.role === "driver" && (
+                  {p.role === "driver" && !p.closed_at && (
                     <>
                       <Link
                         className="rp-text-link"
@@ -321,6 +326,7 @@ export default async function Page({
                       />
                     </>
                   )}
+                  {!p.closed_at && <CloseProfileForm id={p.id} />}
                 </article>
               ))}
             {tab === "support" &&

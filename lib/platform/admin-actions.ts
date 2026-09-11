@@ -114,6 +114,43 @@ export async function reviewVerification(
   refresh();
   return { success: "Revisión guardada." };
 }
+// Closes an account for a privacy/deletion request: blocks the login and
+// scrubs personal data, but deliberately never touches redemption/payment
+// history — a business's stats and RidePerks' own audit trail have to
+// survive this. See rp_close_profile in the 202609110003 migration.
+export async function closeProfile(
+  _: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  await requireAdmin();
+  const id = uuidSchema.safeParse(form.get("id"));
+  const reason = String(form.get("reason") || "").trim();
+  if (!id.success) return { error: "Cuenta inválida." };
+  if (reason.length < 3 || reason.length > 1000)
+    return { error: "Escribe el motivo del cierre." };
+  const db = getSupabaseAdmin();
+  // Block login first: if the profile scrub below fails, the account is
+  // merely locked out (recoverable) rather than scrubbed but still usable.
+  const ban = await db.auth.admin.updateUserById(id.data, {
+    ban_duration: "876000h",
+  });
+  if (ban.error)
+    return { error: "No pudimos bloquear el inicio de sesión de la cuenta." };
+  const { error } = await db.rpc("rp_close_profile", {
+    p_id: id.data,
+    p_reason: reason,
+  });
+  if (error)
+    return {
+      error:
+        error.code === "P0001" ? error.message : "No pudimos cerrar la cuenta.",
+    };
+  refresh();
+  return {
+    success:
+      "Cuenta cerrada: se bloqueó el inicio de sesión y se eliminaron sus datos personales.",
+  };
+}
 export async function setDriverStatus(
   _: ActionState,
   form: FormData,

@@ -6,6 +6,7 @@ export type Profile = {
   status: "pending" | "verified" | "rejected" | "suspended";
   role: "driver" | "business";
   created_at: string;
+  closed_at: string | null;
 };
 export type Business = {
   id: string;
