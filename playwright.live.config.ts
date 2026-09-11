@@ -8,6 +8,8 @@ export default defineConfig({
   reporter: "list",
   use: {
     baseURL: process.env.TEST_BASE_URL || "http://localhost:3100",
+    actionTimeout: 15000,
+    navigationTimeout: 30000,
     trace: "off",
     screenshot: "only-on-failure",
   },

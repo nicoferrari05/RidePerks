@@ -15,7 +15,11 @@ type Order = {
   created_at: string;
   amount_cents: number;
 };
-type Summary = { validUntil: string | null; orders: Order[] };
+type Summary = {
+  validUntil: string | null;
+  orders: Order[];
+  access?: { status: string; lifetime: boolean };
+};
 export default function YappyCheckout({
   phone: initialPhone,
   scriptUrl,
@@ -156,11 +160,19 @@ export default function YappyCheckout({
       button.removeEventListener("eventError", error);
     };
   }, [ready, buttonVersion]);
+  const blocked = Boolean(
+    summary?.access && summary.access.status !== "enabled",
+  );
+  const lifetime = Boolean(summary?.access?.lifetime);
   const active =
-    summary?.validUntil && new Date(summary.validUntil).getTime() > observedAt;
+    !blocked &&
+    summary?.validUntil &&
+    new Date(summary.validUntil).getTime() > observedAt;
   const renew =
-    !active ||
-    new Date(summary!.validUntil!).getTime() < observedAt + 7 * 86400000;
+    !blocked &&
+    !lifetime &&
+    (!active ||
+      new Date(summary!.validUntil!).getTime() < observedAt + 7 * 86400000);
   const labels: Record<string, string> = {
     pending: "Pendiente de confirmación",
     paid: "Pagado",
@@ -184,7 +196,18 @@ export default function YappyCheckout({
           )
         }
       />
-      {active && (
+      {blocked && (
+        <p className="rp-error" role="status">
+          Tu acceso está suspendido o cancelado. Contacta a RidePerks desde
+          Ayuda.
+        </p>
+      )}
+      {lifetime && !blocked && (
+        <p className="rp-success" role="status">
+          Tienes acceso permanente. No necesitas pagar.
+        </p>
+      )}
+      {active && !lifetime && (
         <p className="rp-success" role="status">
           Membresía activa hasta el{" "}
           {new Date(summary!.validUntil!).toLocaleDateString("es-PA", {

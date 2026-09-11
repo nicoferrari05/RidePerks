@@ -163,6 +163,14 @@ export default async function Page({
         <Link className="rp-text-link" href="/admin/payments">
           Pagos de membresías →
         </Link>
+        <div className="rp-actions">
+          <Link className="rp-text-link" href="/admin/reviews">
+            Revisar propuestas de beneficios →
+          </Link>
+          <Link className="rp-text-link" href="/admin/access">
+            Identidad administrativa →
+          </Link>
+        </div>
         {tab === "drivers" && (
           <form className="rp-filters">
             <input type="hidden" name="tab" value="drivers" />
@@ -300,10 +308,18 @@ export default async function Page({
                     ID de cuenta: {p.id}
                   </p>
                   {p.role === "driver" && (
-                    <DriverStatusForm
-                      id={p.id}
-                      suspended={p.status === "suspended"}
-                    />
+                    <>
+                      <Link
+                        className="rp-text-link"
+                        href={"/admin/access?driver=" + p.id}
+                      >
+                        Administrar membresía y acceso →
+                      </Link>
+                      <DriverStatusForm
+                        id={p.id}
+                        suspended={p.status === "suspended"}
+                      />
+                    </>
                   )}
                 </article>
               ))}

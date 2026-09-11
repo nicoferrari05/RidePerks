@@ -5,6 +5,8 @@ const migrations = [
   "202609080002_waitlist_privacy.sql",
   "202609090001_qr_short_codes.sql",
   "202609100001_yappy_memberships.sql",
+  "202609110001_merchant_roles.sql",
+  "202609110002_access_and_review.sql",
 ];
 const parts = await Promise.all(
   migrations.map(

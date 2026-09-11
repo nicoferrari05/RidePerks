@@ -38,15 +38,29 @@ export async function requireBusiness() {
   const profile = await currentProfile();
   if (!profile) redirect("/business/login");
   if (profile.role !== "business") redirect("/driver/dashboard");
-  if (profile.status === "suspended") return { profile, business: null };
-  const { data, error } = await getSupabaseAdmin()
-    .from("rp_businesses")
-    .select("*")
-    .eq("owner_user_id", profile.id)
+  if (profile.status === "suspended")
+    return { profile, business: null, role: null, businesses: [] };
+  const db = getSupabaseAdmin();
+  const { data, error } = await db
+    .from("rp_business_members")
+    .select("business_id,role,rp_businesses!inner(*)")
+    .eq("user_id", profile.id)
     .eq("is_active", true)
-    .maybeSingle();
-  if (error) throw new Error("No pudimos consultar el comercio.");
-  return { profile, business: data as Business | null };
+    .eq("rp_businesses.is_active", true);
+  if (error) throw new Error("No pudimos consultar tus comercios.");
+  const businesses = (data || []).map((row) => ({
+    business: row.rp_businesses as unknown as Business,
+    role: row.role as "owner" | "staff",
+  }));
+  const selected = (await cookies()).get("rp_business_id")?.value;
+  const current =
+    businesses.find((row) => row.business.id === selected) || businesses[0];
+  return {
+    profile,
+    business: current?.business || null,
+    role: current?.role || null,
+    businesses,
+  };
 }
 export async function requireAdmin() {
   const token = (await cookies()).get(ADMIN_COOKIE_NAME)?.value;
@@ -111,7 +125,11 @@ export async function rateLimit(key: string, limit = 10, seconds = 600) {
     );
 }
 
-async function sumSavings(driverId: string, since: string | null, errorMessage: string) {
+async function sumSavings(
+  driverId: string,
+  since: string | null,
+  errorMessage: string,
+) {
   const until = new Date().toISOString();
   let total = 0,
     count = 0;
