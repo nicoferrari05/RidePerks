@@ -1,5 +1,6 @@
 import Nav from "@/components/Nav";
 import ScrollAnimations from "@/components/ScrollAnimations";
+import SplashScreen from "@/components/SplashScreen";
 import MobileCTA from "@/components/MobileCTA";
 import Hero from "@/components/sections/Hero";
 import Benefits from "@/components/sections/Benefits";
@@ -12,6 +13,7 @@ import Footer from "@/components/sections/Footer";
 export default function Home() {
   return (
     <>
+      <SplashScreen />
       <ScrollAnimations />
       <Nav />
       <main>

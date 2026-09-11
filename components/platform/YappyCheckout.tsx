@@ -231,7 +231,12 @@ export default function YappyCheckout({
               para consultar el resultado.
             </p>
           )}
-          <div ref={host}>
+          {/* Yappy's own dialog/backdrop render at z-index 5/10 inside its
+              shadow root. Our fixed sidebar and bottom nav sit at z-index
+              30, so without a stacking context of our own above that, they
+              paint over Yappy's full-screen overlay instead of sitting
+              behind it — this is what elevates it above them. */}
+          <div ref={host} className="rp-yappy-host">
             {createElement("btn-yappy", {
               key: buttonVersion,
               theme: "orange",

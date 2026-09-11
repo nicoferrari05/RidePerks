@@ -745,6 +745,10 @@
     opacity: 0.5;
   }
 }
+.rp-yappy-host {
+  position: relative;
+  z-index: 50;
+}
 .rp-skip {
   position: fixed;
   top: 8px;
