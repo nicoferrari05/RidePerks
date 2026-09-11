@@ -80,7 +80,7 @@ export async function proxy(request: NextRequest) {
   } = await auth.auth.getUser();
   if (!user && protectedPath) {
     const target = new URL(loginPath, request.url);
-    target.searchParams.set("next", pathname);
+    target.searchParams.set("next", pathname + request.nextUrl.search);
     const redirect = NextResponse.redirect(target);
     response.cookies.getAll().forEach((c) => redirect.cookies.set(c));
     return redirect;

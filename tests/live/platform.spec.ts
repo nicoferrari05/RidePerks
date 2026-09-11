@@ -112,7 +112,10 @@ test.afterAll(async () => {
       await db.from(table).delete().eq("driver_id", driverId);
   }
   if (benefitId) await db.from("rp_benefits").delete().eq("id", benefitId);
-  if (shopId) await db.from("rp_businesses").delete().eq("id", shopId);
+  if (shopId) {
+    await db.from("rp_business_members").delete().eq("business_id", shopId);
+    await db.from("rp_businesses").delete().eq("id", shopId);
+  }
   if (driverId)
     await db.from("rp_memberships").delete().eq("driver_id", driverId);
   if (ownerId)
@@ -197,6 +200,9 @@ test("driver onboarding, private verification, admin approval and merchant redem
   await signIn(merchantPage, businessEmail);
   await merchantPage.getByLabel("Código del conductor").fill(token);
   await merchantPage
+    .getByRole("button", { name: "Consultar beneficio" })
+    .click();
+  await merchantPage
     .getByRole("button", { name: "Confirmar y aplicar beneficio" })
     .click();
   await expect(
@@ -210,13 +216,11 @@ test("driver onboarding, private verification, admin approval and merchant redem
     data: { token },
   });
   expect(second.status()).toBe(400);
-  const limit = await db
-    .from("rp_rate_limits")
-    .upsert({
-      key: "redeem:" + ownerId,
-      hits: 60,
-      window_start: new Date().toISOString(),
-    });
+  const limit = await db.from("rp_rate_limits").upsert({
+    key: "redeem:" + ownerId,
+    hits: 60,
+    window_start: new Date().toISOString(),
+  });
   expect(limit.error).toBeNull();
   const limited = await merchantPage.request.post("/api/platform/redeem", {
     headers: { Origin: process.env.TEST_BASE_URL || "http://localhost:3100" },

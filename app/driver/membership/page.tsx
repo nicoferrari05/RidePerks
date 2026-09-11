@@ -15,6 +15,11 @@ export default async function Page() {
     .single();
   if (setting.error) throw new Error("No pudimos consultar el acceso.");
   const free = setting.data.value === true;
+  const access = await getSupabaseAdmin().rpc("rp_access_state", {
+    p_driver: profile.id,
+  });
+  if (access.error) throw new Error("No pudimos consultar tu membresía.");
+  const blocked = access.data.status !== "enabled";
   return (
     <div className="rp-stack">
       <Heading title="Tu membresía RidePerks">
@@ -31,7 +36,26 @@ export default async function Page() {
           conserva sus condiciones y límites de uso.
         </p>
       </section>
-      {free ? (
+      {blocked ? (
+        <section className="rp-panel">
+          <h2>
+            Tu acceso está{" "}
+            {access.data.status === "suspended" ? "suspendido" : "cancelado"}
+          </h2>
+          <p>
+            Contacta al equipo desde Ayuda para revisar tu acceso. Un pago no
+            retira este bloqueo.
+          </p>
+        </section>
+      ) : access.data.lifetime ? (
+        <section className="rp-panel">
+          <h2>Tienes acceso permanente</h2>
+          <p>
+            No necesitas renovar ni pagar una membresía mensual. La verificación
+            de conductor y las condiciones de cada beneficio siguen aplicando.
+          </p>
+        </section>
+      ) : free ? (
         <section className="rp-panel">
           <h2>El acceso gratuito sigue activo</h2>
           <p className="rp-muted mt-3">

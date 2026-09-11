@@ -47,7 +47,12 @@ export type Verification = {
   admin_notes: string | null;
   created_at: string;
 };
-export type ActionState = { error?: string; success?: string };
+export type ActionState = {
+  error?: string;
+  success?: string;
+  revisionId?: string;
+  submitted?: boolean;
+};
 export const platforms: Record<string, string> = {
   uber: "Uber",
   indrive: "inDrive",

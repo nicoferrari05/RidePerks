@@ -93,7 +93,7 @@ export async function GET() {
   if (!profile || profile.role !== "driver")
     return NextResponse.json({ error: "Inicia sesión." }, { status: 401 });
   const db = getSupabaseAdmin();
-  const [membership, orders] = await Promise.all([
+  const [membership, orders, access] = await Promise.all([
     db
       .from("rp_memberships")
       .select("valid_until")
@@ -105,14 +105,19 @@ export async function GET() {
       .eq("driver_id", profile.id)
       .order("created_at", { ascending: false })
       .limit(12),
+    db.rpc("rp_access_state", { p_driver: profile.id }),
   ]);
-  if (membership.error || orders.error)
+  if (membership.error || orders.error || access.error)
     return NextResponse.json(
       { error: "No pudimos consultar tu membresía." },
       { status: 503 },
     );
   return NextResponse.json(
-    { validUntil: membership.data?.valid_until || null, orders: orders.data },
+    {
+      validUntil: access.data?.valid_until || null,
+      orders: orders.data,
+      access: access.data,
+    },
     { headers: { "Cache-Control": "private, no-store" } },
   );
 }

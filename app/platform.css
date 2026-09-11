@@ -1002,3 +1002,90 @@
     margin-left: auto;
   }
 }
+
+.rp-category-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.rp-category-chip {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  padding: 10px 16px;
+  min-height: 44px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  background: #eae4da;
+  color: #514e49;
+}
+.rp-category-chip.combustible {
+  background: #faf0d8;
+  color: #8a6413;
+}
+.rp-category-chip.comida {
+  background: #e0eee4;
+  color: #216546;
+}
+.rp-category-chip.mantenimiento {
+  background: #ffe0d8;
+  color: #ab2a09;
+}
+.rp-category-chip.salud {
+  background: #e3e7ee;
+  color: #041429;
+}
+.rp-category-chip[aria-pressed="true"] {
+  border-color: currentColor;
+}
+.rp-category-chip:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.rp-category-chip:focus-visible {
+  outline: 2px solid var(--rp-ember, #cf3b18);
+  outline-offset: 3px;
+}
+
+.rp-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 24px;
+  border-block: 1px solid var(--rp-border);
+  padding: 24px 0;
+}
+.rp-metrics dt {
+  font-size: 0.875rem;
+}
+.rp-metrics dd {
+  font-size: 1.5rem;
+  font-weight: 650;
+  margin-top: 8px;
+}
+.rp-metrics dd.rp-muted {
+  font-size: 1rem;
+}
+.rp-category-chips [aria-current="page"] {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+label.rp-field {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+label.rp-field :is(input, select, textarea) {
+  font-weight: 400;
+}
+.rp-field[hidden] {
+  display: none;
+}
+.rp-app details > summary {
+  cursor: pointer;
+  padding: 14px 0;
+  font-weight: 600;
+  min-height: 44px;
+}
+.rp-app details[open] > summary {
+  margin-bottom: 12px;
+}

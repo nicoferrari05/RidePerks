@@ -39,6 +39,7 @@ test.afterAll(async () => {
     .select("id")
     .eq("name", shopName);
   for (const shop of shops.data || []) {
+    await db.from("rp_business_members").delete().eq("business_id", shop.id);
     await db.from("rp_businesses").delete().eq("id", shop.id);
     await db.from("rp_admin_audit").delete().eq("subject_id", shop.id);
   }

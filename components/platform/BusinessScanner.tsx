@@ -5,6 +5,8 @@ type Result = {
   driver_name: string;
   benefit_title: string;
   discount_label: string;
+  terms?: string;
+  expires_at?: string;
 };
 type Scanner = { stop: () => Promise<void>; clear: () => void };
 export default function BusinessScanner() {
@@ -13,6 +15,7 @@ export default function BusinessScanner() {
     [error, setError] = useState(""),
     [result, setResult] = useState<Result | null>(null),
     [camera, setCamera] = useState(false);
+  const [preview, setPreview] = useState<Result | null>(null);
   const scanner = useRef<Scanner | null>(null);
   useEffect(
     () => () => {
@@ -47,6 +50,7 @@ export default function BusinessScanner() {
         { fps: 8, qrbox: { width: 220, height: 220 } },
         (text) => {
           setToken(text.trim());
+          setPreview(null);
           void stop();
         },
         () => {},
@@ -64,18 +68,24 @@ export default function BusinessScanner() {
     setError("");
     setResult(null);
     try {
-      const res = await fetch("/api/platform/redeem", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: token.trim() }),
-      });
+      const res = await fetch(
+        preview ? "/api/platform/redeem" : "/api/platform/preview",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token: token.trim() }),
+        },
+      );
       const data = await res.json();
       if (!res.ok) {
         setError(data.error || "No pudimos validar el código.");
         return;
       }
-      setResult(data);
-      setToken("");
+      if (preview) {
+        setResult(data);
+        setToken("");
+        setPreview(null);
+      } else setPreview(data);
     } catch {
       setError(
         "No pudimos conectar. Revisa tu conexión y vuelve a intentarlo.",
@@ -112,7 +122,10 @@ export default function BusinessScanner() {
             <input
               id="token"
               value={token}
-              onChange={(e) => setToken(e.target.value)}
+              onChange={(e) => {
+                setToken(e.target.value);
+                setPreview(null);
+              }}
               autoComplete="off"
               autoCapitalize="characters"
               spellCheck={false}
@@ -126,8 +139,26 @@ export default function BusinessScanner() {
               {error}
             </p>
           )}
+          {preview && (
+            <section className="rp-stack" aria-live="polite">
+              <h3>{preview.driver_name}</h3>
+              <p>
+                <strong>{preview.benefit_title}</strong> ·{" "}
+                {preview.discount_label}
+              </p>
+              <p className="rp-muted whitespace-pre-line">{preview.terms}</p>
+              <p className="rp-muted">
+                Acceso válido al consultar. Se comprobará nuevamente al
+                confirmar.
+              </p>
+            </section>
+          )}
           <button className="rp-button" disabled={busy || !token}>
-            {busy ? "Confirmando…" : "Confirmar y aplicar beneficio"}
+            {busy
+              ? "Consultando…"
+              : preview
+                ? "Confirmar y aplicar beneficio"
+                : "Consultar beneficio"}
           </button>
         </form>
       </div>

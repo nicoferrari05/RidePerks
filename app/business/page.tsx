@@ -1,38 +1,59 @@
 import Link from "next/link";
-import { Store, Ticket, MapPin } from "lucide-react";
+import { Store, MapPin } from "lucide-react";
 import { requireBusiness } from "@/lib/platform/data";
 import { logout } from "@/lib/platform/auth-actions";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
 import { Logo, Heading, Empty } from "@/components/platform/ui";
 import BusinessScanner from "@/components/platform/BusinessScanner";
+import { StaffInvite, RemoveStaff } from "@/components/platform/StaffForms";
+import { selectBusiness } from "@/lib/platform/business-actions";
+import BusinessBenefits from "@/components/platform/BusinessBenefits";
+import { MerchantInfo } from "@/components/platform/MerchantForms";
+import BusinessMetrics from "@/components/platform/BusinessMetrics";
 import { dateLabel } from "@/lib/platform/types";
 import "../platform.css";
 export const metadata = {
   title: "Portal de comercios · RidePerks",
   robots: { index: false, follow: false },
 };
-export default async function Page() {
-  const { business, profile } = await requireBusiness();
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ period?: string }>;
+}) {
+  const { business, profile, role, businesses } = await requireBusiness();
+  const { period } = await searchParams;
   const db = getSupabaseAdmin();
-  const [history, benefits] = business
-    ? await Promise.all([
-        db
-          .from("rp_redemptions")
-          .select("id,benefit_title,redeemed_at")
-          .eq("business_id", business.id)
-          .order("redeemed_at", { ascending: false })
-          .limit(30),
-        db
-          .from("rp_benefits")
-          .select(
-            "id,title,discount_label,terms,is_active,valid_from,valid_until",
-          )
-          .eq("business_id", business.id)
-          .order("created_at", { ascending: false }),
-      ])
-    : [null, null];
+  const [history, benefits] =
+    business && role === "owner"
+      ? await Promise.all([
+          db
+            .from("rp_redemptions")
+            .select("id,benefit_title,redeemed_at")
+            .eq("business_id", business.id)
+            .order("redeemed_at", { ascending: false })
+            .limit(30),
+          db
+            .from("rp_benefits")
+            .select(
+              "id,title,discount_label,terms,is_active,valid_from,valid_until",
+            )
+            .eq("business_id", business.id)
+            .order("created_at", { ascending: false }),
+        ])
+      : [null, null];
   if (history?.error || benefits?.error)
     throw new Error("No pudimos cargar la información del comercio.");
+  const staff =
+    business && role === "owner"
+      ? await db
+          .from("rp_business_members")
+          .select("user_id,rp_profiles(full_name)")
+          .eq("business_id", business.id)
+          .eq("role", "staff")
+          .eq("is_active", true)
+      : null;
+  if (staff?.error) throw new Error("No pudimos consultar el personal.");
   const today = new Date().toLocaleDateString("en-CA", {
     timeZone: "America/Panama",
   });
@@ -50,7 +71,9 @@ export default async function Page() {
         </span>
         <nav aria-label="Portal del comercio">
           <Link href="/business">Mi comercio</Link>
-          {business && <Link href="#beneficios">Beneficios</Link>}
+          {business && role === "owner" && (
+            <Link href="#beneficios">Beneficios</Link>
+          )}
           <Link href="/account/password">Contraseña</Link>
         </nav>
         <form action={logout}>
@@ -63,8 +86,32 @@ export default async function Page() {
           Hola, {profile.full_name}. Este es el espacio de tu negocio en
           RidePerks.
         </Heading>
+        {businesses.length > 1 && (
+          <form action={selectBusiness} className="rp-form">
+            <label htmlFor="business_id">Comercio</label>
+            <select
+              name="business_id"
+              id="business_id"
+              defaultValue={business?.id}
+            >
+              {businesses.map((row) => (
+                <option key={row.business.id} value={row.business.id}>
+                  {row.business.name}
+                </option>
+              ))}
+            </select>
+            <button className="rp-button secondary">Cambiar comercio</button>
+          </form>
+        )}
         {business ? (
           <>
+            {role === "owner" && (
+              <BusinessMetrics
+                businessId={business.id}
+                actorId={profile.id}
+                period={period}
+              />
+            )}
             <section
               className="rp-business-overview"
               aria-label="Resumen del comercio"
@@ -78,8 +125,10 @@ export default async function Page() {
               </div>
               <div>
                 <strong>
-                  {(benefits?.data || []).filter(active).length} beneficios
-                  disponibles
+                  {role === "staff"
+                    ? "Personal autorizado"
+                    : (benefits?.data || []).filter(active).length +
+                      " beneficios disponibles"}
                 </strong>
                 <p className="rp-muted">
                   Solo se pueden validar beneficios de este comercio.
@@ -90,69 +139,57 @@ export default async function Page() {
               <section id="validar">
                 <BusinessScanner />
               </section>
-              <section>
-                <h2 className="mb-5">Últimos usos confirmados</h2>
-                {history?.data?.length ? (
-                  <div className="rp-list">
-                    {history.data.map((r) => (
-                      <div className="rp-list-row" key={r.id}>
-                        <div>
-                          <h3>{r.benefit_title}</h3>
-                          <p className="rp-muted">{dateLabel(r.redeemed_at)}</p>
+              {role === "owner" && (
+                <section>
+                  <h2 className="mb-5">Últimos usos confirmados</h2>
+                  {history?.data?.length ? (
+                    <div className="rp-list">
+                      {history.data.map((r) => (
+                        <div className="rp-list-row" key={r.id}>
+                          <div>
+                            <h3>{r.benefit_title}</h3>
+                            <p className="rp-muted">
+                              {dateLabel(r.redeemed_at)}
+                            </p>
+                          </div>
+                          <span className="rp-badge good">Confirmado</span>
                         </div>
-                        <span className="rp-badge good">Confirmado</span>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <Empty title="Sin usos todavía">
-                    <p>Cuando confirmes un beneficio, aparecerá aquí.</p>
-                  </Empty>
-                )}
-                <p className="rp-muted mt-4">
-                  Se muestran los últimos 30 usos.
-                </p>
-              </section>
-            </div>
-            <section id="beneficios" className="scroll-mt-6">
-              <h2 className="mb-2">Beneficios de tu comercio</h2>
-              <p className="rp-muted mb-5">
-                Comprueba las condiciones antes de aplicar un beneficio. El
-                equipo de RidePerks gestiona su publicación.
-              </p>
-              {benefits?.data?.length ? (
-                <div className="rp-list">
-                  {benefits.data.map((b) => (
-                    <article className="rp-list-row" key={b.id}>
-                      <div>
-                        <h3 className="flex items-center gap-2">
-                          <Ticket size={18} aria-hidden="true" />
-                          {b.title}
-                        </h3>
-                        <p className="mt-2">{b.discount_label}</p>
-                        <p className="rp-muted mt-2 whitespace-pre-line">
-                          {b.terms}
-                        </p>
-                      </div>
-                      <span
-                        className={
-                          "rp-badge " + (active(b) ? "good" : "pending")
-                        }
-                      >
-                        {active(b) ? "Disponible" : "No disponible"}
-                      </span>
-                    </article>
-                  ))}
-                </div>
-              ) : (
-                <Empty title="Aún no hay beneficios publicados">
-                  <p>
-                    Coordina con RidePerks las condiciones de tu primer
-                    beneficio.
+                      ))}
+                    </div>
+                  ) : (
+                    <Empty title="Sin usos todavía">
+                      <p>Cuando confirmes un beneficio, aparecerá aquí.</p>
+                    </Empty>
+                  )}
+                  <p className="rp-muted mt-4">
+                    Se muestran los últimos 30 usos.
                   </p>
-                </Empty>
+                </section>
               )}
-            </section>
+            </div>
+            {role === "owner" && (
+              <>
+                <details>
+                  <summary>Información del comercio</summary>
+                  <MerchantInfo business={business} />
+                </details>
+                <BusinessBenefits businessId={business.id} />
+                <section className="rp-stack">
+                  <h2>Personal autorizado</h2>
+                  <StaffInvite />
+                  {staff?.data?.map((member) => (
+                    <div className="rp-list-row" key={member.user_id}>
+                      <span>
+                        {(
+                          member.rp_profiles as unknown as { full_name: string }
+                        )?.full_name || "Personal"}
+                      </span>
+                      <RemoveStaff id={member.user_id} />
+                    </div>
+                  ))}
+                </section>
+              </>
+            )}
           </>
         ) : (
           <Empty
