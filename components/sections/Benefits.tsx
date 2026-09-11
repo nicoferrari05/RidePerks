@@ -92,7 +92,7 @@ export default function Benefits() {
               ¿Tienes un comercio? <em className="font-accent italic text-ember">Súmate.</em>
             </h3>
             <p className="mt-3 text-sm leading-relaxed text-navy/60">
-              A ti no te cuesta nada unirte — el conductor paga su membresía, no tu negocio. Tú
+              A ti no te cuesta nada unirte. El conductor paga su membresía, no tu negocio, y tú
               eliges el descuento y las condiciones.
             </p>
             <Link
@@ -133,7 +133,7 @@ export default function Benefits() {
                 aria-hidden="true"
               />
               <span className="text-sm leading-relaxed text-navy/70">
-                Confirmas el canje escaneando un código — sin cambiar cómo cobras.
+                Confirmas el canje escaneando un código, sin cambiar cómo cobras.
               </span>
             </li>
           </ul>
