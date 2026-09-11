@@ -1,12 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
-import { categories, type Benefit } from "@/lib/platform/types";
-import { BenefitCard, Empty } from "./ui";
+import { categories } from "@/lib/platform/types";
+import { BenefitCard, Empty, type CatalogBenefit } from "./ui";
 export default function BenefitExplorer({
   benefits,
   initialCategory,
 }: {
-  benefits: Benefit[];
+  benefits: CatalogBenefit[];
   initialCategory: string;
 }) {
   const [category, setCategory] = useState(initialCategory);

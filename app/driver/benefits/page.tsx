@@ -15,7 +15,18 @@ export default async function Page({
         Encuentra tu próxima parada y revisa las condiciones antes de ir.
       </Heading>
       <BenefitExplorer
-        benefits={await getBenefits()}
+        benefits={(await getBenefits()).map(
+          ({ id, title, category, discount_label, rp_businesses }) => ({
+            id,
+            title,
+            category,
+            discount_label,
+            rp_businesses: {
+              name: rp_businesses.name,
+              address: rp_businesses.address,
+            },
+          }),
+        )}
         initialCategory={Object.hasOwn(categories, category) ? category : ""}
       />
     </div>

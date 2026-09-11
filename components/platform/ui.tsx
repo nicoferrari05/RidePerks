@@ -33,7 +33,11 @@ export function CategoryIcon({ category }: { category: string }) {
     </div>
   );
 }
-export function BenefitCard({ benefit: b }: { benefit: Benefit }) {
+export type CatalogBenefit = Pick<
+  Benefit,
+  "id" | "title" | "category" | "discount_label"
+> & { rp_businesses: Pick<Benefit["rp_businesses"], "name" | "address"> };
+export function BenefitCard({ benefit: b }: { benefit: CatalogBenefit }) {
   return (
     <Link className="rp-benefit" href={"/driver/benefits/" + b.id}>
       <div className="rp-benefit-top">
