@@ -8,8 +8,8 @@ import { CheckIcon } from "@/components/icons";
 const FEATURES = [
   "Acceso a todos los beneficios activos: combustible, comida, taller y salud.",
   "Un mes de acceso desde la confirmación del pago.",
-  "Renovación manual con Yappy — vos decidís cuándo pagar, sin cargos automáticos.",
-  "Renovás antes del vencimiento y el mes se suma al tiempo que te queda.",
+  "Renovación manual con Yappy — tú decides cuándo pagar, sin cargos automáticos.",
+  "Renuevas antes del vencimiento y el mes se suma al tiempo que te queda.",
 ];
 
 export default function Pricing() {
@@ -60,7 +60,7 @@ export default function Pricing() {
               Únete y empieza a ahorrar
             </Link>
             <p className="mt-4 text-center text-xs text-bone/40">
-              Necesitás verificar tu perfil de conductor para canjear beneficios.
+              Necesitas verificar tu perfil de conductor para canjear beneficios.
             </p>
           </div>
         </div>

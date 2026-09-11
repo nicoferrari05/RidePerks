@@ -89,11 +89,11 @@ export default function Benefits() {
               PARA COMERCIOS
             </span>
             <h3 className="mt-3 text-2xl font-semibold tracking-tight text-navy">
-              ¿Tenés un comercio? <em className="font-accent italic text-ember">Sumate.</em>
+              ¿Tienes un comercio? <em className="font-accent italic text-ember">Súmate.</em>
             </h3>
             <p className="mt-3 text-sm leading-relaxed text-navy/60">
-              A vos no te cuesta nada unirte — el conductor paga su membresía, no tu negocio. Vos
-              elegís el descuento y las condiciones.
+              A ti no te cuesta nada unirte — el conductor paga su membresía, no tu negocio. Tú
+              eliges el descuento y las condiciones.
             </p>
             <Link
               href="/business/register"
@@ -111,7 +111,7 @@ export default function Benefits() {
                 aria-hidden="true"
               />
               <span className="text-sm leading-relaxed text-navy/70">
-                Accedés a conductores que ya buscan dónde gastar en tu categoría.
+                Accedes a conductores que ya buscan dónde gastar en tu categoría.
               </span>
             </li>
             <li className="flex items-start gap-3">
@@ -122,7 +122,7 @@ export default function Benefits() {
                 aria-hidden="true"
               />
               <span className="text-sm leading-relaxed text-navy/70">
-                Vos proponés el beneficio; nuestro equipo lo revisa antes de publicarlo.
+                Tú propones el beneficio; nuestro equipo lo revisa antes de publicarlo.
               </span>
             </li>
             <li className="flex items-start gap-3">
@@ -133,7 +133,7 @@ export default function Benefits() {
                 aria-hidden="true"
               />
               <span className="text-sm leading-relaxed text-navy/70">
-                Confirmás el canje escaneando un código — sin cambiar cómo cobrás.
+                Confirmas el canje escaneando un código — sin cambiar cómo cobras.
               </span>
             </li>
           </ul>
