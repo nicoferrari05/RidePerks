@@ -18,8 +18,8 @@ const CanvasRevealEffect = dynamic(
 );
 
 const SEEN_KEY = "rp_splash_seen";
-const DISPLAY_MS = 1300;
-const FADE_MS = 500;
+const DISPLAY_MS = 2200;
+const FADE_MS = 600;
 
 export default function SplashScreen() {
   const [show, setShow] = useState(true);
@@ -64,7 +64,7 @@ export default function SplashScreen() {
   return (
     <div
       aria-hidden="true"
-      className={`fixed inset-0 z-[100] flex items-center justify-center bg-navy transition-opacity duration-500 ease-out ${
+      className={`fixed inset-0 z-[100] flex items-center justify-center bg-navy transition-opacity duration-[600ms] ease-out ${
         fading ? "opacity-0" : "opacity-100"
       }`}
     >
@@ -80,7 +80,7 @@ export default function SplashScreen() {
         />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,transparent_0%,var(--color-navy)_72%)]" />
       </div>
-      <LogoMark size="lg" className="relative sm:text-3xl" />
+      <LogoMark animate size="lg" className="relative sm:text-3xl" />
     </div>
   );
 }

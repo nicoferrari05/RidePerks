@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import LogoMark from "@/components/LogoMark";
 
 type Platform = "uber" | "indrive" | "pedidosya" | "multiple";
 type EntryStatus = "pending" | "verified" | "rejected";
@@ -162,11 +163,9 @@ export default function AdminDashboard() {
   return (
     <main className="min-h-screen bg-paper pb-24">
       <header className="sticky top-0 z-10 flex items-center justify-between border-b border-line bg-paper/90 px-6 py-4 backdrop-blur">
-        <div className="inline-flex items-center gap-2 rounded-full bg-navy px-4 py-2 text-sm font-bold tracking-tight text-bone">
-          <span>
-            RIDE<span className="text-ember">PERKS</span>
-          </span>
-          <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-medium tracking-widest text-bone/70">
+        <div className="inline-flex items-center gap-2">
+          <LogoMark size="sm" />
+          <span className="rounded-full bg-navy/10 px-2 py-0.5 text-[10px] font-medium tracking-widest text-navy/70">
             ADMIN
           </span>
         </div>

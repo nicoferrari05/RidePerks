@@ -1,5 +1,6 @@
 import GradientWaves from "@/components/GradientWaves";
 import Counter from "@/components/Counter";
+import LogoMark from "@/components/LogoMark";
 import Link from "next/link";
 import { Fuel, UtensilsCrossed, Wrench, ArrowUpRight } from "lucide-react";
 
@@ -66,9 +67,7 @@ export default function Hero() {
         >
           <div className="relative overflow-hidden rounded-[24px] bg-navy text-bone shadow-[0_30px_70px_-28px_rgba(4,20,41,0.45)]">
             <div className="flex items-center justify-between border-b border-white/15 px-7 py-6">
-              <span className="text-lg font-extrabold tracking-tight">
-                RIDE<span className="text-ember">PERKS</span>
-              </span>
+              <LogoMark size="sm" />
               <span className="rounded-full border border-white/25 px-3 py-1 text-xs font-medium">
                 Club de conductores
               </span>

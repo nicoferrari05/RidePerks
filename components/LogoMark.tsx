@@ -1,11 +1,18 @@
 "use client";
 
-// Animated "RIDEPERKS" wordmark pill: glass background bloom-in, then letters
-// stagger up. Ported from nicoferrari05/rideperks-platform
-// (src/components/shared/Logo.tsx) — same brand pill shown on that repo's
-// landing hero — adapted to this project's brand tokens (--color-bone
-// instead of --bone) and named LogoMark to avoid colliding with the
-// existing plain-text Logo in components/platform/ui.tsx.
+// The RIDEPERKS wordmark pill, used everywhere the brand mark appears.
+// Ported from nicoferrari05/rideperks-platform
+// (src/components/shared/Logo.tsx) — same pill shown on that repo's landing
+// hero — adapted to this project's brand tokens and given an opaque navy
+// backing (the original's translucent glass only reads against a dark
+// backdrop; an opaque one looks right whether the surrounding page is the
+// platform's light bone or a dark section like the splash or the footer).
+// Named LogoMark to avoid colliding with the plain-text Logo that used to
+// live in components/platform/ui.tsx (now itself built on this component).
+//
+// `animate` (default off) plays the bloom-in + letter stagger reveal — kept
+// reserved for the one-time homepage splash; every other placement renders
+// the finished pill immediately, no replay on every navigation.
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -16,6 +23,7 @@ gsap.registerPlugin(useGSAP);
 interface LogoMarkProps {
   size?: "sm" | "md" | "lg" | "xl";
   className?: string;
+  animate?: boolean;
 }
 
 const sizes = {
@@ -27,12 +35,17 @@ const sizes = {
 
 const LETTERS = "RIDEPERKS".split("");
 
-export default function LogoMark({ size = "md", className }: LogoMarkProps) {
+export default function LogoMark({
+  size = "md",
+  className,
+  animate = false,
+}: LogoMarkProps) {
   const pillRef = useRef<HTMLDivElement>(null);
   const lettersRef = useRef<(HTMLSpanElement | null)[]>([]);
 
   useGSAP(
     () => {
+      if (!animate) return;
       const letters = lettersRef.current.filter(Boolean);
       const mm = gsap.matchMedia();
 
@@ -47,7 +60,7 @@ export default function LogoMark({ size = "md", className }: LogoMarkProps) {
           .to(pillRef.current, {
             autoAlpha: 1,
             scale: 1,
-            duration: 0.5,
+            duration: 0.7,
             ease: "expo.out",
           })
           // Letters stagger up, overlapping with the tail of the bloom
@@ -56,32 +69,31 @@ export default function LogoMark({ size = "md", className }: LogoMarkProps) {
             {
               autoAlpha: 1,
               y: 0,
-              duration: 0.38,
+              duration: 0.5,
               ease: "expo.out",
-              stagger: 0.04,
+              stagger: 0.06,
             },
-            0.12,
+            0.16,
           );
       });
 
       return () => mm.revert();
     },
-    { scope: pillRef },
+    { scope: pillRef, dependencies: [animate] },
   );
 
   return (
     <div
       ref={pillRef}
       className={cn(
-        "inline-flex items-center rounded-full font-extrabold tracking-tight select-none",
+        "inline-flex items-center justify-center rounded-full font-extrabold tracking-tight select-none",
         sizes[size],
         className,
       )}
       style={{
-        background:
-          "linear-gradient(135deg, rgba(245,241,234,0.11) 0%, rgba(245,241,234,0.05) 100%)",
-        backdropFilter: "blur(16px) saturate(1.6)",
-        WebkitBackdropFilter: "blur(16px) saturate(1.6)",
+        backgroundColor: "var(--color-navy)",
+        backgroundImage:
+          "linear-gradient(135deg, rgba(245,241,234,0.14) 0%, rgba(245,241,234,0.03) 100%)",
         border: "1px solid rgba(245,241,234,0.14)",
         boxShadow:
           "inset 0 1.5px 0 rgba(245,241,234,0.13), inset 0 -1px 0 rgba(245,241,234,0.04), 0 4px 20px rgba(0,0,0,0.28)",

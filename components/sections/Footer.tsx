@@ -7,6 +7,7 @@
 // on the page, so there's only one signup flow instead of two.
 import Link from "next/link";
 import { InstagramIcon } from "@/components/icons";
+import LogoMark from "@/components/LogoMark";
 
 const FOOTER_LINKS = [
   { label: "Inicio", href: "/#top" },
@@ -20,9 +21,7 @@ export default function Footer() {
   return (
     <footer className="border-t border-white/10 bg-navy px-6 py-12 text-bone sm:py-16">
       <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
-        <span className="mb-8 text-lg font-bold tracking-tight">
-          RIDE<span className="text-ember">PERKS</span>
-        </span>
+        <LogoMark size="md" className="mb-8" />
 
         <nav className="mb-8 flex flex-wrap justify-center gap-x-7 gap-y-3">
           {FOOTER_LINKS.map((link) => (

@@ -47,17 +47,9 @@
   font-size: 0.9rem;
   line-height: 1.65;
 }
-.rp-logo {
-  display: inline-flex;
-  font-size: 1.15rem;
-  font-weight: 800;
-  letter-spacing: -0.045em;
-  align-items: center;
-  min-height: 44px;
-}
-.rp-logo span {
-  color: #cf3b18;
-}
+/* .rp-logo itself no longer carries visual styling — Logo() now renders
+   LogoMark, which is self-styled. The class stays only as a spacing hook
+   for the two rules below. */
 .rp-sidebar {
   display: flex;
   position: fixed;

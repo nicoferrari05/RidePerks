@@ -8,12 +8,13 @@ import {
   ArrowUpRight,
   Inbox,
 } from "lucide-react";
+import LogoMark from "@/components/LogoMark";
 import type { Benefit } from "@/lib/platform/types";
 import { categories } from "@/lib/platform/types";
 export function Logo() {
   return (
     <Link href="/" className="rp-logo" aria-label="RidePerks, inicio">
-      RIDE<span>PERKS</span>
+      <LogoMark size="sm" />
     </Link>
   );
 }
