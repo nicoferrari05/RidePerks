@@ -7,6 +7,7 @@
 // has the flag — never pays for that chunk at all.
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import LogoMark from "@/components/LogoMark";
 
 const CanvasRevealEffect = dynamic(
   () =>
@@ -79,9 +80,7 @@ export default function SplashScreen() {
         />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,transparent_0%,var(--color-navy)_72%)]" />
       </div>
-      <span className="relative scale-100 text-2xl font-bold tracking-tight text-bone opacity-100 transition-[opacity,transform] duration-500 ease-out starting:scale-95 starting:opacity-0 sm:text-3xl">
-        RIDE<span className="text-ember">PERKS</span>
-      </span>
+      <LogoMark size="lg" className="relative sm:text-3xl" />
     </div>
   );
 }
