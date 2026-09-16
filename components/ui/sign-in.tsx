@@ -37,9 +37,16 @@ export function AuthShell({
   children: ReactNode;
 }) {
   return (
-    <div className="flex min-h-[100dvh] w-full font-sans">
-      <section className="flex flex-1 items-center justify-center p-6 sm:p-10">
-        <div className="w-full max-w-md">{children}</div>
+    <div className="flex h-[100dvh] w-full overflow-hidden overscroll-none font-sans">
+      <section className="flex-1 overflow-y-auto overscroll-none">
+        {/* min-h-full (a floor, not a cap) on this inner wrapper — not
+            overflow-y-auto + items-center directly on the scroll
+            container above — keeps a too-tall child (the register form
+            on a short screen) reachable by scroll instead of getting
+            centered into negative, unreachable offscroll space. */}
+        <div className="flex min-h-full items-center justify-center p-6 sm:p-10">
+          <div className="w-full max-w-md">{children}</div>
+        </div>
       </section>
       {heroImageSrc && (
         <section className="relative hidden flex-1 p-4 md:block">
