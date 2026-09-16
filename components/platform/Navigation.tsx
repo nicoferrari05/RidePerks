@@ -1,10 +1,11 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { House, Ticket, MapPin, ReceiptText, UserRound } from "lucide-react";
+import { House, Ticket, CreditCard, MapPin, ReceiptText, UserRound } from "lucide-react";
 const items = [
   { href: "/driver/dashboard", label: "Inicio", Icon: House },
   { href: "/driver/benefits", label: "Beneficios", Icon: Ticket },
+  { href: "/driver/membership", label: "Membresía", Icon: CreditCard },
   { href: "/driver/directory", label: "Comercios", Icon: MapPin },
   { href: "/driver/history", label: "Historial", Icon: ReceiptText },
   { href: "/driver/profile", label: "Mi cuenta", Icon: UserRound },
