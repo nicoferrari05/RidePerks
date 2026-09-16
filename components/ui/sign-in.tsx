@@ -44,7 +44,7 @@ export function AuthShell({
             container above — keeps a too-tall child (the register form
             on a short screen) reachable by scroll instead of getting
             centered into negative, unreachable offscroll space. */}
-        <div className="flex min-h-full items-center justify-center p-4 sm:p-6 [@media(min-height:820px)]:p-6 [@media(min-height:820px)]:sm:p-10">
+        <div className="flex min-h-full items-center justify-center p-6 sm:p-10">
           <div className="w-full max-w-md">{children}</div>
         </div>
       </section>
@@ -100,7 +100,7 @@ export function SignInPage({
 
   return (
     <AuthShell heroImageSrc={heroImageSrc} heroTagline={heroTagline}>
-      <div className="flex flex-col gap-3 [@media(min-height:820px)]:gap-6">
+      <div className="flex flex-col gap-6">
         <Link
           href="/"
           className="animate-element text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
@@ -108,7 +108,7 @@ export function SignInPage({
           ← Volver a RidePerks
         </Link>
         {audienceSwitch}
-        <h1 className="animate-element animate-delay-200 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl [@media(min-height:820px)]:text-4xl [@media(min-height:820px)]:sm:text-5xl">
+        <h1 className="animate-element animate-delay-200 text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
           {title}
         </h1>
         {description && (
@@ -122,7 +122,7 @@ export function SignInPage({
           </p>
         )}
 
-        <form action={formAction} className="space-y-3 [@media(min-height:820px)]:space-y-5">
+        <form action={formAction} className="space-y-5">
           <input type="hidden" name="next" value={next} />
           <input type="hidden" name="audience" value={audience} />
 
@@ -139,7 +139,7 @@ export function SignInPage({
                 autoComplete="email"
                 placeholder="tu@correo.com"
                 maxLength={254}
-                className="w-full rounded-2xl bg-transparent p-3 text-base focus:outline-none [@media(min-height:820px)]:p-4"
+                className="w-full rounded-2xl bg-transparent p-4 text-base focus:outline-none"
               />
             </GlassInputWrapper>
           </div>
@@ -157,7 +157,7 @@ export function SignInPage({
                   required
                   autoComplete="current-password"
                   maxLength={128}
-                  className="w-full rounded-2xl bg-transparent p-3 pr-12 text-base focus:outline-none [@media(min-height:820px)]:p-4"
+                  className="w-full rounded-2xl bg-transparent p-4 pr-12 text-base focus:outline-none"
                 />
                 <button
                   type="button"
@@ -190,7 +190,7 @@ export function SignInPage({
           <button
             type="submit"
             disabled={pending}
-            className="animate-element animate-delay-700 w-full rounded-2xl bg-primary py-3 font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-wait disabled:opacity-60 [@media(min-height:820px)]:py-4"
+            className="animate-element animate-delay-700 w-full rounded-2xl bg-primary py-4 font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-wait disabled:opacity-60"
           >
             {pending ? "Un momento…" : "Iniciar sesión"}
           </button>
@@ -208,7 +208,7 @@ export function SignInPage({
           disabled
           aria-disabled="true"
           title="Próximamente"
-          className="animate-element animate-delay-900 flex w-full cursor-not-allowed items-center justify-center gap-3 rounded-2xl border border-border py-3 text-foreground/40 [@media(min-height:820px)]:py-4"
+          className="animate-element animate-delay-900 flex w-full cursor-not-allowed items-center justify-center gap-3 rounded-2xl border border-border py-4 text-foreground/40"
         >
           <GoogleIcon />
           Continuar con Google
