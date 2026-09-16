@@ -1,6 +1,8 @@
+import { createHash } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
 import { generateReferralCode } from "@/lib/referral";
+import { rateLimit } from "@/lib/platform/data";
 
 const PLATFORMS = new Set(["uber", "indrive", "pedidosya", "multiple"]);
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -13,6 +15,13 @@ function normalizeWhatsapp(raw: string): string {
 }
 
 export async function POST(request: NextRequest) {
+  try {
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    await rateLimit("waitlist:" + createHash("sha256").update(ip).digest("hex"), 20, 600);
+  } catch {
+    return NextResponse.json({ error: "Demasiados intentos. Intenta más tarde." }, { status: 429 });
+  }
+
   let body: unknown;
   try {
     body = await request.json();
@@ -25,8 +34,14 @@ export async function POST(request: NextRequest) {
   if (typeof fullName !== "string" || fullName.trim().length < 3) {
     return NextResponse.json({ error: "Escribe tu nombre completo." }, { status: 400 });
   }
+  if (fullName.trim().length > 100) {
+    return NextResponse.json({ error: "Ese nombre es demasiado largo." }, { status: 400 });
+  }
   if (typeof email !== "string" || !EMAIL_RE.test(email.trim())) {
     return NextResponse.json({ error: "Escribe un correo válido." }, { status: 400 });
+  }
+  if (email.trim().length > 254) {
+    return NextResponse.json({ error: "Ese correo es demasiado largo." }, { status: 400 });
   }
 
   if (typeof whatsapp !== "string" || whatsapp.trim().length === 0) {

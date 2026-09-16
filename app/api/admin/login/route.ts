@@ -8,6 +8,10 @@ export async function POST(request: NextRequest) {
   try {
     const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
     await rateLimit("admin:" + createHash("sha256").update(ip).digest("hex"), 10, 600);
+    // Fixed-key bucket with no IP/header in it, so rotating x-forwarded-for
+    // (or a distributed attacker spread across many IPs) can't bypass the
+    // per-client limit above and grind through the single shared ADMIN_PASSWORD.
+    await rateLimit("admin:global", 100, 600);
   } catch { return NextResponse.json({ error: "Demasiados intentos o servicio no disponible. Intenta más tarde." }, { status: 429 }); }
   let body: unknown;
   try {
