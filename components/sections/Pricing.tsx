@@ -6,7 +6,7 @@ import Link from "next/link";
 import { CheckIcon } from "@/components/icons";
 
 const FEATURES = [
-  "Acceso a todos los beneficios activos: combustible, comida, taller y salud.",
+  "Acceso a todos los beneficios activos: combustible, comida y taller.",
   "Un mes de acceso desde la confirmación del pago.",
   "Renovación manual con Yappy. Tú decides cuándo pagar, sin cargos automáticos.",
   "Renuevas antes del vencimiento y el mes se suma al tiempo que te queda.",

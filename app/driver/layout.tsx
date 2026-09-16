@@ -4,7 +4,7 @@ import { requireDriver } from "@/lib/platform/data";
 import { Logo } from "@/components/platform/ui";
 import InstallApp from "@/components/platform/InstallApp";
 import Navigation from "@/components/platform/Navigation";
-import { statuses } from "@/lib/platform/types";
+import { statuses, initials } from "@/lib/platform/types";
 import "../platform.css";
 export const metadata: Metadata = {
   title: "Mi plataforma · RidePerks",
@@ -45,9 +45,7 @@ export default async function Layout({
           <span>Tu club de beneficios en Panamá</span>
           <Link href="/driver/profile" className="flex items-center gap-3">
             <span>{profile.full_name}</span>
-            <div className="rp-avatar">
-              {profile.full_name.slice(0, 2).toUpperCase()}
-            </div>
+            <div className="rp-avatar">{initials(profile.full_name)}</div>
           </Link>
         </header>
         <main id="main" className="rp-main">

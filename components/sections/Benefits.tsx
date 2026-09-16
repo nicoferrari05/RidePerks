@@ -3,7 +3,6 @@ import {
   Fuel,
   UtensilsCrossed,
   Wrench,
-  HeartPulse,
   ArrowUpRight,
   Store,
   BadgePercent,
@@ -34,14 +33,6 @@ const BENEFITS = [
     bg: "bg-ember",
     text: "text-white",
   },
-  {
-    label: "Salud",
-    category: "salud",
-    description: "También se trata de ti.",
-    Icon: HeartPulse,
-    bg: "bg-navy",
-    text: "text-bone",
-  },
 ];
 export default function Benefits() {
   return (
@@ -58,7 +49,7 @@ export default function Benefits() {
             Una membresía. Todo incluido.
           </h2>
         </div>
-        <div className="mt-8 grid gap-4 sm:mt-14 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mx-auto mt-8 grid max-w-4xl gap-4 sm:mt-14 sm:grid-cols-3">
           {BENEFITS.map(({ label, category, description, Icon, bg, text }) => (
             <Link
               key={category}

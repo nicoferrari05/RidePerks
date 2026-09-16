@@ -1,16 +1,38 @@
 import Link from "next/link";
-import {
-  Fuel,
-  Ticket,
-  ShieldCheck,
-  Store,
-  ScanLine,
-  ClipboardList,
-  CarFront,
-} from "lucide-react";
-import { Logo } from "./ui";
+import { CarFront, Store } from "lucide-react";
+import { AuthShell, SignInPage } from "@/components/ui/sign-in";
 import { AuthForm } from "./Forms";
 import "@/app/platform.css";
+
+const HERO_IMAGE = "/auth-hero.jpg";
+
+function AudienceSwitch({
+  mode,
+  business,
+}: {
+  mode: "register" | "recover";
+  business: boolean;
+}) {
+  return (
+    <nav className="rp-access-switch animate-element animate-delay-100" aria-label="Tipo de acceso">
+      <Link
+        href={mode === "register" ? "/register" : "/login"}
+        aria-current={!business ? "page" : undefined}
+      >
+        <CarFront size={18} />
+        Conductor
+      </Link>
+      <Link
+        href={mode === "register" ? "/business/register" : "/business/login"}
+        aria-current={business ? "page" : undefined}
+      >
+        <Store size={18} />
+        Comercio
+      </Link>
+    </nav>
+  );
+}
+
 export default function AuthPage({
   mode,
   next,
@@ -23,145 +45,87 @@ export default function AuthPage({
   audience?: "driver" | "business";
 }) {
   const business = audience === "business";
-  const title =
-    mode === "login"
-      ? business
-        ? "Tu comercio, conectado."
-        : "Qué bueno verte de vuelta."
-      : mode === "register"
-        ? business
-          ? "Suma tu comercio a RidePerks."
-          : "Tu próximo ahorro empieza aquí."
-        : "Recupera tu acceso.";
-  const description =
-    mode === "login"
-      ? business
-        ? "Entra para validar los beneficios de tus clientes y consultar los usos de tu comercio."
-        : "Entra a tu cuenta y encuentra los beneficios para tu próxima parada."
-      : mode === "register"
-        ? business
-          ? "Crea la cuenta del responsable. El equipo de RidePerks la vinculará a tu comercio."
-          : "Crea tu cuenta gratis y entra directamente. Si estabas en la lista de espera, usa el mismo correo."
-        : "Te enviaremos un enlace para elegir una nueva contraseña.";
+  const heroTagline = business
+    ? "Más visitas. Un beneficio a la vez."
+    : "Tu club de beneficios en Panamá.";
   const loginPath = business ? "/business/login" : "/login";
+
+  if (mode === "login") {
+    return (
+      <SignInPage
+        title={business ? "Tu comercio, conectado." : "Qué bueno verte de vuelta."}
+        description={
+          business
+            ? "Entra para validar los beneficios de tus clientes y consultar los usos de tu comercio."
+            : "Entra a tu cuenta y encuentra los beneficios para tu próxima parada."
+        }
+        heroImageSrc={HERO_IMAGE}
+        heroTagline={heroTagline}
+        audience={audience}
+        next={next || (business ? "/business" : "/driver/dashboard")}
+        notice={
+          error
+            ? "El enlace venció o ya fue utilizado. Inicia sesión o solicita uno nuevo."
+            : undefined
+        }
+        audienceSwitch={<AudienceSwitch mode="register" business={business} />}
+        createAccountHref={business ? "/business/register" : "/register"}
+        createAccountLabel={business ? "Registrar responsable →" : "Crear cuenta gratis →"}
+        createAccountQuestion={
+          business ? "¿Tu comercio aún no tiene cuenta?" : "¿Primera vez por aquí?"
+        }
+      />
+    );
+  }
+
+  const title =
+    mode === "register"
+      ? business
+        ? "Suma tu comercio a RidePerks."
+        : "Tu próximo ahorro empieza aquí."
+      : "Recupera tu acceso.";
+  const description =
+    mode === "register"
+      ? business
+        ? "Crea la cuenta del responsable. El equipo de RidePerks la vinculará a tu comercio."
+        : "Crea tu cuenta gratis y entra directamente. Si estabas en la lista de espera, usa el mismo correo."
+      : "Te enviaremos un enlace para elegir una nueva contraseña.";
+
   return (
-    <div className={"rp-app rp-auth" + (business ? " rp-auth-business" : "")}>
-      <aside className="rp-auth-story">
-        <Logo />
-        <div>
-          <h2>
-            {business
-              ? "Más visitas. Un beneficio a la vez."
-              : "Lo que ganas, que te rinda más."}
-          </h2>
-          <p>
-            {business
-              ? "Un espacio para atender a los conductores que eligen tu negocio."
-              : "Un solo lugar para los beneficios que acompañan tu día al volante."}
-          </p>
-          <ul>
-            {business ? (
-              <>
-                <li>
-                  <Store size={20} />
-                  Tu comercio, con acceso propio
-                </li>
-                <li>
-                  <ScanLine size={20} />
-                  Escanea y confirma cada beneficio
-                </li>
-                <li>
-                  <ClipboardList size={20} />
-                  Consulta los usos registrados
-                </li>
-              </>
-            ) : (
-              <>
-                <li>
-                  <Fuel size={20} />
-                  Encuentra comercios aliados
-                </li>
-                <li>
-                  <Ticket size={20} />
-                  Presenta tu código y usa el beneficio
-                </li>
-                <li>
-                  <ShieldCheck size={20} />
-                  Registro gratuito · Membresía de $15 al mes
-                </li>
-              </>
-            )}
-          </ul>
-        </div>
-        <p>
-          {business
-            ? "Comercios y conductores, más cerca."
-            : "Hecho para quienes mueven Panamá."}
+    <AuthShell heroImageSrc={HERO_IMAGE} heroTagline={heroTagline}>
+      <div className="flex flex-col gap-6">
+        <Link
+          href="/"
+          className="animate-element text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+        >
+          ← Volver a RidePerks
+        </Link>
+        {mode !== "recover" && <AudienceSwitch mode={mode} business={business} />}
+        <h1 className="animate-element animate-delay-200 text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+          {title}
+        </h1>
+        <p className="animate-element animate-delay-300 text-muted-foreground">
+          {description}
         </p>
-      </aside>
-      <main className="rp-auth-form">
-        <div className="rp-auth-inner">
-          <Link className="rp-text-link" href="/">
-            ← Volver a RidePerks
-          </Link>
-          {mode !== "recover" && (
-            <nav className="rp-access-switch" aria-label="Tipo de acceso">
-              <Link
-                href={mode === "register" ? "/register" : "/login"}
-                aria-current={!business ? "page" : undefined}
-              >
-                <CarFront size={18} />
-                Conductor
-              </Link>
-              <Link
-                href={
-                  mode === "register" ? "/business/register" : "/business/login"
-                }
-                aria-current={business ? "page" : undefined}
-              >
-                <Store size={18} />
-                Comercio
-              </Link>
-            </nav>
-          )}
-          <h1>{title}</h1>
-          <p className="rp-muted">{description}</p>
-          {error && (
-            <p role="alert" className="rp-error mb-5">
-              El enlace venció o ya fue utilizado. Inicia sesión o solicita uno
-              nuevo.
-            </p>
-          )}
+        <div className="animate-element animate-delay-400">
           <AuthForm
             mode={mode}
             next={next || (business ? "/business" : "/driver/dashboard")}
             audience={audience}
           />
-          <div className="rp-auth-footer">
-            {mode === "login" ? (
-              <>
-                <span className="rp-muted">
-                  {business
-                    ? "¿Tu comercio aún no tiene cuenta?"
-                    : "¿Primera vez por aquí?"}
-                </span>
-                <Link
-                  className="rp-text-link"
-                  href={business ? "/business/register" : "/register"}
-                >
-                  {business
-                    ? "Registrar responsable →"
-                    : "Crear cuenta gratis →"}
-                </Link>
-              </>
-            ) : (
-              <Link className="rp-text-link" href={loginPath}>
-                Ya tengo una cuenta. Iniciar sesión →
-              </Link>
-            )}
-          </div>
         </div>
-      </main>
-    </div>
+        <p className="animate-element animate-delay-500 text-center text-sm text-muted-foreground">
+          {mode === "register" ? (
+            <Link href={loginPath} className="text-ember transition-colors hover:underline">
+              Ya tengo una cuenta. Iniciar sesión →
+            </Link>
+          ) : (
+            <Link href={loginPath} className="text-ember transition-colors hover:underline">
+              Volver a iniciar sesión →
+            </Link>
+          )}
+        </p>
+      </div>
+    </AuthShell>
   );
 }

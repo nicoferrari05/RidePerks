@@ -67,6 +67,9 @@ export const categories: Record<string, string> = {
   salud: "Salud",
   otros: "Otros",
 };
+// Kept in sync by hand with the $15.00/month price shown in
+// AuthPage/driver/membership — there is no shared pricing table yet.
+export const MEMBERSHIP_PRICE_USD = 15;
 export const statuses: Record<string, string> = {
   pending: "Por verificar",
   verified: "Verificado",
@@ -84,4 +87,10 @@ export function dateLabel(value: string) {
     dateStyle: "medium",
     timeZone: "America/Panama",
   }).format(new Date(value));
+}
+export function initials(fullName: string) {
+  const parts = fullName.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return "";
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }

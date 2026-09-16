@@ -30,8 +30,24 @@ export default async function BusinessMetrics({
     p_until: until.toISOString(),
   });
   if (error) throw new Error("No pudimos calcular las estadísticas.");
+  const drivers = Number(data.drivers) || 0;
+  const milestones = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000];
+  const nextMilestone =
+    milestones.find((m) => m > drivers) || Math.ceil((drivers + 1) / 5000) * 5000;
+  const milestonePct = Math.max(0, Math.min(drivers / nextMilestone, 1)) * 100;
   return (
     <section className="rp-stack" aria-label="Estadísticas del comercio">
+      <div className="rp-balance" aria-label="Conductores que te ha traído RidePerks">
+        <p>Conductores que te ha traído RidePerks</p>
+        <strong>{drivers}</strong>
+        <div className="rp-progress" role="progressbar" aria-valuenow={Math.round(milestonePct)} aria-valuemin={0} aria-valuemax={100}>
+          <div className="rp-progress-bar" style={{ width: milestonePct + "%" }} />
+        </div>
+        <p className="rp-progress-label">
+          Van camino a <strong>{nextMilestone}</strong> conductores únicos en el
+          período seleccionado.
+        </p>
+      </div>
       <nav className="rp-category-chips" aria-label="Período">
         {[
           ["7", "Últimos 7 días"],
