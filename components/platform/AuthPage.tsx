@@ -54,11 +54,6 @@ export default function AuthPage({
     return (
       <SignInPage
         title={business ? "Tu comercio, conectado." : "Qué bueno verte de vuelta."}
-        description={
-          business
-            ? "Entra para validar los beneficios de tus clientes y consultar los usos de tu comercio."
-            : "Entra a tu cuenta y encuentra los beneficios para tu próxima parada."
-        }
         heroImageSrc={HERO_IMAGE}
         heroTagline={heroTagline}
         audience={audience}
