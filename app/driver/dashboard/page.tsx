@@ -2,19 +2,17 @@ import Link from "next/link";
 import { ArrowRight, ShieldCheck } from "lucide-react";
 import {
   requireDriver,
-  getBenefits,
   getRedemptions,
   getMonthlySavings,
   getTotalSavings,
 } from "@/lib/platform/data";
 import { money, dateLabel, platforms, statuses } from "@/lib/platform/types";
-import { BenefitCard, Empty, Logo } from "@/components/platform/ui";
+import { Empty, Logo } from "@/components/platform/ui";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
 import SavingsCard from "@/components/platform/SavingsCard";
 export default async function Page() {
   const p = await requireDriver();
-  const [benefits, history, monthly, total] = await Promise.all([
-    getBenefits(),
+  const [history, monthly, total] = await Promise.all([
     getRedemptions(p.id),
     getMonthlySavings(p.id),
     getTotalSavings(p.id),
@@ -112,20 +110,13 @@ export default async function Page() {
             Ver beneficios <ArrowRight size={16} />
           </Link>
         </div>
-        {benefits.length ? (
-          <div className="rp-grid">
-            {benefits.slice(0, 4).map((b) => (
-              <BenefitCard key={b.id} benefit={b} />
-            ))}
-          </div>
-        ) : (
-          <Empty title="Estamos sumando aliados">
-            <p>
-              Cuando haya beneficios disponibles, los encontrarás aquí con sus
-              condiciones y ubicaciones.
-            </p>
-          </Empty>
-        )}
+        <Empty title="Próximamente: más beneficios">
+          <p>
+            Estamos cerrando los últimos detalles con nuestros comercios
+            aliados. Muy pronto vas a encontrar aquí descuentos en
+            mantenimiento, comida y combustible.
+          </p>
+        </Empty>
       </section>
       <section>
         <div className="rp-section-head">

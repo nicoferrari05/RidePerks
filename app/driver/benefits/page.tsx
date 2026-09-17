@@ -1,34 +1,18 @@
-import { getBenefits } from "@/lib/platform/data";
-import { categories } from "@/lib/platform/types";
-import { Heading } from "@/components/platform/ui";
-import BenefitExplorer from "@/components/platform/BenefitExplorer";
+import { Empty, Heading } from "@/components/platform/ui";
 export const metadata = { title: "Beneficios · RidePerks" };
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: Promise<{ category?: string }>;
-}) {
-  const { category = "" } = await searchParams;
+export default function Page() {
   return (
     <div className="rp-stack">
       <Heading title="Beneficios para tu día">
         Encuentra tu próxima parada y revisa las condiciones antes de ir.
       </Heading>
-      <BenefitExplorer
-        benefits={(await getBenefits()).map(
-          ({ id, title, category, discount_label, rp_businesses }) => ({
-            id,
-            title,
-            category,
-            discount_label,
-            rp_businesses: {
-              name: rp_businesses.name,
-              address: rp_businesses.address,
-            },
-          }),
-        )}
-        initialCategory={Object.hasOwn(categories, category) ? category : ""}
-      />
+      <Empty title="Próximamente: más beneficios">
+        <p>
+          Estamos cerrando los últimos detalles con nuestros comercios
+          aliados. Muy pronto vas a encontrar aquí descuentos en
+          mantenimiento, comida y combustible.
+        </p>
+      </Empty>
     </div>
   );
 }
