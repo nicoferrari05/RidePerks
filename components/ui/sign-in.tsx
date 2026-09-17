@@ -4,7 +4,6 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { Eye, EyeOff } from "lucide-react";
 import { login } from "@/lib/platform/auth-actions";
-import LogoMark from "@/components/LogoMark";
 
 // Dynamically imported (ssr:false), same as the homepage splash and the
 // admin login background — react-three-fiber/three isn't otherwise part
@@ -56,33 +55,37 @@ export function AuthShell({
             container above — keeps a too-tall child (the register form
             on a short screen) reachable by scroll instead of getting
             centered into negative, unreachable offscroll space. */}
-        <div className="flex min-h-full items-center justify-center p-6 sm:p-10">
+        <div className="flex min-h-full items-center justify-center p-6 sm:p-8">
           <div className="w-full max-w-md">{children}</div>
         </div>
       </section>
       {showHero && (
         <section className="relative hidden flex-1 p-4 md:block">
-          <div className="animate-slide-right animate-delay-300 absolute inset-4 flex items-center justify-center overflow-hidden rounded-3xl bg-navy">
-            <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-              <CanvasRevealEffect
-                animationSpeed={2.2}
-                dotSize={5}
-                colors={[
-                  [245, 241, 234],
-                  [207, 59, 24],
-                ]}
-                opacities={[0.15, 0.15, 0.2, 0.2, 0.3, 0.3, 0.4, 0.4, 0.5, 0.6]}
-              />
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,transparent_0%,var(--color-navy)_72%)]" />
-            </div>
-            <LogoMark animate size="lg" className="relative" />
-            {heroTagline && (
-              <div className="absolute inset-x-0 bottom-0 p-10 text-center">
-                <p className="mx-auto max-w-sm text-2xl font-semibold leading-snug text-bone">
-                  {heroTagline}
-                </p>
+          <div className="animate-slide-right animate-delay-300 absolute inset-4 overflow-hidden rounded-3xl bg-bone">
+            {/* Starts on the panel's own light background, then the navy
+                dot-matrix layer fades in on top — a white-to-blue crossfade
+                rather than the navy just appearing instantly. */}
+            <div className="rp-hero-fade-in absolute inset-0 bg-navy">
+              <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+                <CanvasRevealEffect
+                  animationSpeed={2.2}
+                  dotSize={5}
+                  colors={[
+                    [245, 241, 234],
+                    [207, 59, 24],
+                  ]}
+                  opacities={[0.15, 0.15, 0.2, 0.2, 0.3, 0.3, 0.4, 0.4, 0.5, 0.6]}
+                />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,transparent_0%,var(--color-navy)_72%)]" />
               </div>
-            )}
+              {heroTagline && (
+                <div className="rp-hero-fade-in-delayed absolute inset-x-0 bottom-0 p-10 text-center">
+                  <p className="mx-auto max-w-sm text-2xl font-semibold leading-snug text-bone">
+                    {heroTagline}
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         </section>
       )}
@@ -120,7 +123,7 @@ export function SignInPage({
 
   return (
     <AuthShell heroTagline={heroTagline}>
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-5">
         <Link
           href="/"
           className="animate-element text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
@@ -142,7 +145,7 @@ export function SignInPage({
           </p>
         )}
 
-        <form action={formAction} className="space-y-5">
+        <form action={formAction} className="space-y-4">
           <input type="hidden" name="next" value={next} />
           <input type="hidden" name="audience" value={audience} />
 
@@ -159,7 +162,7 @@ export function SignInPage({
                 autoComplete="email"
                 placeholder="tu@correo.com"
                 maxLength={254}
-                className="w-full rounded-2xl bg-transparent p-4 text-base focus:outline-none"
+                className="w-full rounded-2xl bg-transparent p-3.5 text-base focus:outline-none"
               />
             </GlassInputWrapper>
           </div>
@@ -177,7 +180,7 @@ export function SignInPage({
                   required
                   autoComplete="current-password"
                   maxLength={128}
-                  className="w-full rounded-2xl bg-transparent p-4 pr-12 text-base focus:outline-none"
+                  className="w-full rounded-2xl bg-transparent p-3.5 pr-12 text-base focus:outline-none"
                 />
                 <button
                   type="button"
@@ -210,7 +213,7 @@ export function SignInPage({
           <button
             type="submit"
             disabled={pending}
-            className="animate-element animate-delay-700 w-full rounded-2xl bg-primary py-4 font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-wait disabled:opacity-60"
+            className="animate-element animate-delay-700 w-full rounded-2xl bg-primary py-3.5 font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-wait disabled:opacity-60"
           >
             {pending ? "Un momento…" : "Iniciar sesión"}
           </button>
@@ -228,7 +231,7 @@ export function SignInPage({
           disabled
           aria-disabled="true"
           title="Próximamente"
-          className="animate-element animate-delay-900 flex w-full cursor-not-allowed items-center justify-center gap-3 rounded-2xl border border-border py-4 text-foreground/40"
+          className="animate-element animate-delay-900 flex w-full cursor-not-allowed items-center justify-center gap-3 rounded-2xl border border-border py-3.5 text-foreground/40"
         >
           <GoogleIcon />
           Continuar con Google

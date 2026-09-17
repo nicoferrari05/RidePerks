@@ -38,11 +38,13 @@ export default function SplashScreen() {
   // before hiding it.
   useLayoutEffect(() => {
     if (decision.current === null) {
-      const reduceMotion = window.matchMedia(
-        "(prefers-reduced-motion: reduce)",
-      ).matches;
-      decision.current =
-        reduceMotion || sessionStorage.getItem(SEEN_KEY) ? "skip" : "show";
+      // Reduced-motion users still get the timed splash (display, then
+      // fade) — LogoMark itself already renders statically for them
+      // instead of playing the bloom/stagger reveal, and rp-splash-fade
+      // below keeps the fade-out from being zeroed by the site-wide
+      // reduced-motion transition override. Only a repeat visit within
+      // the same tab session skips it outright.
+      decision.current = sessionStorage.getItem(SEEN_KEY) ? "skip" : "show";
       if (decision.current === "show") sessionStorage.setItem(SEEN_KEY, "1");
     }
     if (decision.current === "skip") {
@@ -64,7 +66,7 @@ export default function SplashScreen() {
   return (
     <div
       aria-hidden="true"
-      className={`fixed inset-0 z-[100] flex items-center justify-center bg-navy transition-opacity duration-[600ms] ease-out ${
+      className={`rp-splash-fade fixed inset-0 z-[100] flex items-center justify-center bg-navy ${
         fading ? "opacity-0" : "opacity-100"
       }`}
     >
