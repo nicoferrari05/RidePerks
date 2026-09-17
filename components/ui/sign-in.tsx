@@ -1,8 +1,18 @@
 "use client";
 import { useActionState, useState, type ReactNode } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { Eye, EyeOff } from "lucide-react";
 import { login } from "@/lib/platform/auth-actions";
+import LogoMark from "@/components/LogoMark";
+
+// Dynamically imported (ssr:false), same as the homepage splash and the
+// admin login background — react-three-fiber/three isn't otherwise part
+// of this bundle, and WebGL has no server-side renderer to hydrate against.
+const CanvasRevealEffect = dynamic(
+  () => import("@/components/ui/canvas-reveal-effect").then((m) => m.CanvasRevealEffect),
+  { ssr: false },
+);
 
 function GoogleIcon() {
   return (
@@ -23,16 +33,18 @@ function GlassInputWrapper({ children }: { children: ReactNode }) {
   );
 }
 
-// Shared two-column shell: form content on the left, a full-bleed hero
-// image on the right (hidden below md). Used by SignInPage below and by
-// AuthPage.tsx for register/recover, so all three auth screens share one
-// layout instead of each reimplementing it.
+// Shared two-column shell: form content on the left, the brand's dot-matrix
+// reveal animation on the right (hidden below md) — the same visual used on
+// the homepage splash and the admin login background, just contained to this
+// panel and held on its resolved state instead of fading away after a couple
+// of seconds. Used by SignInPage below and by AuthPage.tsx for
+// register/recover, so all three auth screens share one layout.
 export function AuthShell({
-  heroImageSrc,
+  showHero = true,
   heroTagline,
   children,
 }: {
-  heroImageSrc?: string;
+  showHero?: boolean;
   heroTagline?: ReactNode;
   children: ReactNode;
 }) {
@@ -48,15 +60,25 @@ export function AuthShell({
           <div className="w-full max-w-md">{children}</div>
         </div>
       </section>
-      {heroImageSrc && (
+      {showHero && (
         <section className="relative hidden flex-1 p-4 md:block">
-          <div
-            className="animate-slide-right animate-delay-300 absolute inset-4 overflow-hidden rounded-3xl bg-cover bg-center"
-            style={{ backgroundImage: `url(${heroImageSrc})` }}
-          >
+          <div className="animate-slide-right animate-delay-300 absolute inset-4 flex items-center justify-center overflow-hidden rounded-3xl bg-navy">
+            <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+              <CanvasRevealEffect
+                animationSpeed={2.2}
+                dotSize={5}
+                colors={[
+                  [245, 241, 234],
+                  [207, 59, 24],
+                ]}
+                opacities={[0.15, 0.15, 0.2, 0.2, 0.3, 0.3, 0.4, 0.4, 0.5, 0.6]}
+              />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,transparent_0%,var(--color-navy)_72%)]" />
+            </div>
+            <LogoMark animate size="lg" className="relative" />
             {heroTagline && (
-              <div className="absolute inset-x-0 bottom-0 p-10">
-                <p className="max-w-sm text-2xl font-semibold leading-snug text-bone">
+              <div className="absolute inset-x-0 bottom-0 p-10 text-center">
+                <p className="mx-auto max-w-sm text-2xl font-semibold leading-snug text-bone">
                   {heroTagline}
                 </p>
               </div>
@@ -71,7 +93,6 @@ export function AuthShell({
 export function SignInPage({
   title,
   description,
-  heroImageSrc,
   heroTagline,
   audience = "driver",
   next = "/driver/dashboard",
@@ -84,7 +105,6 @@ export function SignInPage({
 }: {
   title: ReactNode;
   description?: ReactNode;
-  heroImageSrc?: string;
   heroTagline?: ReactNode;
   audience?: "driver" | "business";
   next?: string;
@@ -99,7 +119,7 @@ export function SignInPage({
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <AuthShell heroImageSrc={heroImageSrc} heroTagline={heroTagline}>
+    <AuthShell heroTagline={heroTagline}>
       <div className="flex flex-col gap-6">
         <Link
           href="/"

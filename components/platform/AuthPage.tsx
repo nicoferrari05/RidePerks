@@ -4,8 +4,6 @@ import { AuthShell, SignInPage } from "@/components/ui/sign-in";
 import { AuthForm } from "./Forms";
 import "@/app/platform.css";
 
-const HERO_IMAGE = "/auth-hero.jpg";
-
 function AudienceSwitch({
   mode,
   business,
@@ -54,7 +52,6 @@ export default function AuthPage({
     return (
       <SignInPage
         title={business ? "Tu comercio, conectado." : "Qué bueno verte de vuelta."}
-        heroImageSrc={HERO_IMAGE}
         heroTagline={heroTagline}
         audience={audience}
         next={next || (business ? "/business" : "/driver/dashboard")}
@@ -87,7 +84,7 @@ export default function AuthPage({
       : "Te enviaremos un enlace para elegir una nueva contraseña.";
 
   return (
-    <AuthShell heroImageSrc={HERO_IMAGE} heroTagline={heroTagline}>
+    <AuthShell heroTagline={heroTagline}>
       <div className="flex flex-col gap-6">
         <Link
           href="/"
