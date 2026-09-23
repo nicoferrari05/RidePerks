@@ -50,7 +50,9 @@ export default function InfoCard({
   return (
     <div
       className={cn(
-        "relative isolate overflow-hidden rounded-[28px]",
+        // Front and panel share one grid cell, so the card is as tall as the
+        // longer of the two and the panel's text is never clipped.
+        "relative isolate grid overflow-hidden rounded-[28px]",
         highlight
           ? "bg-lp-accent text-lp-accent-fg"
           : "border border-lp-line bg-lp-surface",
@@ -64,7 +66,7 @@ export default function InfoCard({
         aria-controls={panelId}
         onClick={() => setOpen(true)}
         className={cn(
-          "group flex h-full min-h-[184px] w-full flex-col justify-between p-6 text-left transition-[background-color,scale] duration-200 ease-snappy active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-lp-fg sm:min-h-[240px] sm:p-7",
+          "group col-start-1 row-start-1 flex h-full min-h-[184px] w-full flex-col justify-between p-6 text-left transition-[background-color,scale] duration-200 ease-snappy active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-lp-fg sm:min-h-[240px] sm:p-7",
           highlight ? "hover:bg-black/[0.06]" : "hover:bg-lp-surface-2/70",
         )}
       >
@@ -98,7 +100,7 @@ export default function InfoCard({
         aria-hidden={!open}
         inert={!open}
         className={cn(
-          "absolute inset-0 z-10 flex flex-col justify-between bg-lp-band p-6 text-lp-band-fg transition-[translate,opacity] sm:p-7",
+          "z-10 col-start-1 row-start-1 flex flex-col justify-between gap-6 bg-lp-band p-6 text-lp-band-fg transition-[translate,opacity] sm:p-7",
           open
             ? "translate-y-0 opacity-100 duration-[380ms] ease-drawer"
             : "translate-y-full opacity-0 duration-200 ease-snappy",

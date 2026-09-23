@@ -70,6 +70,8 @@ export default function RootLayout({
   return (
     <html
       lang="es"
+      // The theme scripts set data-lp-theme / data-rp-theme before hydration.
+      suppressHydrationWarning
       className={`${geist.variable} ${fraunces.variable} ${jetbrainsMono.variable}`}
     >
       <body>{children}</body>

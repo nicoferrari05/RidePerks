@@ -174,6 +174,9 @@ html[data-rp-theme="dark"] .rp-sidebar {
 .rp-sidebar nav a:active {
   scale: 0.97;
 }
+.rp-nav-icon {
+  display: inline-flex;
+}
 .rp-sidebar nav a[aria-current] {
   background: var(--rp-accent);
   color: var(--rp-accent-fg);
@@ -1275,7 +1278,9 @@ label.rp-field :is(input, select, textarea) {
     align-items: center;
     gap: 10px;
     margin: 0 10px;
-    padding: calc(8px + env(safe-area-inset-top, 0px)) 8px 8px 16px;
+    /* The glass (::before) starts 6px below the top; the switcher sits 6px
+       inside it on every side so the two pills read as concentric. */
+    padding: calc(12px + env(safe-area-inset-top, 0px)) 6px 6px 18px;
   }
   .rp-mobile-header::before {
     content: "";
@@ -1299,6 +1304,10 @@ label.rp-field :is(input, select, textarea) {
     align-items: center;
     gap: 8px;
   }
+  .rp-mobile-actions .rp-badge {
+    padding: 4px 10px;
+    font-size: 0.72rem;
+  }
   .rp-main {
     padding: 20px 16px calc(112px + env(safe-area-inset-bottom, 0px));
   }
@@ -1317,8 +1326,7 @@ label.rp-field :is(input, select, textarea) {
     right: 10px;
     bottom: calc(10px + env(safe-area-inset-bottom, 0px));
     justify-content: space-between;
-    gap: 2px;
-    padding: 6px;
+    padding: 6px 4px;
     border-radius: 999px;
     background: var(--rp-glass);
     -webkit-backdrop-filter: blur(20px) saturate(170%);
@@ -1328,29 +1336,66 @@ label.rp-field :is(input, select, textarea) {
       inset 0 1px 0 var(--rp-glass-hi),
       0 18px 40px -18px rgba(16, 11, 0, 0.5);
   }
+  /* Six tabs don't leave room for a filled pill around each label, so the
+     active state is a green pill behind the icon only (labels never spill). */
   .rp-bottomnav a {
     display: flex;
-    flex: 1;
+    flex: 1 1 0;
+    min-width: 0;
     flex-direction: column;
     align-items: center;
-    gap: 3px;
+    gap: 4px;
     justify-content: center;
-    min-height: 54px;
-    font-size: 10px;
+    min-height: 52px;
+    font-size: 10.5px;
     font-weight: 600;
+    letter-spacing: -0.01em;
     color: var(--rp-muted);
-    border-radius: 999px;
+    border-radius: 18px;
     transition:
-      background-color 200ms ease,
       color 200ms ease,
       scale 160ms var(--rp-ease);
   }
   .rp-bottomnav a:active {
-    scale: 0.92;
+    scale: 0.94;
+  }
+  .rp-nav-icon {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 28px;
+    border-radius: 999px;
+    transition:
+      background-color 200ms ease,
+      color 200ms ease;
+  }
+  .rp-nav-label {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .rp-bottomnav a[aria-current] {
+    color: var(--rp-text);
+  }
+  .rp-bottomnav a[aria-current] .rp-nav-icon {
     color: var(--rp-accent-fg);
     background: var(--rp-accent);
+  }
+  /* Narrow phones (iPhone SE, small Android): six labels still fit whole. */
+  @media (max-width: 360px) {
+    .rp-bottomnav {
+      left: 8px;
+      right: 8px;
+      padding: 6px 2px;
+    }
+    .rp-bottomnav a {
+      font-size: 9.5px;
+      letter-spacing: -0.02em;
+    }
+    .rp-nav-icon {
+      width: 40px;
+    }
   }
   .rp-stack {
     gap: 20px;

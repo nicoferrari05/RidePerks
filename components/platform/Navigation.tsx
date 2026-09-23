@@ -23,8 +23,10 @@ export default function Navigation({ mobile = false }: { mobile?: boolean }) {
           href={href}
           aria-current={path.startsWith(href) ? "page" : undefined}
         >
-          <Icon size={20} aria-hidden="true" />
-          <span>{label}</span>
+          <span className="rp-nav-icon">
+            <Icon size={20} aria-hidden="true" />
+          </span>
+          <span className="rp-nav-label">{label}</span>
         </Link>
       ))}
     </nav>
