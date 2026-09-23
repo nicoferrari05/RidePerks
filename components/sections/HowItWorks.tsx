@@ -1,48 +1,55 @@
+import { UserRoundPlus, ShieldCheck, QrCode } from "lucide-react";
+import InfoCard from "@/components/landing/InfoCard";
+
 const STEPS = [
-  { n: "01", title: "Crea tu cuenta", copy: "Gratis y en un minuto. Solo tus datos y la plataforma en la que trabajas." },
-  { n: "02", title: "Verifica tu perfil", copy: "Sube una captura de tu perfil de conductor y el equipo la revisa." },
-  { n: "03", title: "Ahorra", copy: "Muestra tu QR RidePerks en comercios aliados." },
+  {
+    n: "01",
+    title: "Crea tu cuenta",
+    Icon: UserRoundPlus,
+    detail:
+      "Gratis y en un minuto: tu nombre, correo, WhatsApp y la plataforma en la que trabajas.",
+  },
+  {
+    n: "02",
+    title: "Verifica tu perfil",
+    Icon: ShieldCheck,
+    detail:
+      "Sube una captura de tu perfil de Uber, InDrive o PedidosYa. El equipo la revisa y aprueba tu cuenta.",
+  },
+  {
+    n: "03",
+    title: "Muestra tu código",
+    Icon: QrCode,
+    detail:
+      "En el comercio generas un QR de un solo uso. Lo escanean, confirman el descuento y tu ahorro queda registrado.",
+  },
 ];
 
 export default function HowItWorks() {
   return (
-    <section id="como-funciona" className="scroll-mt-20 border-b border-line px-6 py-14 sm:py-28">
-      <div className="mx-auto max-w-6xl">
-        <div data-reveal className="max-w-xl">
-          <span className="font-mono text-xs font-medium tracking-[0.14em] text-ember">
-            CÓMO FUNCIONA
-          </span>
-          <h2 className="mt-4 text-balance text-4xl font-semibold tracking-tight text-navy sm:text-5xl">
-            Tres pasos. Ya.
-          </h2>
-        </div>
+    <section id="como-funciona" className="scroll-mt-24 px-5 py-16 sm:px-6 sm:py-32">
+      <div className="mx-auto max-w-7xl">
+        <h2
+          data-reveal
+          className="text-[clamp(2.25rem,5.5vw,4.25rem)] font-medium leading-[1.02] tracking-[-0.035em]"
+        >
+          Tres pasos.
+        </h2>
 
-        {/* Connected stepper instead of a generic 3-up card row: a single
-            line runs through the numbered nodes, content sits offset
-            below each one. */}
-        <div data-reveal className="relative mt-12 sm:mt-20">
-          <div
-            className="absolute left-0 right-0 top-6 hidden h-px bg-line sm:block"
-            aria-hidden="true"
-          />
-          <div className="grid gap-12 sm:grid-cols-3 sm:gap-8">
-            {STEPS.map((step, i) => (
-              <div key={step.n} className="relative">
-                <div
-                  className={`relative z-10 flex h-12 w-12 items-center justify-center rounded-full font-mono text-sm font-semibold ${
-                    i === 0 ? "bg-ember text-white" : "border border-line bg-paper text-navy"
-                  }`}
-                >
-                  {step.n}
-                </div>
-                <h3 className="mt-6 text-xl font-semibold text-navy">{step.title}</h3>
-                <p className="mt-2 max-w-[26ch] text-[15px] leading-relaxed text-mute">
-                  {step.copy}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
+        <ol className="mt-10 grid gap-3 sm:mt-16 sm:gap-4 md:grid-cols-3">
+          {STEPS.map(({ n, title, Icon, detail }, i) => (
+            <li key={n} data-reveal>
+              <InfoCard
+                icon={<Icon size={34} strokeWidth={1.5} aria-hidden="true" />}
+                label={n}
+                title={title}
+                detail={detail}
+                highlight={i === 0}
+                className="h-full"
+              />
+            </li>
+          ))}
+        </ol>
       </div>
     </section>
   );

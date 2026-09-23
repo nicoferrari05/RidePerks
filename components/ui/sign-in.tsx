@@ -37,7 +37,7 @@ export function AuthShell({
   children: ReactNode;
 }) {
   return (
-    <div className="flex h-[100dvh] w-full overflow-hidden overscroll-none font-sans">
+    <div className="rp-auth flex h-[100dvh] w-full overflow-hidden overscroll-none font-sans">
       <section className="flex-1 overflow-y-auto overscroll-none">
         {/* min-h-full (a floor, not a cap) on this inner wrapper — not
             overflow-y-auto + items-center directly on the scroll
@@ -60,8 +60,8 @@ export function AuthShell({
                   animationSpeed={2.2}
                   dotSize={5}
                   colors={[
-                    [245, 241, 234],
-                    [207, 59, 24],
+                    [239, 255, 200],
+                    [133, 203, 51],
                   ]}
                   opacities={[0.15, 0.15, 0.2, 0.2, 0.3, 0.3, 0.4, 0.4, 0.5, 0.6]}
                 />

@@ -12,6 +12,8 @@ import { MerchantInfo } from "@/components/platform/MerchantForms";
 import SupportForm from "@/components/platform/SupportForm";
 import BusinessMetrics from "@/components/platform/BusinessMetrics";
 import { dateLabel } from "@/lib/platform/types";
+import PlatformThemeScript from "@/components/platform/ThemeScript";
+import { PlatformThemeToggle } from "@/components/platform/theme";
 import "../platform.css";
 export const metadata = {
   title: "Portal de comercios · RidePerks",
@@ -73,12 +75,14 @@ export default async function Page({
     (!benefit.valid_until || benefit.valid_until >= today);
   return (
     <div className="rp-app">
+      <PlatformThemeScript />
       <header className="rp-business-header">
         <Logo />
         <span className="rp-badge">
           <Store size={14} />
           Comercios
         </span>
+        <PlatformThemeToggle />
         <nav aria-label="Portal del comercio">
           <Link href="/business">Mi comercio</Link>
           {business && role === "owner" && (

@@ -1,36 +1,18 @@
 export default function AboutHero() {
   return (
-    <section className="relative overflow-hidden border-b border-line px-6 pb-12 pt-28 sm:pb-20 sm:pt-40">
-      <div
-        className="pointer-events-none absolute -left-24 top-10 h-80 w-80 rounded-full opacity-60"
-        style={{ background: "radial-gradient(circle, rgba(207,59,24,0.16), transparent 70%)" }}
-        aria-hidden="true"
-      />
-
-      <div className="relative mx-auto max-w-3xl text-center">
-        <span
-          data-reveal
-          className="font-mono text-xs font-medium tracking-[0.14em] text-ember"
-        >
-          SOBRE RIDEPERKS
-        </span>
-        <h1
-          data-reveal
-          className="mt-5 text-balance text-[clamp(2.5rem,6vw,4.25rem)] font-bold leading-[1.02] tracking-tight text-navy"
-        >
-          Un club de beneficios para{" "}
-          <em className="font-accent italic text-ember">conductores.</em>
+    <section className="px-5 pb-16 pt-36 sm:px-6 sm:pb-24 sm:pt-48">
+      <div className="mx-auto max-w-4xl text-center">
+        <h1 className="lp-enter text-balance text-[clamp(2.75rem,7.5vw,6rem)] font-medium leading-[0.95] tracking-[-0.045em]">
+          Un club de beneficios para conductores.
         </h1>
-        <div
-          data-reveal
-          className="mx-auto mt-6 flex max-w-xl flex-col gap-4 text-pretty text-lg text-ink/75 sm:text-xl"
+        <p
+          style={{ "--enter-delay": "90ms" } as React.CSSProperties}
+          className="lp-enter mx-auto mt-7 max-w-2xl text-pretty text-lg leading-relaxed text-lp-muted sm:text-xl"
         >
-          <p>
-            RidePerks reúne descuentos y beneficios pensados para personas que trabajan manejando
-            con plataformas como Uber, InDrive y PedidosYa.
-          </p>
-          <p>No buscamos conseguirte más viajes. Buscamos ayudarte a gastar menos mientras trabajas.</p>
-        </div>
+          RidePerks es una membresía para quienes trabajan manejando con Uber,
+          InDrive o PedidosYa en Panamá. Negociamos descuentos con comercios
+          locales para que lo que ya gastas cada semana rinda más.
+        </p>
       </div>
     </section>
   );

@@ -9,10 +9,11 @@ import Manifesto from "@/components/sections/Manifesto";
 import Pricing from "@/components/sections/Pricing";
 import JoinCTA from "@/components/sections/JoinCTA";
 import Footer from "@/components/sections/Footer";
+import LandingShell from "@/components/landing/LandingShell";
 
 export default function Home() {
   return (
-    <>
+    <LandingShell>
       <SplashScreen />
       <ScrollAnimations />
       <Nav />
@@ -26,6 +27,6 @@ export default function Home() {
       </main>
       <Footer />
       <MobileCTA />
-    </>
+    </LandingShell>
   );
 }

@@ -38,6 +38,182 @@
   --color-muted-foreground: var(--color-mute);
   --color-card: var(--color-paper);
   --color-card-foreground: var(--color-navy);
+
+  /* Motion curves (landing). Built-in CSS easings are too soft: snappy for
+     anything responding to the user, move for things travelling across the
+     screen, drawer for panels sliding in from an edge. */
+  --ease-snappy: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-move: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Landing theme tokens. Only `.lp` (components/landing/LandingShell) reads
+   them; the attribute on <html> picks the theme (light / dark / dim). The
+   landing is deliberately monochrome: the primary action uses the text
+   color, not ember. */
+@theme inline {
+  --color-lp-bg: var(--lp-bg);
+  --color-lp-surface: var(--lp-surface);
+  --color-lp-surface-2: var(--lp-surface-2);
+  --color-lp-fg: var(--lp-fg);
+  --color-lp-muted: var(--lp-muted);
+  --color-lp-line: var(--lp-line);
+  --color-lp-accent: var(--lp-accent);
+  --color-lp-accent-fg: var(--lp-accent-fg);
+  --color-lp-band: var(--lp-band);
+  --color-lp-band-fg: var(--lp-band-fg);
+  --color-lp-band-muted: var(--lp-band-muted);
+  --color-lp-band-line: var(--lp-band-line);
+  --color-lp-pill: var(--lp-pill);
+  --color-lp-pill-fg: var(--lp-pill-fg);
+}
+
+/* Palette: pitch black #100B00, yellow green #85CB33, frosted mint #EFFFC8,
+   ash grey #A5CBC3, dark khaki #3B341F. */
+.lp {
+  --lp-bg: #efffc8;
+  --lp-surface: #e2f3b3;
+  --lp-surface-2: #d6ec9c;
+  --lp-fg: #100b00;
+  --lp-muted: #3b341f;
+  --lp-line: rgba(16, 11, 0, 0.14);
+  --lp-accent: #85cb33;
+  --lp-accent-fg: #100b00;
+  --lp-band: #100b00;
+  --lp-band-fg: #efffc8;
+  --lp-band-muted: rgba(239, 255, 200, 0.7);
+  --lp-band-line: rgba(239, 255, 200, 0.16);
+  --lp-pill: #85cb33;
+  --lp-pill-fg: #100b00;
+  --lp-glass-tint: #efffc8;
+  --lp-glass-line: rgba(255, 255, 255, 0.6);
+  --lp-glass-hi: rgba(255, 255, 255, 0.85);
+  --sw-tint: var(--lp-glass-tint);
+  --sw-ink: var(--lp-fg);
+}
+html[data-lp-theme="dark"] .lp {
+  --lp-bg: #100b00;
+  --lp-surface: #1d180b;
+  --lp-surface-2: #3b341f;
+  --lp-fg: #efffc8;
+  --lp-muted: #c3c9a8;
+  --lp-line: rgba(239, 255, 200, 0.14);
+  --lp-accent: #85cb33;
+  --lp-accent-fg: #100b00;
+  --lp-band: #3b341f;
+  --lp-band-fg: #efffc8;
+  --lp-band-muted: rgba(239, 255, 200, 0.72);
+  --lp-band-line: rgba(239, 255, 200, 0.16);
+  --lp-pill: #85cb33;
+  --lp-pill-fg: #100b00;
+  --lp-glass-tint: #1d180b;
+  --lp-glass-line: rgba(239, 255, 200, 0.16);
+  --lp-glass-hi: rgba(239, 255, 200, 0.1);
+  --sw-rim: rgba(239, 255, 200, 0.2);
+  --sw-hi: rgba(239, 255, 200, 0.16);
+  --sw-thumb-top: rgba(239, 255, 200, 0.24);
+  --sw-thumb-bottom: rgba(239, 255, 200, 0.09);
+}
+html[data-lp-theme="dim"] .lp {
+  --lp-bg: #3b341f;
+  --lp-surface: #463e27;
+  --lp-surface-2: #524a30;
+  --lp-fg: #efffc8;
+  --lp-muted: #cfd2b4;
+  --lp-line: rgba(239, 255, 200, 0.16);
+  --lp-accent: #85cb33;
+  --lp-accent-fg: #100b00;
+  --lp-band: #100b00;
+  --lp-band-fg: #efffc8;
+  --lp-band-muted: rgba(239, 255, 200, 0.7);
+  --lp-band-line: rgba(239, 255, 200, 0.16);
+  --lp-pill: #85cb33;
+  --lp-pill-fg: #100b00;
+  --lp-glass-tint: #463e27;
+  --lp-glass-line: rgba(239, 255, 200, 0.2);
+  --lp-glass-hi: rgba(239, 255, 200, 0.14);
+  --sw-rim: rgba(239, 255, 200, 0.2);
+  --sw-hi: rgba(239, 255, 200, 0.16);
+  --sw-thumb-top: rgba(239, 255, 200, 0.24);
+  --sw-thumb-bottom: rgba(239, 255, 200, 0.09);
+}
+html[data-lp-theme="light"] body {
+  background: #efffc8;
+}
+html[data-lp-theme="dark"] body {
+  background: #100b00;
+}
+html[data-lp-theme="dim"] body {
+  background: #3b341f;
+}
+.lp ::selection {
+  background: var(--lp-fg);
+  color: var(--lp-bg);
+}
+/* Colors ease between themes instead of snapping. :where() keeps this at
+   zero specificity so component transitions still win. */
+.lp,
+.lp :where(section, header, footer, nav, article, div, a, p, h1, h2, h3, span, li) {
+  transition:
+    background-color 300ms ease,
+    color 300ms ease,
+    border-color 300ms ease;
+}
+/* First-visit hero entrance: each line fades up out of a slight blur, in a
+   short stagger. Held while the homepage splash is still covering the page,
+   so it plays as the splash fades instead of behind it. */
+@keyframes lp-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+.lp-enter {
+  animation: lp-enter 700ms var(--ease-snappy) both;
+  animation-delay: var(--enter-delay, 0ms);
+}
+.lp:has(.rp-splash-fade.opacity-100) .lp-enter {
+  animation-play-state: paused;
+}
+/* The footer switcher sits on the dark band in every theme. */
+.lp .lp-footer-switch {
+  --sw-tint: color-mix(in srgb, var(--lp-band-fg) 12%, var(--lp-band));
+  --sw-ink: var(--lp-band-fg);
+  --sw-rim: rgba(245, 241, 234, 0.16);
+  --sw-hi: rgba(245, 241, 234, 0.14);
+  --sw-thumb-top: rgba(245, 241, 234, 0.24);
+  --sw-thumb-bottom: rgba(245, 241, 234, 0.08);
+}
+/* The header turns into a floating glass tab once the page scrolls, so its
+   text never sits directly on top of page content. */
+.lp-tab {
+  background: color-mix(in srgb, var(--lp-glass-tint) 82%, transparent);
+  -webkit-backdrop-filter: blur(20px) saturate(170%);
+  backdrop-filter: blur(20px) saturate(170%);
+  border: 1px solid var(--lp-glass-line);
+  box-shadow:
+    inset 0 1px 0 var(--lp-glass-hi),
+    0 16px 40px -20px rgba(16, 11, 0, 0.45);
+}
+.lp a,
+.lp button {
+  -webkit-tap-highlight-color: transparent;
+}
+/* Frosted glass for surfaces that sit over the hero or scroll over content. */
+.lp-glass {
+  background: color-mix(in srgb, var(--lp-glass-tint) 58%, transparent);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid var(--lp-glass-line);
+  box-shadow:
+    inset 0 1px 0 var(--lp-glass-hi),
+    0 12px 36px -18px rgba(4, 20, 41, 0.35);
 }
 
 * {
@@ -99,6 +275,61 @@ body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* Auth screens (components/ui/sign-in.tsx AuthShell) in the landing palette.
+   Only colors change; the layout and components stay as they are. */
+.rp-auth {
+  --color-background: #efffc8;
+  --color-foreground: #100b00;
+  --color-primary: #85cb33;
+  --color-primary-foreground: #100b00;
+  --color-secondary: #e2f3b3;
+  --color-secondary-foreground: #100b00;
+  --color-border: rgba(16, 11, 0, 0.16);
+  --color-muted-foreground: #3b341f;
+  --color-ember: #3b341f;
+  --color-bone: #efffc8;
+  --color-navy: #100b00;
+  --rp-border: rgba(16, 11, 0, 0.16);
+  --rp-text: #100b00;
+  background: var(--color-background);
+  color: var(--color-foreground);
+}
+.rp-auth .rp-field :is(input, select, textarea) {
+  border-color: rgba(16, 11, 0, 0.16);
+  background: #f7ffe0;
+  color: #100b00;
+}
+.rp-auth .rp-field :is(input, select, textarea):focus {
+  border-color: #3b341f;
+  background: #fbffef;
+}
+.rp-auth .rp-field input::placeholder {
+  color: #6b6650;
+}
+.rp-auth .rp-button {
+  background: #85cb33;
+  color: #100b00;
+}
+.rp-auth .rp-button:hover {
+  background: #77b82c;
+}
+.rp-auth .rp-text-link {
+  color: #3b341f;
+}
+.rp-auth .rp-check input {
+  accent-color: #85cb33;
+}
+.rp-auth .rp-access-switch a[aria-current] {
+  background: #100b00;
+  color: #efffc8;
+}
+.rp-auth .rp-access-switch a:not([aria-current]):hover {
+  background: #e2f3b3;
+}
+.rp-auth .rp-password button {
+  color: #3b341f;
 }
 
 /* Sign-in page entrance animation (components/ui/sign-in.tsx). */

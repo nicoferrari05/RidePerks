@@ -66,7 +66,7 @@ export default function SplashScreen() {
   return (
     <div
       aria-hidden="true"
-      className={`rp-splash-fade fixed inset-0 z-[100] flex items-center justify-center bg-navy ${
+      className={`rp-splash-fade fixed inset-0 z-[100] flex items-center justify-center bg-[#100b00] ${
         fading ? "opacity-0" : "opacity-100"
       }`}
     >
@@ -75,14 +75,14 @@ export default function SplashScreen() {
           animationSpeed={2.2}
           dotSize={5}
           colors={[
-            [245, 241, 234],
-            [207, 59, 24],
+            [239, 255, 200],
+            [133, 203, 51],
           ]}
           opacities={[0.15, 0.15, 0.2, 0.2, 0.3, 0.3, 0.4, 0.4, 0.5, 0.6]}
         />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,transparent_0%,var(--color-navy)_72%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,transparent_0%,#100b00_72%)]" />
       </div>
-      <LogoMark animate size="lg" className="relative sm:text-3xl" />
+      <LogoMark animate variant="text" size="lg" className="relative text-[#efffc8] sm:text-5xl" />
     </div>
   );
 }

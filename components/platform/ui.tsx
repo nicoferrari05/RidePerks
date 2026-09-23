@@ -14,7 +14,7 @@ import { categories } from "@/lib/platform/types";
 export function Logo() {
   return (
     <Link href="/" className="rp-logo" aria-label="RidePerks, inicio">
-      <LogoMark size="sm" />
+      <LogoMark variant="text" size="sm" />
     </Link>
   );
 }

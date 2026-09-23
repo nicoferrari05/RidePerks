@@ -5,6 +5,8 @@ import { Logo } from "@/components/platform/ui";
 import InstallApp from "@/components/platform/InstallApp";
 import Navigation from "@/components/platform/Navigation";
 import { statuses, initials } from "@/lib/platform/types";
+import PlatformThemeScript from "@/components/platform/ThemeScript";
+import { PlatformThemeToggle } from "@/components/platform/theme";
 import "../platform.css";
 export const metadata: Metadata = {
   title: "Mi plataforma · RidePerks",
@@ -18,6 +20,7 @@ export default async function Layout({
   const profile = await requireDriver();
   return (
     <div className="rp-app">
+      <PlatformThemeScript />
       <InstallApp />
       <a className="rp-skip" href="#main">
         Saltar al contenido
@@ -33,20 +36,27 @@ export default async function Layout({
       <div className="rp-workspace">
         <header className="rp-mobile-header">
           <Logo />
-          <span
-            className={
-              "rp-badge " + (profile.status === "verified" ? "good" : "pending")
-            }
-          >
-            {statuses[profile.status]}
-          </span>
+          <div className="rp-mobile-actions">
+            <span
+              className={
+                "rp-badge " +
+                (profile.status === "verified" ? "good" : "pending")
+              }
+            >
+              {statuses[profile.status]}
+            </span>
+            <PlatformThemeToggle />
+          </div>
         </header>
         <header className="rp-topbar">
           <span>Tu club de beneficios en Panamá</span>
-          <Link href="/driver/profile" className="flex items-center gap-3">
-            <span>{profile.full_name}</span>
-            <div className="rp-avatar">{initials(profile.full_name)}</div>
-          </Link>
+          <div className="rp-topbar-actions">
+            <PlatformThemeToggle />
+            <Link href="/driver/profile" className="rp-profile-link">
+              <span>{profile.full_name}</span>
+              <div className="rp-avatar">{initials(profile.full_name)}</div>
+            </Link>
+          </div>
         </header>
         <main id="main" className="rp-main">
           {children}

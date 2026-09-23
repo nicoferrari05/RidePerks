@@ -2,10 +2,10 @@ import { test, expect } from "@playwright/test";
 test("landing points to sign-up and links to driver login", async ({ page }) => {
   await page.goto("/");
   await expect(
-    page.getByRole("link", { name: "Iniciar sesión" }),
+    page.getByRole("banner").getByRole("link", { name: "Iniciar sesión" }),
   ).toBeVisible();
   await expect(page.locator("#unete")).toBeAttached();
-  await page.getByRole("link", { name: "Iniciar sesión" }).click();
+  await page.getByRole("banner").getByRole("link", { name: "Iniciar sesión" }).click();
   await expect(page).toHaveURL(/\/login/);
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
     "Qué bueno",
@@ -118,15 +118,17 @@ test("legal pages and offline fallback render", async ({ page, request }) => {
   expect((await manifest.json()).start_url).toBe("/driver/dashboard");
 });
 
-test("landing redesign and merchant entry are visible", async ({ page }) => {
+test("landing hero, theme switcher and merchant entry are visible", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/");
   await expect(page.getByText("Carlos Rodriguez", { exact: true })).toHaveCount(
     0,
   );
   await expect(
-    page.getByRole("heading", { name: "Tus beneficios, a mano." }),
+    page.getByRole("heading", { level: 1, name: /Tu trabajo rinde/ }),
   ).toBeVisible();
+  for (const label of ["Tema claro", "Tema noche", "Tema atardecer"])
+    await expect(page.getByRole("radio", { name: label }).first()).toBeAttached();
   await page.screenshot({ path: "artifacts/landing-hero-new.png" });
   await page.locator("#beneficios").scrollIntoViewIfNeeded();
   await page.screenshot({ path: "artifacts/landing-benefits-new.png" });

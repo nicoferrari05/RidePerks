@@ -24,6 +24,8 @@ interface LogoMarkProps {
   size?: "sm" | "md" | "lg" | "xl";
   className?: string;
   animate?: boolean;
+  /** "text" drops the pill: just the wordmark, in the surrounding text color. */
+  variant?: "pill" | "text";
 }
 
 const sizes = {
@@ -33,12 +35,20 @@ const sizes = {
   xl: "px-8 py-4 text-4xl",
 };
 
+const textSizes = {
+  sm: "text-lg",
+  md: "text-2xl",
+  lg: "text-3xl",
+  xl: "text-5xl",
+};
+
 const LETTERS = "RIDEPERKS".split("");
 
 export default function LogoMark({
   size = "md",
   className,
   animate = false,
+  variant = "pill",
 }: LogoMarkProps) {
   const pillRef = useRef<HTMLDivElement>(null);
   const lettersRef = useRef<(HTMLSpanElement | null)[]>([]);
@@ -87,10 +97,10 @@ export default function LogoMark({
       ref={pillRef}
       className={cn(
         "inline-flex items-center justify-center rounded-full font-extrabold tracking-tight select-none",
-        sizes[size],
+        variant === "pill" ? sizes[size] : textSizes[size],
         className,
       )}
-      style={{
+      style={variant === "text" ? undefined : {
         backgroundColor: "var(--color-navy)",
         backgroundImage:
           "linear-gradient(135deg, rgba(245,241,234,0.14) 0%, rgba(245,241,234,0.03) 100%)",

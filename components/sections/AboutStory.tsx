@@ -1,34 +1,27 @@
 export default function AboutStory() {
   return (
-    <section className="border-b border-white/10 bg-navy px-6 py-14 sm:py-28">
-      <div className="mx-auto max-w-3xl">
-        <div data-reveal>
-          <span className="font-mono text-xs font-medium tracking-[0.14em] text-ember">
-            POR QUÉ EXISTIMOS
-          </span>
-          <h2 className="mt-4 text-balance text-3xl font-semibold tracking-tight text-bone sm:text-4xl">
-            Manejar ya tiene suficientes gastos.
-          </h2>
-        </div>
-
-        <div
-          data-reveal
-          className="mt-8 flex flex-col gap-5 text-pretty text-[17px] leading-relaxed text-bone/70 sm:text-lg"
-        >
+    <section className="px-5 sm:px-6">
+      <div
+        data-reveal
+        className="mx-auto grid max-w-7xl gap-10 rounded-[32px] bg-lp-band px-7 py-14 text-lp-band-fg sm:px-14 sm:py-20 lg:grid-cols-[1fr_1.15fr]"
+      >
+        <h2 className="text-balance text-[clamp(2.2rem,4.5vw,3.5rem)] font-medium leading-[1.02] tracking-[-0.035em]">
+          Manejar ya tiene suficientes gastos.
+        </h2>
+        <div className="flex flex-col gap-5 text-pretty text-[17px] leading-relaxed text-lp-band-muted">
           <p>
-            Gasolina, comida, mantenimiento, llantas, farmacia… son gastos que salen de lo que
-            ganas todos los días.
+            Gasolina, comida, mantenimiento, llantas, farmacia. Son gastos que
+            salen directo de lo que ganas cada día y que no puedes dejar de
+            hacer.
           </p>
-          <p>Por eso creamos RidePerks.</p>
           <p>
-            Nos aliamos con comercios para conseguir beneficios que realmente le sirvan al
-            conductor en su día a día. Tú te registras, accedes a los beneficios disponibles y
-            ahorras en gastos que probablemente ya ibas a tener.
+            RidePerks no te promete más viajes ni un algoritmo más inteligente.
+            Hacemos algo más simple: nos aliamos con comercios para que pagues
+            menos en lo que ya ibas a comprar.
           </p>
-          <p>Sin puntos. Sin complicaciones. Sin cambiar la forma en la que trabajas.</p>
-          <p className="text-bone">
-            Tú manejas para ganar.{" "}
-            <em className="font-accent italic text-ember">RidePerks te ayuda a gastar menos.</em>
+          <p className="text-lp-band-fg">
+            Una sola membresía te da acceso a todos los beneficios activos. Sin
+            puntos que acumular y sin cambiar la forma en la que trabajas.
           </p>
         </div>
       </div>

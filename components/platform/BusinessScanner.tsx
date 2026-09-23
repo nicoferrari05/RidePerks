@@ -164,7 +164,7 @@ export default function BusinessScanner() {
       </div>
       {result && (
         <div className="rp-panel rp-stack" role="status">
-          <CheckCircle2 size={32} color="#216546" />
+          <CheckCircle2 size={32} className="text-[var(--rp-accent-text)]" />
           <h2>Beneficio confirmado</h2>
           <p>
             <strong>{result.driver_name}</strong>

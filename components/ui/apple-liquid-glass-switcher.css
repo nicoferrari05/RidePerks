@@ -1,0 +1,111 @@
+/* Liquid-glass pill: translucent tinted body, bright rim, soft inner
+   shading, and a glass thumb that springs between options. Tint and ink
+   come from the surrounding page (--sw-tint / --sw-ink), so it follows the
+   landing theme. */
+.switcher {
+  --sw-opt: 48px;
+  --sw-h: 42px;
+  --sw-pad: 3px;
+  --sw-index: 0;
+  --c: var(--sw-ink, #1c1f3a);
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--sw-count, 3), var(--sw-opt));
+  height: var(--sw-h);
+  margin: 0;
+  padding: var(--sw-pad);
+  border: 0;
+  border-radius: 999px;
+  isolation: isolate;
+  background: color-mix(in srgb, var(--sw-tint, #f4f4f6) 55%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(170%);
+  backdrop-filter: blur(14px) saturate(170%);
+  box-shadow:
+    inset 0 0 0 1px var(--sw-rim, rgba(255, 255, 255, 0.65)),
+    inset 0 1.5px 1px var(--sw-hi, rgba(255, 255, 255, 0.9)),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.06),
+    0 6px 18px -8px rgba(4, 20, 41, 0.35);
+}
+.switcher[data-active="2"] {
+  --sw-index: 1;
+}
+.switcher[data-active="3"] {
+  --sw-index: 2;
+}
+/* The glass thumb under the active option. */
+.switcher::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: var(--sw-pad);
+  bottom: var(--sw-pad);
+  left: var(--sw-pad);
+  width: var(--sw-opt);
+  border-radius: 999px;
+  background: linear-gradient(
+    180deg,
+    var(--sw-thumb-top, rgba(255, 255, 255, 0.75)),
+    var(--sw-thumb-bottom, rgba(255, 255, 255, 0.35))
+  );
+  box-shadow:
+    inset 0 0 0 1px var(--sw-rim, rgba(255, 255, 255, 0.8)),
+    inset 0 1px 2px var(--sw-hi, rgba(255, 255, 255, 0.95)),
+    0 3px 10px -3px rgba(4, 20, 41, 0.3);
+  transform: translateX(calc(var(--sw-index) * var(--sw-opt)));
+  transition: transform 300ms cubic-bezier(0.77, 0, 0.175, 1);
+}
+.switcher__legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.switcher__option {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.switcher__option:has(.switcher__input:focus-visible) {
+  outline: 2px solid var(--c);
+  outline-offset: 2px;
+}
+.switcher__input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.switcher__icon {
+  width: 26px;
+  height: 26px;
+  opacity: 0.6;
+  transition:
+    opacity 200ms ease,
+    transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+@media (hover: hover) and (pointer: fine) {
+  .switcher__option:hover .switcher__icon {
+    opacity: 0.85;
+  }
+}
+.switcher__option:active .switcher__icon {
+  transform: scale(0.9);
+}
+.switcher__input:checked + .switcher__icon {
+  opacity: 1;
+  transform: scale(1.08);
+}
+.switcher--compact {
+  --sw-opt: 38px;
+  --sw-h: 36px;
+}
+.switcher--compact .switcher__icon {
+  width: 22px;
+  height: 22px;
+}

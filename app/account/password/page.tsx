@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { currentProfile } from "@/lib/platform/data";
 import { Logo, Heading } from "@/components/platform/ui";
 import { PasswordForm } from "@/components/platform/Forms";
+import PlatformThemeScript from "@/components/platform/ThemeScript";
 import "../../platform.css";
 export const metadata = {
   title: "Actualizar contraseña · RidePerks",
@@ -13,6 +14,7 @@ export default async function Page() {
   if (!profile) redirect("/recover");
   return (
     <div className="rp-app">
+      <PlatformThemeScript />
       <main className="rp-main rp-stack max-w-xl">
         <Logo />
         <Heading title="Elige tu nueva contraseña">

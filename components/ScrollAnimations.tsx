@@ -25,9 +25,9 @@ export default function ScrollAnimations() {
           gsap.to(batch, {
             opacity: 1,
             y: 0,
-            duration: 0.6,
+            duration: 0.55,
             ease: "power3.out",
-            stagger: 0.08,
+            stagger: 0.06,
           }),
       });
     });

@@ -5,8 +5,12 @@ import MobileCTA from "@/components/MobileCTA";
 import AboutHero from "@/components/sections/AboutHero";
 import AboutStory from "@/components/sections/AboutStory";
 import AboutHelp from "@/components/sections/AboutHelp";
+import AboutAudiences from "@/components/sections/AboutAudiences";
+import AboutRedemption from "@/components/sections/AboutRedemption";
+import AboutFAQ from "@/components/sections/AboutFAQ";
 import JoinCTA from "@/components/sections/JoinCTA";
 import Footer from "@/components/sections/Footer";
+import LandingShell from "@/components/landing/LandingShell";
 
 const title = "Sobre RidePerks · El club de beneficios para conductores";
 const description =
@@ -41,17 +45,20 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <>
+    <LandingShell>
       <ScrollAnimations />
       <Nav />
       <main>
         <AboutHero />
         <AboutStory />
+        <AboutAudiences />
+        <AboutRedemption />
         <AboutHelp />
+        <AboutFAQ />
         <JoinCTA />
       </main>
       <Footer />
       <MobileCTA />
-    </>
+    </LandingShell>
   );
 }

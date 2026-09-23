@@ -111,7 +111,7 @@ export default function BenefitCode({
       </h2>
       {code?.status === "used" ? (
         <>
-          <CheckCircle2 size={56} color="#216546" />
+          <CheckCircle2 size={56} className="text-[var(--rp-accent-text)]" />
           <p className="rp-success" role="status">
             El comercio confirmó tu beneficio. Ya está en tu historial.
           </p>

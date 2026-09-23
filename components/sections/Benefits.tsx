@@ -1,133 +1,69 @@
-import Link from "next/link";
-import {
-  Fuel,
-  UtensilsCrossed,
-  Wrench,
-  ArrowUpRight,
-  Store,
-  BadgePercent,
-  ScanLine,
-} from "lucide-react";
+import { Fuel, UtensilsCrossed, Wrench } from "lucide-react";
+import PillLink from "@/components/landing/PillLink";
+import InfoCard from "@/components/landing/InfoCard";
+
 const BENEFITS = [
   {
-    label: "Combustible",
+    title: "Combustible",
     category: "combustible",
-    description: "Para seguir en ruta.",
     Icon: Fuel,
-    bg: "bg-sol",
-    text: "text-navy",
+    detail:
+      "Descuentos en gasolineras aliadas, donde ya cargas cada semana. Cada beneficio muestra sus condiciones y límites antes de ir.",
   },
   {
-    label: "Comida",
+    title: "Comida",
     category: "comida",
-    description: "Tu pausa entre viajes.",
     Icon: UtensilsCrossed,
-    bg: "bg-verde",
-    text: "text-white",
+    detail:
+      "Precios especiales en los lugares donde comes entre viaje y viaje, sin cambiar tu ruta.",
   },
   {
-    label: "Taller",
+    title: "Taller",
     category: "mantenimiento",
-    description: "Cuida lo que te mueve.",
     Icon: Wrench,
-    bg: "bg-ember",
-    text: "text-white",
+    detail:
+      "Mantenimiento y repuestos más baratos para el carro o la moto que es tu herramienta de trabajo.",
   },
 ];
+
 export default function Benefits() {
   return (
-    <section
-      id="beneficios"
-      className="scroll-mt-20 border-b border-line bg-bone px-6 py-14 sm:py-28"
-    >
-      <div className="mx-auto max-w-6xl">
-        <div data-reveal className="max-w-xl">
-          <span className="font-mono text-xs font-medium tracking-[0.14em] text-ember">
-            BENEFICIOS
-          </span>
-          <h2 className="mt-4 text-balance text-4xl font-semibold tracking-tight text-navy sm:text-5xl">
-            Una membresía. Todo incluido.
-          </h2>
-        </div>
-        <div className="mx-auto mt-8 grid max-w-4xl gap-4 sm:mt-14 sm:grid-cols-3">
-          {BENEFITS.map(({ label, category, description, Icon, bg, text }) => (
-            <Link
-              key={category}
-              href={"/driver/benefits?category=" + category}
-              data-reveal
-              className={`group flex min-h-[218px] flex-col justify-between rounded-2xl p-6 transition-transform duration-200 ease-out hover:-translate-y-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-navy ${bg} ${text}`}
-            >
-              <div className="flex items-start justify-between">
-                <Icon size={38} strokeWidth={1.8} aria-hidden="true" />
-                <ArrowUpRight size={20} strokeWidth={1.8} aria-hidden="true" />
-              </div>
-              <div className="mt-7">
-                <h3 className="text-xl font-semibold tracking-tight">
-                  {label}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed">{description}</p>
-              </div>
-            </Link>
+    <section id="beneficios" className="scroll-mt-24 px-5 py-16 sm:px-6 sm:py-32">
+      <div className="mx-auto max-w-7xl">
+        <h2
+          data-reveal
+          className="max-w-2xl text-balance text-[clamp(2.25rem,5.5vw,4.25rem)] font-medium leading-[1.02] tracking-[-0.035em]"
+        >
+          Una membresía. Todo incluido.
+        </h2>
+
+        <div className="mt-10 grid gap-3 sm:mt-16 sm:grid-cols-3 sm:gap-4">
+          {BENEFITS.map(({ title, category, Icon, detail }) => (
+            <div key={category} data-reveal>
+              <InfoCard
+                icon={<Icon size={34} strokeWidth={1.5} aria-hidden="true" />}
+                title={title}
+                detail={detail}
+                link={{ href: "/driver/benefits?category=" + category, label: "Ver beneficios" }}
+                className="h-full"
+              />
+            </div>
           ))}
         </div>
 
         <div
           data-reveal
-          className="mt-6 flex flex-col gap-8 rounded-2xl border border-line bg-white p-7 sm:mt-8 sm:flex-row sm:items-center sm:justify-between sm:p-10"
+          className="mt-3 flex flex-col gap-6 rounded-[28px] bg-lp-band p-7 text-lp-band-fg sm:mt-4 sm:flex-row sm:items-center sm:justify-between sm:p-12"
         >
-          <div className="max-w-sm">
-            <span className="font-mono text-xs font-medium tracking-[0.14em] text-ember">
-              PARA COMERCIOS
-            </span>
-            <h3 className="mt-3 text-2xl font-semibold tracking-tight text-navy">
-              ¿Tienes un comercio? <em className="font-accent italic text-ember">Súmate.</em>
+          <div>
+            <h3 className="text-[clamp(1.75rem,3.5vw,2.75rem)] font-medium leading-[1.05] tracking-[-0.03em]">
+              ¿Tienes un comercio?
             </h3>
-            <p className="mt-3 text-sm leading-relaxed text-navy/60">
-              A ti no te cuesta nada unirte. El conductor paga su membresía, no tu negocio, y tú
-              eliges el descuento y las condiciones.
-            </p>
-            <Link
-              href="/business/register"
-              className="mt-6 inline-flex items-center gap-2 rounded-full bg-navy px-6 py-3 text-sm font-semibold text-bone transition-transform duration-150 ease-out hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy"
-            >
-              Registra tu comercio
-            </Link>
+            <p className="mt-2 text-lp-band-muted sm:mt-3">Unirte no le cuesta nada a tu negocio.</p>
           </div>
-          <ul className="flex flex-col gap-5">
-            <li className="flex items-start gap-3">
-              <Store
-                size={20}
-                strokeWidth={1.8}
-                className="mt-0.5 shrink-0 text-ember"
-                aria-hidden="true"
-              />
-              <span className="text-sm leading-relaxed text-navy/70">
-                Accedes a conductores que ya buscan dónde gastar en tu categoría.
-              </span>
-            </li>
-            <li className="flex items-start gap-3">
-              <BadgePercent
-                size={20}
-                strokeWidth={1.8}
-                className="mt-0.5 shrink-0 text-ember"
-                aria-hidden="true"
-              />
-              <span className="text-sm leading-relaxed text-navy/70">
-                Tú propones el beneficio; nuestro equipo lo revisa antes de publicarlo.
-              </span>
-            </li>
-            <li className="flex items-start gap-3">
-              <ScanLine
-                size={20}
-                strokeWidth={1.8}
-                className="mt-0.5 shrink-0 text-ember"
-                aria-hidden="true"
-              />
-              <span className="text-sm leading-relaxed text-navy/70">
-                Confirmas el canje escaneando un código, sin cambiar cómo cobras.
-              </span>
-            </li>
-          </ul>
+          <PillLink href="/business/register" variant="pill" className="self-start sm:self-auto">
+            Registra tu comercio
+          </PillLink>
         </div>
       </div>
     </section>

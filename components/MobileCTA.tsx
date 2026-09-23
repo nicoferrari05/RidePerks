@@ -1,45 +1,57 @@
 "use client";
 
-// Phone-only sticky bottom bar: one tap gets a driver to sign-up
-// from anywhere on the page, instead of making them scroll through
-// every section first. Disappears once #unete itself has been reached
-// (and stays gone past it, e.g. at the footer) so it doesn't sit on top
-// of the very call to action it points to.
-import Link from "next/link";
+// Phone-only floating call to action: one tap gets a driver to sign-up from
+// anywhere on the page once the hero is behind them. Leaves again once #unete
+// has been reached (and stays gone past it, e.g. at the footer) so it doesn't
+// sit on top of the very call to action it points to.
+//
+// Always mounted so it can slide in and out: enters on the iOS drawer curve,
+// exits faster than it enters.
 import { useEffect, useState } from "react";
+import PillLink from "@/components/landing/PillLink";
 
 export default function MobileCTA() {
-  const [visible, setVisible] = useState(true);
+  const [pastHero, setPastHero] = useState(false);
+  const [reachedEnd, setReachedEnd] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setPastHero(window.scrollY > window.innerHeight * 0.6);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     const target = document.getElementById("unete");
     if (!target) return;
-
     const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting || entry.boundingClientRect.top < 0) {
-          setVisible(false);
-        }
-      },
-      { threshold: 0 }
+      ([entry]) =>
+        setReachedEnd(entry.isIntersecting || entry.boundingClientRect.top < 0),
+      { threshold: 0 },
     );
     io.observe(target);
     return () => io.disconnect();
   }, []);
 
-  if (!visible) return null;
+  const show = pastHero && !reachedEnd;
 
   return (
     <div
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-paper/95 px-4 pt-3 shadow-[0_-8px_30px_-12px_rgba(4,20,41,0.25)] backdrop-blur-md sm:hidden"
+      aria-hidden={!show}
+      inert={!show}
+      className={
+        "fixed inset-x-0 bottom-0 z-40 px-4 transition-[transform,opacity] ease-drawer sm:hidden " +
+        (show
+          ? "translate-y-0 opacity-100 duration-[400ms]"
+          : "pointer-events-none translate-y-[calc(100%+1rem)] opacity-0 duration-200")
+      }
       style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
     >
-      <Link
-        href="/register"
-        className="flex w-full items-center justify-center rounded-full bg-ember px-6 py-3.5 text-[15px] font-semibold text-white transition-[transform,background-color] duration-150 ease-out hover:bg-ember-2 active:scale-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy"
-      >
-        Crear mi cuenta gratis
-      </Link>
+      <div className="lp-glass rounded-full p-1.5">
+        <PillLink href="/register" className="w-full">
+          Crear mi cuenta
+        </PillLink>
+      </div>
     </div>
   );
 }
