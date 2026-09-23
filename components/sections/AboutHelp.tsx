@@ -8,12 +8,12 @@ const AREAS = [
   {
     label: "Combustible",
     Icon: Fuel,
-    copy: "Descuentos en gasolineras aliadas, donde ya cargás cada semana.",
+    copy: "Descuentos en gasolineras aliadas, donde ya cargas cada semana.",
   },
   {
     label: "Comida",
     Icon: UtensilsCrossed,
-    copy: "Precios especiales en los lugares donde comés entre viaje y viaje.",
+    copy: "Precios especiales en los lugares donde comes entre viaje y viaje.",
   },
   {
     label: "Taller",

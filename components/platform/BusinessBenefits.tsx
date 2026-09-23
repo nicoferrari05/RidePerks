@@ -70,7 +70,9 @@ export default async function BusinessBenefits({
             <span className="rp-badge">
               {expired
                 ? "Expirado"
-                : !b.is_active
+                : b.admin_paused
+                  ? "Pausado por RidePerks"
+                  : !b.is_active
                   ? "Pausado"
                   : future
                     ? "Aprobado, próximamente"
@@ -78,7 +80,14 @@ export default async function BusinessBenefits({
             </span>
             <p>{b.discount_label}</p>
             <p className="rp-muted whitespace-pre-line">{b.terms}</p>
-            <MerchantToggle id={b.id} active={b.is_active} />
+            {b.admin_paused ? (
+              <p className="rp-muted">
+                RidePerks pausó este beneficio. Contáctanos desde Ayuda para
+                reactivarlo.
+              </p>
+            ) : (
+              <MerchantToggle id={b.id} active={b.is_active} />
+            )}
             {!revision && (
               <details>
                 <summary>Proponer cambios</summary>

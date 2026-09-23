@@ -1,6 +1,11 @@
 "use server";
 import { z } from "zod";
-import { requireDriver, rateLimit, requireAdmin } from "./data";
+import {
+  requireDriver,
+  requireBusiness,
+  rateLimit,
+  requireAdmin,
+} from "./data";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
 import { firstError } from "./validation";
 import type { ActionState } from "./types";
@@ -9,7 +14,18 @@ export async function requestSupport(
   _: ActionState,
   form: FormData,
 ): Promise<ActionState> {
-  const p = await requireDriver();
+  return submitSupport(form, (await requireDriver()).id);
+}
+export async function requestBusinessSupport(
+  _: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  return submitSupport(form, (await requireBusiness()).profile.id);
+}
+async function submitSupport(
+  form: FormData,
+  profileId: string,
+): Promise<ActionState> {
   const parsed = z
     .object({
       topic: z.enum(["benefit", "account", "privacy", "delete"]),
@@ -22,10 +38,10 @@ export async function requestSupport(
     .safeParse(Object.fromEntries(form));
   if (!parsed.success) return { error: firstError(parsed.error) };
   try {
-    await rateLimit("support:" + p.id, 5, 3600);
+    await rateLimit("support:" + profileId, 5, 3600);
     const { error } = await getSupabaseAdmin()
       .from("rp_support_requests")
-      .insert({ driver_id: p.id, ...parsed.data });
+      .insert({ driver_id: profileId, ...parsed.data });
     if (error)
       return { error: "No pudimos enviar tu solicitud. Intenta nuevamente." };
     return {

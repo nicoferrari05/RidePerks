@@ -1,6 +1,6 @@
 const STEPS = [
-  { n: "01", title: "Únete a la lista", copy: "Tu nombre y correo. Invita a otros y sube en la fila." },
-  { n: "02", title: "Te avisamos", copy: "Por correo o WhatsApp, apenas la app esté lista." },
+  { n: "01", title: "Crea tu cuenta", copy: "Gratis y en un minuto. Solo tus datos y la plataforma en la que trabajas." },
+  { n: "02", title: "Verifica tu perfil", copy: "Sube una captura de tu perfil de conductor y el equipo la revisa." },
   { n: "03", title: "Ahorra", copy: "Muestra tu QR RidePerks en comercios aliados." },
 ];
 

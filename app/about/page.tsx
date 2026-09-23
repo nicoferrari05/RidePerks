@@ -5,7 +5,7 @@ import MobileCTA from "@/components/MobileCTA";
 import AboutHero from "@/components/sections/AboutHero";
 import AboutStory from "@/components/sections/AboutStory";
 import AboutHelp from "@/components/sections/AboutHelp";
-import Waitlist from "@/components/sections/Waitlist";
+import JoinCTA from "@/components/sections/JoinCTA";
 import Footer from "@/components/sections/Footer";
 
 const title = "Sobre RidePerks · El club de beneficios para conductores";
@@ -48,7 +48,7 @@ export default function AboutPage() {
         <AboutHero />
         <AboutStory />
         <AboutHelp />
-        <Waitlist />
+        <JoinCTA />
       </main>
       <Footer />
       <MobileCTA />

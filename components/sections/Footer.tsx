@@ -46,10 +46,10 @@ export default function Footer() {
         </a>
 
         <Link
-          href="/#waitlist"
+          href="/register"
           className="mb-10 cursor-pointer rounded-full bg-ember px-6 py-3 text-sm font-semibold text-white transition-[transform,background-color] duration-150 ease-out hover:bg-ember-2 active:scale-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-bone"
         >
-          Únete a la lista
+          Crear mi cuenta gratis
         </Link>
 
         <p className="font-mono text-xs tracking-wide text-bone/40">© 2026 RIDEPERKS · PANAMÁ</p>

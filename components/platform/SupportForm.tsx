@@ -1,9 +1,20 @@
 "use client";
 import { useActionState } from "react";
-import { requestSupport, resolveSupport } from "@/lib/platform/support-actions";
+import {
+  requestSupport,
+  requestBusinessSupport,
+  resolveSupport,
+} from "@/lib/platform/support-actions";
 import { Feedback } from "./Forms";
-export default function SupportForm() {
-  const [state, action, pending] = useActionState(requestSupport, {});
+export default function SupportForm({
+  audience = "driver",
+}: {
+  audience?: "driver" | "business";
+}) {
+  const [state, action, pending] = useActionState(
+    audience === "business" ? requestBusinessSupport : requestSupport,
+    {},
+  );
   return (
     <form action={action} className="rp-form">
       <div className="rp-field">

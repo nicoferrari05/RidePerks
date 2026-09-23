@@ -1,6 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getBenefits, requireDriver } from "@/lib/platform/data";
+import {
+  catalogLive,
+  getBenefits,
+  requireDriver,
+} from "@/lib/platform/data";
 import { uuidSchema } from "@/lib/platform/validation";
 import { Heading, CategoryIcon } from "@/components/platform/ui";
 import BenefitCode from "@/components/platform/BenefitCode";
@@ -12,7 +16,7 @@ export default async function Page({
 }) {
   const p = await requireDriver();
   const { id } = await params;
-  if (!uuidSchema.safeParse(id).success) notFound();
+  if (!uuidSchema.safeParse(id).success || !(await catalogLive())) notFound();
   const b = (await getBenefits()).find((b) => b.id === id);
   if (!b) notFound();
   return (

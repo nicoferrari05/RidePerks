@@ -11,6 +11,7 @@ const migrationFiles = [
   "202609110001_merchant_roles.sql",
   "202609110002_access_and_review.sql",
   "202609110003_close_profile.sql",
+  "202609120001_hardening_and_ops.sql",
 ];
 const migrations = migrationFiles.map((name) =>
   readFileSync(
@@ -50,6 +51,7 @@ async function fixture() {
   await db.query("update rp_profiles set status='verified' where id=$1", [
     driver,
   ]);
+  await db.query("update rp_profiles set role='business' where id=$1", [owner]);
   const shop = (
     await db.query("select rp_save_business(null,$1) as id", [
       JSON.stringify({
@@ -791,4 +793,98 @@ test("closing a profile scrubs personal data, revokes staff access and preserves
     db.query("select rp_close_profile($1,$2)", [randomUUID(), "Cuenta inexistente."]),
     /inexistente/,
   );
+});
+
+test("only business accounts can be linked as a business owner", async () => {
+  const driver = await user({ full_name: "Solo conductor" });
+  await assert.rejects(
+    db.query("select rp_save_business(null,$1)", [
+      JSON.stringify({
+        name: "Comercio X",
+        description: "",
+        address: "Panamá",
+        category: "comida",
+        owner_user_id: driver,
+      }),
+    ]),
+    /cuenta de comercio/,
+  );
+  assert.equal(
+    (await db.query("select role from rp_profiles where id=$1", [driver]))
+      .rows[0].role,
+    "driver",
+  );
+});
+test("business name changes wait for admin review and apply once", async () => {
+  const f = await fixture(),
+    admin = await adminActor();
+  const id = (
+    await db.query(
+      "insert into rp_business_changes(business_id,payload,created_by) values($1,$2,$3) returning id",
+      [
+        f.shop,
+        JSON.stringify({ name: "Nuevo nombre", address: "Otra dirección", category: "salud" }),
+        f.owner,
+      ],
+    )
+  ).rows[0].id;
+  assert.equal(
+    (await db.query("select name from rp_businesses where id=$1", [f.shop]))
+      .rows[0].name,
+    "Aliado de prueba",
+  );
+  await assert.rejects(
+    db.query("select rp_review_business_change($1,$2,true,'')", [f.owner, id]),
+    /administrador/,
+  );
+  await db.query("select rp_review_business_change($1,$2,true,'')", [admin, id]);
+  assert.equal(
+    (await db.query("select name,category from rp_businesses where id=$1", [f.shop]))
+      .rows[0].name,
+    "Nuevo nombre",
+  );
+  await assert.rejects(
+    db.query("select rp_review_business_change($1,$2,true,'')", [admin, id]),
+    /pendiente/,
+  );
+});
+test("stale pending orders expire and an admin can credit an order manually", async () => {
+  const f = await fixture(),
+    admin = await adminActor(),
+    id = "pay" + randomUUID().replaceAll("-", "").slice(0, 12);
+  await db.exec("update rp_settings set value='false' where key='free_access'");
+  try {
+    await db.query("select rp_create_payment($1,$2,$3)", [
+      f.driver,
+      id,
+      "https://www.rideperks.app",
+    ]);
+    await db.query(
+      "update rp_payment_orders set created_at=now()-interval '25 hours' where id=$1",
+      [id],
+    );
+    assert.ok(
+      (await db.query("select rp_expire_stale_orders() as n")).rows[0].n >= 1,
+    );
+    assert.equal(
+      (await db.query("select status from rp_payment_orders where id=$1", [id]))
+        .rows[0].status,
+      "expired",
+    );
+    await assert.rejects(
+      db.query("select rp_credit_payment($1,$2,'Yappy confirmó')", [f.owner, id]),
+      /administrador/,
+    );
+    await db.query("select rp_credit_payment($1,$2,'Yappy confirmó')", [admin, id]);
+    assert.equal(
+      (await db.query("select rp_has_access($1) as yes", [f.driver])).rows[0].yes,
+      true,
+    );
+    await assert.rejects(
+      db.query("select rp_credit_payment($1,$2,'Otra vez')", [admin, id]),
+      /ya está pagada/,
+    );
+  } finally {
+    await db.exec("update rp_settings set value='true' where key='free_access'");
+  }
 });

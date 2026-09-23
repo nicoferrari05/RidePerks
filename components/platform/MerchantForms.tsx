@@ -18,10 +18,23 @@ type Payload = {
   valid_from?: string | null;
   valid_until?: string | null;
 };
-export function MerchantInfo({ business: b }: { business: Business }) {
+export function MerchantInfo({
+  business: b,
+  pendingChange = false,
+}: {
+  business: Business;
+  pendingChange?: boolean;
+}) {
   const [state, action, pending] = useActionState(saveMerchantInfo, {});
   return (
     <form action={action} className="rp-form">
+      <p className="rp-muted">
+        Descripción y teléfono se actualizan al instante. Los cambios de nombre,
+        dirección o categoría los revisa RidePerks antes de publicarlos.
+      </p>
+      {pendingChange && (
+        <p className="rp-badge">Tienes un cambio pendiente de aprobación</p>
+      )}
       <label className="rp-field">
         Nombre
         <input

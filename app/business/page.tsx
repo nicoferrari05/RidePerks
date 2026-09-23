@@ -9,6 +9,7 @@ import { StaffInvite, RemoveStaff } from "@/components/platform/StaffForms";
 import { selectBusiness } from "@/lib/platform/business-actions";
 import BusinessBenefits from "@/components/platform/BusinessBenefits";
 import { MerchantInfo } from "@/components/platform/MerchantForms";
+import SupportForm from "@/components/platform/SupportForm";
 import BusinessMetrics from "@/components/platform/BusinessMetrics";
 import { dateLabel } from "@/lib/platform/types";
 import "../platform.css";
@@ -54,6 +55,15 @@ export default async function Page({
           .eq("is_active", true)
       : null;
   if (staff?.error) throw new Error("No pudimos consultar el personal.");
+  const pendingChange =
+    business && role === "owner"
+      ? await db
+          .from("rp_business_changes")
+          .select("id")
+          .eq("business_id", business.id)
+          .eq("status", "pending")
+          .maybeSingle()
+      : null;
   const today = new Date().toLocaleDateString("en-CA", {
     timeZone: "America/Panama",
   });
@@ -171,7 +181,10 @@ export default async function Page({
               <>
                 <details>
                   <summary>Información del comercio</summary>
-                  <MerchantInfo business={business} />
+                  <MerchantInfo
+                    business={business}
+                    pendingChange={Boolean(pendingChange?.data)}
+                  />
                 </details>
                 <BusinessBenefits businessId={business.id} />
                 <section className="rp-stack">
@@ -209,6 +222,12 @@ export default async function Page({
             </p>
           </Empty>
         )}
+        <details>
+          <summary>Ayuda y soporte</summary>
+          <div className="rp-panel">
+            <SupportForm audience="business" />
+          </div>
+        </details>
       </main>
     </div>
   );

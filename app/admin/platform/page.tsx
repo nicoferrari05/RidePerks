@@ -1,6 +1,6 @@
 import { ResolveSupport } from "@/components/platform/SupportForm";
 import Link from "next/link";
-import { requireAdmin } from "@/lib/platform/data";
+import { requireAdmin, catalogLive } from "@/lib/platform/data";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
 import { Logo, Heading, Empty } from "@/components/platform/ui";
 import {
@@ -10,6 +10,7 @@ import {
   ReviewForm,
   DriverStatusForm,
   CloseProfileForm,
+  CatalogToggle,
 } from "@/components/platform/AdminForms";
 import {
   type Business,
@@ -108,6 +109,7 @@ export default async function Page({
     const accounts = await db
       .from("rp_profiles")
       .select("id,full_name,phone,role")
+      .eq("role", "business")
       .order("full_name")
       .limit(500);
     if (accounts.error)
@@ -124,6 +126,23 @@ export default async function Page({
     }
   }
   const rows = result.data || [];
+  const contacts = new Map<string, { full_name: string; phone: string | null }>();
+  if (tab === "support" && rows.length) {
+    const people = await db
+      .from("rp_profiles")
+      .select("id,full_name,phone")
+      .in("id", rows.map((r) => r.driver_id));
+    for (const person of people.data || [])
+      contacts.set(person.id, person);
+  }
+  const whatsapp = (phone: string | null | undefined, text: string) =>
+    phone
+      ? "https://wa.me/" +
+        phone.replace(/\D/g, "") +
+        "?text=" +
+        encodeURIComponent(text)
+      : null;
+  const catalog = await catalogLive();
   const verificationRows =
     tab === "verifications"
       ? await Promise.all(
@@ -134,13 +153,14 @@ export default async function Page({
                 .createSignedUrl(v.photo_path, 300),
               db
                 .from("rp_profiles")
-                .select("full_name,platform")
+                .select("full_name,platform,phone")
                 .eq("id", v.driver_id)
                 .single(),
             ]);
             return {
               ...v,
               name: p.data?.full_name || "Conductor",
+              phone: (p.data?.phone as string | null) ?? null,
               platform: p.data?.platform
                 ? platforms[p.data.platform as keyof typeof platforms]
                 : "Plataforma no indicada",
@@ -164,6 +184,7 @@ export default async function Page({
         <Link className="rp-text-link" href="/admin/payments">
           Pagos de membresías →
         </Link>
+        <CatalogToggle live={catalog} />
         <div className="rp-actions">
           <Link className="rp-text-link" href="/admin/reviews">
             Revisar propuestas de beneficios →
@@ -344,6 +365,31 @@ export default async function Page({
                       )[r.topic]
                     }
                   </h2>
+                  {(() => {
+                    const person = contacts.get(r.driver_id);
+                    const link = whatsapp(
+                      person?.phone,
+                      "Hola " +
+                        (person?.full_name.split(" ")[0] || "") +
+                        ", te escribimos de RidePerks sobre tu solicitud de ayuda.",
+                    );
+                    return (
+                      <p className="rp-muted mt-2">
+                        {person?.full_name || "Cuenta sin nombre"}
+                        {person?.phone ? " · " + person.phone : ""}{" "}
+                        {link && (
+                          <a
+                            className="rp-text-link"
+                            href={link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Escribir por WhatsApp ↗
+                          </a>
+                        )}
+                      </p>
+                    );
+                  })()}
                   <p className="rp-muted break-all mt-2">
                     Cuenta:{" "}
                     <Link
@@ -390,6 +436,28 @@ export default async function Page({
                     No pudimos abrir la imagen. Recarga la página antes de
                     revisar.
                   </p>
+                )}
+                {whatsapp(
+                  v.phone,
+                  "Hola " +
+                    v.name.split(" ")[0] +
+                    ", te escribimos de RidePerks sobre la verificación de tu cuenta.",
+                ) && (
+                  <a
+                    className="rp-text-link"
+                    href={
+                      whatsapp(
+                        v.phone,
+                        "Hola " +
+                          v.name.split(" ")[0] +
+                          ", te escribimos de RidePerks sobre la verificación de tu cuenta.",
+                      )!
+                    }
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Contactar por WhatsApp ↗
+                  </a>
                 )}
                 {v.url && <ReviewForm id={v.id} />}
               </article>

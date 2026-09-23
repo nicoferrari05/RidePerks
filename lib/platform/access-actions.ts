@@ -4,6 +4,7 @@ import { z } from "zod";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
 import { currentProfile, requireAdmin } from "./data";
 import type { ActionState } from "./types";
+import { notifyPaymentReceived } from "@/lib/email";
 async function actor() {
   await requireAdmin();
   const profile = await currentProfile();
@@ -135,6 +136,81 @@ export async function reviewBenefit(
     return {
       error:
         e instanceof Error ? e.message : "No pudimos revisar la propuesta.",
+    };
+  }
+}
+export async function reviewBusinessChange(
+  _: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  try {
+    const id = await actor();
+    const parsed = z
+      .object({
+        id: z.uuid(),
+        decision: z.enum(["approve", "return"]),
+        notes: z.string().trim().max(1000),
+      })
+      .safeParse(Object.fromEntries(form));
+    if (!parsed.success) return { error: "Solicitud inválida." };
+    const { error } = await getSupabaseAdmin().rpc(
+      "rp_review_business_change",
+      {
+        p_admin: id,
+        p_change: parsed.data.id,
+        p_approve: parsed.data.decision === "approve",
+        p_notes: parsed.data.notes,
+      },
+    );
+    if (error)
+      return {
+        error:
+          error.code === "P0001"
+            ? error.message
+            : "No pudimos revisar el cambio.",
+      };
+    revalidatePath("/admin/reviews");
+    revalidatePath("/business");
+    revalidatePath("/driver", "layout");
+    return { success: "Revisión guardada." };
+  } catch (e) {
+    return {
+      error: e instanceof Error ? e.message : "No pudimos revisar el cambio.",
+    };
+  }
+}
+export async function creditPayment(
+  _: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  try {
+    const id = await actor();
+    const parsed = z
+      .object({
+        order: z.string().regex(/^[a-zA-Z0-9]{1,15}$/),
+        reason: z.string().trim().min(3).max(1000),
+      })
+      .safeParse(Object.fromEntries(form));
+    if (!parsed.success) return { error: "Escribe el motivo del cambio." };
+    const { error } = await getSupabaseAdmin().rpc("rp_credit_payment", {
+      p_admin: id,
+      p_order: parsed.data.order,
+      p_reason: parsed.data.reason,
+    });
+    if (error)
+      return {
+        error:
+          error.code === "P0001"
+            ? error.message
+            : "No pudimos acreditar el pago.",
+      };
+    await notifyPaymentReceived(parsed.data.order);
+    revalidatePath("/admin/payments");
+    revalidatePath("/driver", "layout");
+    return { success: "Pago acreditado y registrado en la auditoría." };
+  } catch (e) {
+    return {
+      error: e instanceof Error ? e.message : "No pudimos acreditar el pago.",
     };
   }
 }

@@ -1,18 +1,19 @@
 import { getSupabaseAdmin } from "@/lib/supabase-server";
-import { requireDriver } from "@/lib/platform/data";
+import { requireDriver, catalogLive } from "@/lib/platform/data";
 import { Heading, Empty, CategoryIcon } from "@/components/platform/ui";
 import { MapPin, Phone, ArrowUpRight } from "lucide-react";
 import type { Business } from "@/lib/platform/types";
 export const metadata = { title: "Comercios aliados · RidePerks" };
 export default async function Page() {
   await requireDriver();
+  const live = await catalogLive();
   const { data, error } = await getSupabaseAdmin()
     .from("rp_businesses")
     .select("id,name,description,category,address,phone,is_active")
     .eq("is_active", true)
     .order("name");
   if (error) throw new Error("No pudimos cargar los comercios.");
-  const rows = data as Business[];
+  const rows = live ? (data as Business[]) : [];
   return (
     <div className="rp-stack">
       <Heading title="Tus aliados en el camino">

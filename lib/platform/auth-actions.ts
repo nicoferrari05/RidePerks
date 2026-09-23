@@ -12,6 +12,7 @@ import {
 } from "./validation";
 import { rateLimit } from "./data";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
+import { verifyTurnstile } from "@/lib/turnstile";
 import type { ActionState } from "./types";
 function siteUrl() {
   return process.env.SITE_URL || "https://rideperks.app";
@@ -100,6 +101,7 @@ async function registerAccount(
   if (!authConfigured())
     return { error: "El registro aún no está habilitado. Intenta más tarde." };
   try {
+    await verifyTurnstile(form.get("cf-turnstile-response"));
     await authLimit(parsed.data.email);
     const { email, password, full_name, phone, platform } = parsed.data;
     const db = getSupabaseAdmin();

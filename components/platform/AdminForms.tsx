@@ -7,6 +7,7 @@ import {
   toggleRecord,
   setDriverStatus,
   closeProfile,
+  setCatalogLive,
 } from "@/lib/platform/admin-actions";
 import { Feedback } from "./Forms";
 import { categories, type Business, type Benefit } from "@/lib/platform/types";
@@ -317,5 +318,22 @@ export function CloseProfileForm({ id }: { id: string }) {
         </button>
       </form>
     </details>
+  );
+}
+export function CatalogToggle({ live }: { live: boolean }) {
+  const [state, action, pending] = useActionState(setCatalogLive, {});
+  return (
+    <form action={action} className="rp-panel rp-stack">
+      <input type="hidden" name="live" value={String(!live)} />
+      <h2>Catálogo para conductores: {live ? "visible" : "oculto"}</h2>
+      <p className="rp-muted">
+        Oculto, los conductores ven «Próximamente» en Beneficios y Comercios.
+        Actívalo cuando haya beneficios aprobados para publicar.
+      </p>
+      <Feedback state={state} />
+      <button className="rp-button secondary" disabled={pending}>
+        {live ? "Ocultar catálogo" : "Publicar catálogo"}
+      </button>
+    </form>
   );
 }

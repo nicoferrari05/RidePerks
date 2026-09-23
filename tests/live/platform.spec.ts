@@ -218,7 +218,7 @@ test("driver onboarding, private verification, admin approval and merchant redem
   expect(second.status()).toBe(400);
   const limit = await db.from("rp_rate_limits").upsert({
     key: "redeem:" + ownerId,
-    hits: 60,
+    hits: 120,
     window_start: new Date().toISOString(),
   });
   expect(limit.error).toBeNull();

@@ -84,6 +84,15 @@ export const getBenefits = cache(async (): Promise<Benefit[]> => {
     throw new Error("No pudimos cargar los beneficios. Intenta nuevamente.");
   return data as Benefit[];
 });
+export const catalogLive = cache(async (): Promise<boolean> => {
+  const { data, error } = await getSupabaseAdmin()
+    .from("rp_settings")
+    .select("value")
+    .eq("key", "catalog_live")
+    .maybeSingle();
+  if (error) throw new Error("No pudimos consultar el catálogo.");
+  return data?.value === true;
+});
 export async function getRedemptions(driverId: string): Promise<Redemption[]> {
   if ((await requireDriver()).id !== driverId)
     throw new Error("No autorizado.");

@@ -110,20 +110,46 @@ export async function saveMerchantInfo(
   _: ActionState,
   form: FormData,
 ): Promise<ActionState> {
-  const { business } = await owner();
+  const { profile, business } = await owner();
   const { businessSchema } = await import("./catalog-validation");
   const parsed = businessSchema
     .omit({ id: true, owner_user_id: true })
     .safeParse(Object.fromEntries(form));
   if (!parsed.success) return { error: parsed.error.issues[0].message };
-  const { error } = await getSupabaseAdmin()
+  const db = getSupabaseAdmin();
+  const { name, address, category, ...direct } = parsed.data;
+  // Description and phone are low risk; name, address and category identify
+  // the business to drivers, so changes to them wait for RidePerks review.
+  const saved = await db
     .from("rp_businesses")
-    .update(parsed.data)
+    .update(direct)
     .eq("id", business.id);
-  if (error) return { error: "No pudimos guardar los datos." };
+  if (saved.error) return { error: "No pudimos guardar los datos." };
+  const sensitive =
+    name !== business.name ||
+    address !== business.address ||
+    category !== business.category;
+  let message = "Datos actualizados.";
+  if (sensitive) {
+    await db
+      .from("rp_business_changes")
+      .delete()
+      .eq("business_id", business.id)
+      .eq("status", "pending");
+    const request = await db.from("rp_business_changes").insert({
+      business_id: business.id,
+      payload: { name, address, category },
+      created_by: profile.id,
+    });
+    if (request.error)
+      return { error: "No pudimos enviar el cambio a revisión." };
+    message =
+      "Descripción y teléfono actualizados. El cambio de nombre, dirección o categoría quedó pendiente de aprobación.";
+    revalidatePath("/admin/reviews");
+  }
   revalidatePath("/business");
   revalidatePath("/driver", "layout");
-  return { success: "Datos actualizados." };
+  return { success: message };
 }
 export async function saveMerchantBenefit(
   _: ActionState,
@@ -193,12 +219,19 @@ export async function toggleMerchantBenefit(
   const { business } = await owner();
   const id = uuidSchema.safeParse(form.get("id"));
   if (!id.success) return { error: "Beneficio inválido." };
-  const { error } = await getSupabaseAdmin()
+  const { error, data } = await getSupabaseAdmin()
     .from("rp_benefits")
     .update({ is_active: form.get("active") === "true" })
     .eq("id", id.data)
-    .eq("business_id", business.id);
+    .eq("business_id", business.id)
+    .eq("admin_paused", false)
+    .select("id");
   if (error) return { error: "No pudimos cambiar el estado." };
+  if (!data?.length)
+    return {
+      error:
+        "Este beneficio fue pausado por RidePerks. Contáctanos para reactivarlo.",
+    };
   revalidatePath("/business");
   revalidatePath("/driver", "layout");
   return { success: "Estado actualizado." };

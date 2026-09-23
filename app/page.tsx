@@ -7,7 +7,7 @@ import Benefits from "@/components/sections/Benefits";
 import HowItWorks from "@/components/sections/HowItWorks";
 import Manifesto from "@/components/sections/Manifesto";
 import Pricing from "@/components/sections/Pricing";
-import Waitlist from "@/components/sections/Waitlist";
+import JoinCTA from "@/components/sections/JoinCTA";
 import Footer from "@/components/sections/Footer";
 
 export default function Home() {
@@ -22,7 +22,7 @@ export default function Home() {
         <Manifesto />
         <HowItWorks />
         <Pricing />
-        <Waitlist />
+        <JoinCTA />
       </main>
       <Footer />
       <MobileCTA />

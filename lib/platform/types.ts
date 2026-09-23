@@ -31,6 +31,7 @@ export type Benefit = {
   valid_from: string | null;
   valid_until: string | null;
   is_active: boolean;
+  admin_paused?: boolean;
   rp_businesses: Business;
 };
 export type Redemption = {

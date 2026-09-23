@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
 import { verifyYappyNotification } from "@/lib/payments/yappy-protocol";
+import { notifyPaymentReceived } from "@/lib/email";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export async function GET(request: NextRequest) {
@@ -16,11 +17,20 @@ export async function GET(request: NextRequest) {
   );
   if (!notification)
     return NextResponse.json({ success: false }, { status: 401 });
-  const { error } = await getSupabaseAdmin().rpc("rp_apply_payment", {
+  const db = getSupabaseAdmin();
+  const before = await db
+    .from("rp_payment_orders")
+    .select("status")
+    .eq("id", notification.orderId)
+    .maybeSingle();
+  const { error } = await db.rpc("rp_apply_payment", {
     p_order: notification.orderId,
     p_status: notification.status,
     p_domain: notification.domain,
   });
+  // Only the first confirmation sends a receipt; repeated notices are silent.
+  if (!error && notification.status === "E" && before.data?.status !== "paid")
+    await notifyPaymentReceived(notification.orderId).catch(() => {});
   return NextResponse.json(
     { success: !error },
     { status: error ? 503 : 200, headers: { "Cache-Control": "no-store" } },

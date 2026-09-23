@@ -84,3 +84,28 @@ Revertir el commit de aplicación en GitHub y dejar que Vercel reconstruya. Cons
 ## Alcance de esta versión
 
 Incluye landing con entrada al login, registro sin confirmación por correo, recuperación pendiente de SMTP, inicio del conductor, catálogo y condiciones, códigos de uso, directorio, historial, perfil, verificación, soporte, administración y portal de canje del comercio. Incluye membresías Yappy; free_access se desactivó (pasó a `false`) el 10/11 de septiembre de 2026 — el plan pago ya está activo y es requisito real para el acceso. No se publican comercios ni descuentos ficticios.
+
+## Cambios de septiembre 2026 (endurecimiento y operación)
+
+Aplicar antes del código: `supabase/migrations/202609120001_hardening_and_ops.sql` (o regenerar `artifacts/ACTIVAR_RIDEPERKS.sql` con `node scripts/prepare-supabase.mjs`).
+
+- **Catálogo del conductor**: `rp_settings.catalog_live` (por defecto `false`). Se activa desde el interruptor en `/admin/platform`. Oculto, Beneficios y Comercios muestran «Próximamente» y el detalle de beneficio devuelve 404. Los tests live de conductor requieren `catalog_live = true`.
+- **Pausa de beneficios**: pausar un beneficio desde el admin lo marca `admin_paused`; el comercio no puede reactivarlo.
+- **Cambios de comercio**: nombre, dirección y categoría pasan por revisión en `/admin/reviews`; descripción y teléfono se guardan directo.
+- **Responsable de comercio**: solo cuentas con rol comercio (`rp_save_business` ya no promueve conductores).
+- **Cierre de cuenta**: además del perfil, borra capturas de verificación, mensajes de soporte y la inscripción en la lista de espera. Las capturas también se borran al aprobar o rechazar una verificación.
+- **Pagos**: cron diario `/api/cron/daily` (`vercel.json`) vence órdenes pendientes de más de 24 h y envía recordatorio 2–3 días antes del vencimiento. En `/admin/payments` se puede acreditar una orden manualmente (requiere identidad administrativa; queda en auditoría).
+- **Límites del comercio**: consultar 240 y confirmar 120 por 10 minutos, por persona.
+- **Cabeceras**: HSTS activo. La política CSP se envía como `Content-Security-Policy-Report-Only`; tras verificar `/driver/membership` con Yappy sin avisos en la consola, cambiar la clave en `next.config.mjs` a `Content-Security-Policy`.
+
+### Variables nuevas (todas opcionales salvo `CRON_SECRET`)
+
+| Variable | Para qué |
+| --- | --- |
+| `CRON_SECRET` | Autoriza el cron diario (Vercel lo envía como Bearer). |
+| `RESEND_API_KEY`, `EMAIL_FROM` | Recibos, aviso de verificación y recordatorios. Sin ellas los correos se omiten. |
+| `TURNSTILE_SECRET_KEY`, `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Captcha de Cloudflare en el registro. Sin ambas no se muestra. |
+
+### Recuperación de contraseña (pendiente de configuración externa)
+
+En Supabase → Authentication → SMTP Settings, activar SMTP propio (por ejemplo Resend: host `smtp.resend.com`, puerto 465, usuario `resend`, contraseña = API key) con un remitente de un dominio verificado. El SMTP por defecto de Supabase solo permite unos pocos correos por hora. Después probar `/recover` con una cuenta real.

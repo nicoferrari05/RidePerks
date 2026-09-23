@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
       { status: 401 },
     );
   try {
-    await rateLimit("redeem:" + profile.id, 60, 600);
+    await rateLimit("preview:" + profile.id, 240, 600);
   } catch {
     return NextResponse.json(
       {

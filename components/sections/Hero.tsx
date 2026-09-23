@@ -51,12 +51,12 @@ export default function Hero() {
           </p>
 
           <div className="mt-10 flex flex-col items-start gap-5 sm:flex-row sm:items-center">
-            <a
-              href="#waitlist"
+            <Link
+              href="/register"
               className="cursor-pointer rounded-full bg-ember px-7 py-3.5 text-[15px] font-semibold text-white transition-[transform,background-color] duration-150 ease-out hover:bg-ember-2 active:scale-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy"
             >
-              Únete a la lista
-            </a>
+              Crear mi cuenta gratis
+            </Link>
             <Counter />
           </div>
         </div>

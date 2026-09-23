@@ -2,6 +2,7 @@
 import { useActionState, useState } from "react";
 import Link from "next/link";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
+import Turnstile from "@/components/Turnstile";
 import {
   login,
   signup,
@@ -184,6 +185,7 @@ export function AuthForm({
               .
             </span>
           </label>
+          <Turnstile key={String(pending)} />
         </>
       )}
       <Feedback state={state} />

@@ -4,6 +4,8 @@ import {
   enrollAdmin,
   manageAccess,
   reviewBenefit,
+  reviewBusinessChange,
+  creditPayment,
 } from "@/lib/platform/access-actions";
 import { Feedback } from "./Forms";
 export function AdminIdentity() {
@@ -123,5 +125,55 @@ export function BenefitReview({ id }: { id: string }) {
         </button>
       </div>
     </form>
+  );
+}
+export function BusinessChangeReview({ id }: { id: string }) {
+  const [state, action, pending] = useActionState(reviewBusinessChange, {});
+  return (
+    <form action={action} className="rp-form">
+      <input name="id" type="hidden" value={id} />
+      <label className="rp-field">
+        Observaciones
+        <textarea name="notes" maxLength={1000} />
+      </label>
+      <Feedback state={state} />
+      <div className="rp-actions">
+        <button
+          name="decision"
+          value="approve"
+          className="rp-button"
+          disabled={pending}
+        >
+          Aprobar cambio
+        </button>
+        <button
+          name="decision"
+          value="return"
+          className="rp-button secondary"
+          disabled={pending}
+        >
+          Devolver
+        </button>
+      </div>
+    </form>
+  );
+}
+export function CreditPayment({ order }: { order: string }) {
+  const [state, action, pending] = useActionState(creditPayment, {});
+  return (
+    <details>
+      <summary className="rp-text-link">Acreditar manualmente →</summary>
+      <form action={action} className="rp-form mt-3">
+        <input name="order" type="hidden" value={order} />
+        <label className="rp-field">
+          Motivo (por ejemplo, comprobante de Yappy)
+          <textarea name="reason" required minLength={3} maxLength={1000} />
+        </label>
+        <Feedback state={state} />
+        <button className="rp-button secondary" disabled={pending}>
+          {pending ? "Acreditando…" : "Confirmar acreditación"}
+        </button>
+      </form>
+    </details>
   );
 }

@@ -1,10 +1,10 @@
 import { test, expect } from "@playwright/test";
-test("landing keeps waitlist and links to driver login", async ({ page }) => {
+test("landing points to sign-up and links to driver login", async ({ page }) => {
   await page.goto("/");
   await expect(
     page.getByRole("link", { name: "Iniciar sesión" }),
   ).toBeVisible();
-  await expect(page.locator("#waitlist")).toBeAttached();
+  await expect(page.locator("#unete")).toBeAttached();
   await page.getByRole("link", { name: "Iniciar sesión" }).click();
   await expect(page).toHaveURL(/\/login/);
   await expect(page.getByRole("heading", { level: 1 })).toContainText(

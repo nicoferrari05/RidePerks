@@ -3,6 +3,7 @@ import { requireAdmin } from "@/lib/platform/data";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
 import { Heading } from "@/components/platform/ui";
 import { money, dateLabel } from "@/lib/platform/types";
+import { CreditPayment } from "@/components/platform/AccessForms";
 import "../../platform.css";
 export const metadata = {
   title: "Pagos de membresías · RidePerks",
@@ -56,6 +57,7 @@ export default async function Page() {
                       Vigencia otorgada hasta {dateLabel(o.period_end)}
                     </p>
                   )}
+                  {o.status !== "paid" && <CreditPayment order={o.id} />}
                 </div>
               </article>
             ))
@@ -65,7 +67,7 @@ export default async function Page() {
         </div>
         <p className="rp-muted">
           Para investigar un cobro, compara la referencia con Yappy Comercial.
-          Este panel no ejecuta devoluciones.
+          Este panel no ejecuta devoluciones. Las órdenes pendientes pasan a «Vencido» después de 24 horas; si Yappy confirma un pago que no llegó, acredítalo manualmente con su motivo.
         </p>
       </main>
     </div>

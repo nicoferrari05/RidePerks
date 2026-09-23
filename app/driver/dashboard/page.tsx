@@ -5,9 +5,11 @@ import {
   getRedemptions,
   getMonthlySavings,
   getTotalSavings,
+  catalogLive,
+  getBenefits,
 } from "@/lib/platform/data";
 import { money, dateLabel, platforms, statuses } from "@/lib/platform/types";
-import { Empty, Logo } from "@/components/platform/ui";
+import { Empty, Logo, BenefitCard } from "@/components/platform/ui";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
 import SavingsCard from "@/components/platform/SavingsCard";
 export default async function Page() {
@@ -17,6 +19,8 @@ export default async function Page() {
     getMonthlySavings(p.id),
     getTotalSavings(p.id),
   ]);
+  const live = await catalogLive();
+  const featured = live ? (await getBenefits()).slice(0, 3) : [];
   const access = await getSupabaseAdmin().rpc("rp_has_access", {
     p_driver: p.id,
   });
@@ -110,13 +114,21 @@ export default async function Page() {
             Ver beneficios <ArrowRight size={16} />
           </Link>
         </div>
-        <Empty title="Próximamente: más beneficios">
-          <p>
-            Estamos cerrando los últimos detalles con nuestros comercios
-            aliados. Muy pronto vas a encontrar aquí descuentos en
-            mantenimiento, comida y combustible.
-          </p>
-        </Empty>
+        {featured.length ? (
+          <div className="rp-grid">
+            {featured.map((b) => (
+              <BenefitCard key={b.id} benefit={b} />
+            ))}
+          </div>
+        ) : (
+          <Empty title="Próximamente: más beneficios">
+            <p>
+              Estamos cerrando los últimos detalles con nuestros comercios
+              aliados. Muy pronto vas a encontrar aquí descuentos en
+              mantenimiento, comida y combustible.
+            </p>
+          </Empty>
+        )}
       </section>
       <section>
         <div className="rp-section-head">
