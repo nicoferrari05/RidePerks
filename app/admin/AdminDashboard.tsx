@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import LogoMark from "@/components/LogoMark";
+import { ChevronDown } from "lucide-react";
+import { Heading, Empty } from "@/components/platform/ui";
 
 type Platform = "uber" | "indrive" | "pedidosya" | "multiple";
 type EntryStatus = "pending" | "verified" | "rejected";
@@ -25,12 +26,6 @@ const STATUS_LABEL: Record<EntryStatus, string> = {
   pending: "Pendiente",
   verified: "Verificado",
   rejected: "Rechazado",
-};
-
-const STATUS_STYLE: Record<EntryStatus, string> = {
-  pending: "bg-bone-2 text-mute",
-  verified: "bg-verde/15 text-verde",
-  rejected: "bg-ember-soft text-ember-2",
 };
 
 const PLATFORM_LABEL: Record<Platform, string> = {
@@ -117,12 +112,6 @@ export default function AdminDashboard() {
     if (!res.ok) setShowCounter(!next);
   }
 
-  async function handleLogout() {
-    await fetch("/api/admin/logout", { method: "POST" });
-    router.replace("/admin/login");
-    router.refresh();
-  }
-
   const filtered = useMemo(() => {
     if (!entries) return [];
     const q = query.trim().toLowerCase();
@@ -161,251 +150,200 @@ export default function AdminDashboard() {
   }, [entries]);
 
   return (
-    <main className="min-h-screen bg-paper pb-24">
-      <header className="sticky top-0 z-10 flex items-center justify-between border-b border-line bg-paper/90 px-6 py-4 backdrop-blur">
-        <div className="inline-flex items-center gap-2">
-          <LogoMark size="sm" />
-          <span className="rounded-full bg-navy/10 px-2 py-0.5 text-[10px] font-medium tracking-widest text-navy/70">
-            ADMIN
+    <>
+      <Heading title="Lista de espera">
+        Conductores que se anotaron antes del lanzamiento y sus referidos.
+      </Heading>
+
+      {error && (
+        <p className="rp-error" role="alert">
+          {error}
+        </p>
+      )}
+
+      <dl className="rp-metrics">
+        <div>
+          <dt>Total en lista</dt>
+          <dd>{stats.total}</dd>
+        </div>
+        <div>
+          <dt>Verificados</dt>
+          <dd>{stats.verified}</dd>
+        </div>
+        <div>
+          <dt>Pendientes</dt>
+          <dd>{stats.pending}</dd>
+        </div>
+        <div>
+          <dt>Referidos totales</dt>
+          <dd>{stats.referrals}</dd>
+        </div>
+      </dl>
+
+      <div className="rp-actions">
+        {(["uber", "indrive", "pedidosya", "multiple", "none"] as const).map((p) => (
+          <span key={p} className="rp-badge">
+            {p === "none" ? "Sin especificar" : PLATFORM_LABEL[p]}
+            <strong>{platformCounts[p] ?? 0}</strong>
           </span>
-        </div>
+        ))}
+      </div>
+
+      <section className="rp-panel rp-stack">
+        <h2>Contador público: {showCounter ? "visible" : "oculto"}</h2>
+        <p className="rp-muted">
+          Muestra u oculta el número de conductores en la página principal.
+        </p>
         <button
-          onClick={handleLogout}
-          className="cursor-pointer rounded-full border border-line px-4 py-2 text-sm font-medium text-navy transition-colors duration-150 hover:bg-bone-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ember"
+          type="button"
+          className="rp-button secondary"
+          onClick={toggleCounter}
+          disabled={showCounter === null}
+          aria-pressed={showCounter ?? false}
         >
-          Cerrar sesión
+          {showCounter ? "Ocultar contador" : "Mostrar contador"}
         </button>
-      </header>
+      </section>
 
-      <div className="mx-auto max-w-6xl px-6 pt-8">
-        {error && (
-          <p className="mb-4 rounded-xl bg-ember-soft px-4 py-3 text-sm text-ember-2">{error}</p>
-        )}
-
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard label="Total en lista" value={stats.total} />
-          <StatCard label="Verificados" value={stats.verified} tone="verde" />
-          <StatCard label="Pendientes" value={stats.pending} />
-          <StatCard label="Referidos totales" value={stats.referrals} tone="ember" />
-        </div>
-
-        <div className="mt-4 flex flex-wrap gap-2 text-xs text-mute">
-          {(["uber", "indrive", "pedidosya", "multiple", "none"] as const).map((p) => (
-            <span key={p} className="rounded-full border border-line bg-white px-3 py-1.5">
-              {p === "none" ? "Sin especificar" : PLATFORM_LABEL[p]}{" "}
-              <span className="font-mono font-semibold text-navy">{platformCounts[p] ?? 0}</span>
-            </span>
-          ))}
-        </div>
-
-        <div className="mt-6 flex flex-col justify-between gap-4 rounded-2xl border border-line bg-white p-5 sm:flex-row sm:items-center">
-          <div>
-            <p className="font-semibold text-navy">Contador público</p>
-            <p className="text-sm text-mute">
-              Muestra u oculta el número de conductores en la página principal.
-            </p>
-          </div>
-          <button
-            role="switch"
-            aria-checked={showCounter ?? false}
-            aria-label="Mostrar contador público"
-            onClick={toggleCounter}
-            disabled={showCounter === null}
-            className={`relative h-8 w-14 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ember disabled:cursor-wait ${
-              showCounter ? "bg-verde" : "bg-line"
-            }`}
-          >
-            <span
-              className={`absolute left-1 top-1 h-6 w-6 rounded-full bg-white shadow transition-transform duration-200 ease-out ${
-                showCounter ? "translate-x-6" : "translate-x-0"
-              }`}
-            />
-          </button>
-        </div>
-
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <label className="sr-only" htmlFor="search">
-            Buscar
-          </label>
+      <div className="rp-stack rp-waitlist-tools">
+        <div className="rp-field">
+          <label htmlFor="search">Buscar</label>
           <input
             id="search"
             type="search"
-            placeholder="Buscar por nombre, email o WhatsApp…"
+            placeholder="Nombre, correo o WhatsApp"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full rounded-full border border-line bg-white px-4 py-2.5 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-ember sm:max-w-xs"
           />
-          <div className="flex flex-wrap gap-2">
-            <FilterGroup
-              value={platformFilter}
-              onChange={setPlatformFilter}
-              options={[
-                ["all", "Todas"],
-                ["uber", "Uber"],
-                ["indrive", "InDrive"],
-                ["pedidosya", "PedidosYa"],
-                ["multiple", "Varias"],
-                ["none", "Sin especificar"],
-              ]}
-            />
-            <FilterGroup
-              value={statusFilter}
-              onChange={setStatusFilter}
-              options={[
-                ["all", "Todos"],
-                ["pending", "Pendiente"],
-                ["verified", "Verificado"],
-                ["rejected", "Rechazado"],
-              ]}
-            />
-          </div>
         </div>
+        <FilterGroup
+          label="Plataforma"
+          value={platformFilter}
+          onChange={setPlatformFilter}
+          options={[
+            ["all", "Todas"],
+            ["uber", "Uber"],
+            ["indrive", "InDrive"],
+            ["pedidosya", "PedidosYa"],
+            ["multiple", "Varias"],
+            ["none", "Sin especificar"],
+          ]}
+        />
+        <FilterGroup
+          label="Estado"
+          value={statusFilter}
+          onChange={setStatusFilter}
+          options={[
+            ["all", "Todos"],
+            ["pending", "Pendiente"],
+            ["verified", "Verificado"],
+            ["rejected", "Rechazado"],
+          ]}
+        />
+      </div>
 
-        <div className="mt-4 overflow-x-auto rounded-2xl border border-line bg-white">
-          <table className="w-full min-w-[920px] text-left text-sm">
+      {entries === null ? (
+        <div className="rp-skeleton" aria-label="Cargando" />
+      ) : filtered.length === 0 ? (
+        <Empty title={entries.length ? "Sin resultados" : "No hay conductores todavía"}>
+          <p>
+            {entries.length
+              ? "Prueba con otra búsqueda o quita los filtros."
+              : "Las inscripciones de la lista de espera aparecerán aquí."}
+          </p>
+        </Empty>
+      ) : (
+        <div className="rp-table-wrap">
+          <table className="rp-table">
             <thead>
-              <tr className="border-b border-line text-xs uppercase tracking-wide text-mute">
-                <th className="px-5 py-3 font-medium">#</th>
-                <th className="px-5 py-3 font-medium">Nombre</th>
-                <th className="px-5 py-3 font-medium">Email</th>
-                <th className="px-5 py-3 font-medium">Plataforma</th>
-                <th className="px-5 py-3 font-medium">WhatsApp</th>
-                <th className="px-5 py-3 font-medium">Referidos</th>
-                <th className="px-5 py-3 font-medium">Fecha</th>
-                <th className="px-5 py-3 font-medium">Estado</th>
+              <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Plataforma</th>
+                <th>WhatsApp</th>
+                <th>Referidos</th>
+                <th>Fecha</th>
+                <th>Estado</th>
               </tr>
             </thead>
             <tbody>
-              {entries === null && (
-                <tr>
-                  <td colSpan={8} className="px-5 py-10 text-center text-mute">
-                    Cargando…
-                  </td>
-                </tr>
-              )}
-              {entries !== null && filtered.length === 0 && (
-                <tr>
-                  <td colSpan={8} className="px-5 py-10 text-center text-mute">
-                    No hay conductores todavía.
-                  </td>
-                </tr>
-              )}
               {filtered.map((entry) => (
-                <tr key={entry.id} className="border-b border-line last:border-none">
-                  <td className="px-5 py-3.5 font-mono text-xs text-mute">{entry.position}</td>
-                  <td className="px-5 py-3.5 font-medium text-navy">{entry.full_name}</td>
-                  <td className="px-5 py-3.5">
-                    <a
-                      href={`mailto:${entry.email}`}
-                      className="text-ink underline decoration-line underline-offset-4 hover:text-ember focus-visible:outline focus-visible:outline-2 focus-visible:outline-ember"
-                    >
-                      {entry.email}
-                    </a>
+                <tr key={entry.id}>
+                  <td data-label="#" className="rp-table-pos">
+                    {entry.position}
                   </td>
-                  <td className="px-5 py-3.5 text-ink">
-                    {entry.platform ? PLATFORM_LABEL[entry.platform] : <span className="text-mute">-</span>}
+                  <td data-label="Nombre" className="rp-table-name">
+                    {entry.full_name}
                   </td>
-                  <td className="px-5 py-3.5">
+                  <td data-label="Correo">
+                    <a href={`mailto:${entry.email}`}>{entry.email}</a>
+                  </td>
+                  <td data-label="Plataforma">
+                    {entry.platform ? PLATFORM_LABEL[entry.platform] : <span className="rp-muted">-</span>}
+                  </td>
+                  <td data-label="WhatsApp">
                     {entry.whatsapp ? (
-                      <a
-                        href={waLink(entry.whatsapp)}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="font-mono text-[13px] text-navy underline decoration-line underline-offset-4 hover:text-ember focus-visible:outline focus-visible:outline-2 focus-visible:outline-ember"
-                      >
+                      <a href={waLink(entry.whatsapp)} target="_blank" rel="noreferrer">
                         {entry.whatsapp}
                       </a>
                     ) : (
-                      <span className="text-mute">-</span>
+                      <span className="rp-muted">-</span>
                     )}
                   </td>
-                  <td className="px-5 py-3.5">
+                  <td data-label="Referidos">
                     {entry.referral_count > 0 ? (
-                      <span className="rounded-full bg-ember-soft px-2.5 py-1 font-mono text-xs font-semibold text-ember-2">
-                        {entry.referral_count}
-                      </span>
+                      <span className="rp-badge good">{entry.referral_count}</span>
                     ) : (
-                      <span className="text-mute">0</span>
+                      <span className="rp-muted">0</span>
                     )}
                   </td>
-                  <td className="whitespace-nowrap px-5 py-3.5 text-mute">
+                  <td data-label="Fecha" className="rp-table-date">
                     {formatDate(entry.created_at)}
                   </td>
-                  <td className="px-5 py-3.5">
+                  <td data-label="Estado">
                     <label className="sr-only" htmlFor={`status-${entry.id}`}>
                       Estado de {entry.full_name}
                     </label>
-                    <div className={`relative inline-flex rounded-full ${STATUS_STYLE[entry.status]}`}>
+                    <span className="rp-status-select" data-status={entry.status}>
                       <select
                         id={`status-${entry.id}`}
                         value={entry.status}
                         onChange={(e) => updateStatus(entry.id, e.target.value as EntryStatus)}
-                        className="cursor-pointer appearance-none rounded-full bg-transparent py-1.5 pl-3 pr-7 text-xs font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-ember"
                       >
                         <option value="pending">{STATUS_LABEL.pending}</option>
                         <option value="verified">{STATUS_LABEL.verified}</option>
                         <option value="rejected">{STATUS_LABEL.rejected}</option>
                       </select>
-                      {/* Native select arrows look inconsistent across
-                          browsers and clash with the pill shape; same
-                          custom-chevron treatment as the platform select in
-                          WaitlistForm.tsx. */}
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="pointer-events-none absolute right-2.5 top-1/2 h-3 w-3 -translate-y-1/2"
-                        aria-hidden="true"
-                      >
-                        <path d="m6 9 6 6 6-6" />
-                      </svg>
-                    </div>
+                      <ChevronDown size={14} aria-hidden="true" />
+                    </span>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-      </div>
-    </main>
-  );
-}
-
-function StatCard({ label, value, tone }: { label: string; value: number; tone?: "verde" | "ember" }) {
-  const toneClass = tone === "verde" ? "text-verde" : tone === "ember" ? "text-ember" : "text-navy";
-  return (
-    <div className="rounded-2xl border border-line bg-white p-5">
-      <p className="text-xs uppercase tracking-wide text-mute">{label}</p>
-      <p className={`mt-2 text-3xl font-semibold ${toneClass}`}>{value}</p>
-    </div>
+      )}
+    </>
   );
 }
 
 function FilterGroup<T extends string>({
+  label,
   value,
   onChange,
   options,
 }: {
+  label: string;
   value: T;
   onChange: (v: T) => void;
   options: [T, string][];
 }) {
   return (
-    <div className="flex flex-wrap gap-1 rounded-full border border-line bg-white p-1">
-      {options.map(([v, label]) => (
-        <button
-          key={v}
-          type="button"
-          onClick={() => onChange(v)}
-          aria-pressed={value === v}
-          className={`cursor-pointer rounded-full px-3 py-1.5 text-xs font-medium transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ember ${
-            value === v ? "bg-navy text-bone" : "text-mute hover:text-navy"
-          }`}
-        >
-          {label}
+    <div className="rp-subnav" role="group" aria-label={label}>
+      {options.map(([v, text]) => (
+        <button key={v} type="button" onClick={() => onChange(v)} aria-pressed={value === v}>
+          {text}
         </button>
       ))}
     </div>

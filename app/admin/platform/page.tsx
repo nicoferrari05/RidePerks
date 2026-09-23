@@ -2,7 +2,8 @@ import { ResolveSupport } from "@/components/platform/SupportForm";
 import Link from "next/link";
 import { requireAdmin, catalogLive } from "@/lib/platform/data";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
-import { Logo, Heading, Empty } from "@/components/platform/ui";
+import { Heading, Empty } from "@/components/platform/ui";
+import AdminShell from "@/components/platform/AdminShell";
 import {
   BusinessForm,
   BenefitForm,
@@ -21,7 +22,6 @@ import {
   dateLabel,
   platforms,
 } from "@/lib/platform/types";
-import "../../platform.css";
 export const metadata = {
   title: "Administrar plataforma · RidePerks",
   robots: { index: false, follow: false },
@@ -126,14 +126,19 @@ export default async function Page({
     }
   }
   const rows = result.data || [];
-  const contacts = new Map<string, { full_name: string; phone: string | null }>();
+  const contacts = new Map<
+    string,
+    { full_name: string; phone: string | null }
+  >();
   if (tab === "support" && rows.length) {
     const people = await db
       .from("rp_profiles")
       .select("id,full_name,phone")
-      .in("id", rows.map((r) => r.driver_id));
-    for (const person of people.data || [])
-      contacts.set(person.id, person);
+      .in(
+        "id",
+        rows.map((r) => r.driver_id),
+      );
+    for (const person of people.data || []) contacts.set(person.id, person);
   }
   const whatsapp = (phone: string | null | undefined, text: string) =>
     phone
@@ -170,348 +175,323 @@ export default async function Page({
         )
       : [];
   return (
-    <div className="rp-app">
-      <header className="rp-page-header">
-        <Logo />
-        <Link className="rp-text-link" href="/admin">
-          Lista de espera →
-        </Link>
-      </header>
-      <main className="rp-main rp-stack">
-        <Heading title="Tu plataforma, al día">
-          Gestiona los aliados, beneficios y verificaciones de RidePerks.
-        </Heading>
-        <Link className="rp-text-link" href="/admin/payments">
-          Pagos de membresías →
-        </Link>
-        <CatalogToggle live={catalog} />
-        <div className="rp-actions">
-          <Link className="rp-text-link" href="/admin/reviews">
-            Revisar propuestas de beneficios →
+    <AdminShell>
+      <Heading title="Tu plataforma, al día">
+        Gestiona los aliados, beneficios y verificaciones de RidePerks.
+      </Heading>
+      <CatalogToggle live={catalog} />
+      {tab === "drivers" && (
+        <form className="rp-filters">
+          <input type="hidden" name="tab" value="drivers" />
+          <div className="rp-field">
+            <label htmlFor="q">Buscar por nombre o ID de cuenta</label>
+            <input name="q" id="q" defaultValue={search} maxLength={100} />
+          </div>
+          <button className="rp-button dark">Buscar cuenta</button>
+        </form>
+      )}
+      <nav className="rp-subnav" aria-label="Administración">
+        {[
+          ["verifications", "Verificaciones"],
+          ["drivers", "Cuentas"],
+          ["businesses", "Comercios"],
+          ["benefits", "Beneficios"],
+          ["support", "Ayuda"],
+        ].map(([v, l]) => (
+          <Link
+            key={v}
+            href={"/admin/platform?tab=" + v}
+            aria-current={tab === v ? "page" : undefined}
+          >
+            {l}
           </Link>
-          <Link className="rp-text-link" href="/admin/access">
-            Identidad administrativa →
-          </Link>
-        </div>
-        {tab === "drivers" && (
-          <form className="rp-filters">
-            <input type="hidden" name="tab" value="drivers" />
-            <div className="rp-field">
-              <label htmlFor="q">Buscar por nombre o ID de cuenta</label>
-              <input name="q" id="q" defaultValue={search} maxLength={100} />
-            </div>
-            <button className="rp-button dark">Buscar cuenta</button>
-          </form>
-        )}
-        <nav className="rp-subnav" aria-label="Administración">
-          {[
-            ["verifications", "Verificaciones"],
-            ["drivers", "Cuentas"],
-            ["businesses", "Comercios"],
-            ["benefits", "Beneficios"],
-            ["support", "Ayuda"],
-          ].map(([v, l]) => (
-            <Link
-              key={v}
-              href={"/admin/platform?tab=" + v}
-              aria-current={tab === v ? "page" : undefined}
+        ))}
+      </nav>
+      {tab === "verifications" && (
+        <section className="rp-panel">
+          <h2>Verificación manual de conductores</h2>
+          <ol className="rp-steps">
+            <li>
+              Abre la captura y comprueba que corresponde al perfil de una app
+              de conductores.
+            </li>
+            <li>Compara el nombre y la plataforma con la cuenta registrada.</li>
+            <li>
+              Aprueba la solicitud o pide una corrección con un mensaje claro.
+            </li>
+          </ol>
+          <p className="rp-muted">
+            Subir una imagen no aprueba la cuenta automáticamente. Solo después
+            de tu aprobación podrá generar códigos de beneficio.
+          </p>
+        </section>
+      )}
+      <div
+        className={
+          tab === "benefits" || tab === "businesses"
+            ? "rp-admin-grid"
+            : "rp-stack"
+        }
+      >
+        <section className="rp-stack">
+          {!rows.length && (
+            <Empty
+              title={
+                tab === "verifications"
+                  ? "Sin verificaciones pendientes"
+                  : "Todavía no hay registros"
+              }
             >
-              {l}
-            </Link>
-          ))}
-        </nav>
-        {tab === "verifications" && (
-          <section className="rp-panel">
-            <h2>Verificación manual de conductores</h2>
-            <ol className="rp-steps">
-              <li>
-                Abre la captura y comprueba que corresponde al perfil de una app
-                de conductores.
-              </li>
-              <li>
-                Compara el nombre y la plataforma con la cuenta registrada.
-              </li>
-              <li>
-                Aprueba la solicitud o pide una corrección con un mensaje claro.
-              </li>
-            </ol>
-            <p className="rp-muted">
-              Subir una imagen no aprueba la cuenta automáticamente. Solo
-              después de tu aprobación podrá generar códigos de beneficio.
-            </p>
-          </section>
-        )}
-        <div
-          className={
-            tab === "benefits" || tab === "businesses"
-              ? "rp-admin-grid"
-              : "rp-stack"
-          }
-        >
-          <section className="rp-stack">
-            {!rows.length && (
-              <Empty
-                title={
-                  tab === "verifications"
-                    ? "Sin verificaciones pendientes"
-                    : "Todavía no hay registros"
-                }
-              >
-                <p>
-                  {tab === "verifications"
-                    ? "Las nuevas solicitudes de conductores aparecerán aquí."
-                    : "Agrega la información confirmada para publicarla en la plataforma."}
+              <p>
+                {tab === "verifications"
+                  ? "Las nuevas solicitudes de conductores aparecerán aquí."
+                  : "Agrega la información confirmada para publicarla en la plataforma."}
+              </p>
+            </Empty>
+          )}
+          {tab === "businesses" &&
+            (rows as Business[]).map((b) => (
+              <article className="rp-panel" key={b.id}>
+                <h2>{b.name}</h2>
+                <p className="rp-muted mt-2">{b.address}</p>
+                <p className="rp-muted">
+                  {b.owner_user_id
+                    ? "Cuenta del comercio vinculada"
+                    : "Falta vincular la cuenta del comercio"}
                 </p>
-              </Empty>
-            )}
-            {tab === "businesses" &&
-              (rows as Business[]).map((b) => (
-                <article className="rp-panel" key={b.id}>
-                  <h2>{b.name}</h2>
-                  <p className="rp-muted mt-2">{b.address}</p>
-                  <p className="rp-muted">
-                    {b.owner_user_id
-                      ? "Cuenta del comercio vinculada"
-                      : "Falta vincular la cuenta del comercio"}
-                  </p>
-                  <div className="rp-actions mt-4">
-                    <Link
-                      className="rp-text-link"
-                      href={"/admin/platform?tab=businesses&edit=" + b.id}
-                    >
-                      Editar comercio
-                    </Link>
-                    <ToggleForm
-                      table="rp_businesses"
-                      id={b.id}
-                      active={b.is_active}
-                    />
-                  </div>
-                </article>
-              ))}
-            {tab === "benefits" &&
-              (rows as Benefit[]).map((b) => (
-                <article className="rp-panel" key={b.id}>
-                  <h2>{b.title}</h2>
-                  <p className="rp-muted mt-2">{b.discount_label}</p>
-                  <span
-                    className={"rp-badge " + (b.is_active ? "good" : "pending")}
+                <div className="rp-actions mt-4">
+                  <Link
+                    className="rp-text-link"
+                    href={"/admin/platform?tab=businesses&edit=" + b.id}
                   >
-                    {b.is_active ? "Publicado" : "Pausado"}
-                  </span>
-                  <div className="rp-actions mt-4">
-                    <Link
-                      className="rp-text-link"
-                      href={"/admin/platform?tab=benefits&edit=" + b.id}
-                    >
-                      Editar beneficio
-                    </Link>
-                    <ToggleForm
-                      table="rp_benefits"
-                      id={b.id}
-                      active={b.is_active}
-                    />
-                  </div>
-                </article>
-              ))}
-            {tab === "drivers" &&
-              (rows as Profile[]).map((p) => (
-                <article className="rp-panel" key={p.id}>
-                  <div className="rp-heading">
-                    <h2>{p.full_name || "Cuenta sin nombre"}</h2>
-                    <span className="rp-badge">
-                      {p.closed_at
-                        ? "Cuenta cerrada"
-                        : p.role === "business"
-                          ? "Comercio"
-                          : statuses[p.status]}
-                    </span>
-                  </div>
-                  <p className="rp-muted mt-2">
-                    {p.phone} · {p.platform}
-                  </p>
-                  <p className="rp-muted break-all my-3">
-                    ID de cuenta: {p.id}
-                  </p>
-                  {p.role === "driver" && !p.closed_at && (
-                    <>
-                      <Link
-                        className="rp-text-link"
-                        href={"/admin/access?driver=" + p.id}
-                      >
-                        Administrar membresía y acceso →
-                      </Link>
-                      <DriverStatusForm
-                        id={p.id}
-                        suspended={p.status === "suspended"}
-                      />
-                    </>
-                  )}
-                  {!p.closed_at && <CloseProfileForm id={p.id} />}
-                </article>
-              ))}
-            {tab === "support" &&
-              rows.map((r) => (
-                <article className="rp-panel" key={r.id}>
-                  <h2>
-                    {
-                      (
-                        {
-                          benefit: "Beneficio",
-                          account: "Cuenta",
-                          privacy: "Datos personales",
-                          delete: "Solicitud de eliminación",
-                        } as Record<string, string>
-                      )[r.topic]
-                    }
-                  </h2>
-                  {(() => {
-                    const person = contacts.get(r.driver_id);
-                    const link = whatsapp(
-                      person?.phone,
-                      "Hola " +
-                        (person?.full_name.split(" ")[0] || "") +
-                        ", te escribimos de RidePerks sobre tu solicitud de ayuda.",
-                    );
-                    return (
-                      <p className="rp-muted mt-2">
-                        {person?.full_name || "Cuenta sin nombre"}
-                        {person?.phone ? " · " + person.phone : ""}{" "}
-                        {link && (
-                          <a
-                            className="rp-text-link"
-                            href={link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            Escribir por WhatsApp ↗
-                          </a>
-                        )}
-                      </p>
-                    );
-                  })()}
-                  <p className="rp-muted break-all mt-2">
-                    Cuenta:{" "}
-                    <Link
-                      className="rp-text-link"
-                      href={"/admin/platform?tab=drivers&q=" + r.driver_id}
-                    >
-                      {r.driver_id}
-                    </Link>
-                  </p>
-                  <p className="my-4 whitespace-pre-line">{r.message}</p>
-                  <p className="rp-muted mb-4">
-                    Busca el ID en Cuentas para contactar por WhatsApp. Resolver
-                    esta solicitud no elimina datos automáticamente.
-                  </p>
-                  <ResolveSupport id={r.id} />
-                </article>
-              ))}
-            {verificationRows.map((v) => (
-              <article className="rp-panel" key={v.id}>
-                <h2>{v.name}</h2>
-                <p className="rp-muted mb-3">
-                  {v.platform} · Enviada el {dateLabel(v.created_at)}
-                </p>
-                {v.url && (
-                  // The private signed URL must not be cached by the public image optimizer.
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={v.url}
-                    alt={"Captura del perfil de " + v.name}
-                    className="rp-verification-preview"
+                    Editar comercio
+                  </Link>
+                  <ToggleForm
+                    table="rp_businesses"
+                    id={b.id}
+                    active={b.is_active}
                   />
-                )}
-                {v.url ? (
-                  <a
-                    className="rp-text-link"
-                    href={v.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Abrir imagen privada (enlace válido 5 min) ↗
-                  </a>
-                ) : (
-                  <p className="rp-error">
-                    No pudimos abrir la imagen. Recarga la página antes de
-                    revisar.
-                  </p>
-                )}
-                {whatsapp(
-                  v.phone,
-                  "Hola " +
-                    v.name.split(" ")[0] +
-                    ", te escribimos de RidePerks sobre la verificación de tu cuenta.",
-                ) && (
-                  <a
-                    className="rp-text-link"
-                    href={
-                      whatsapp(
-                        v.phone,
-                        "Hola " +
-                          v.name.split(" ")[0] +
-                          ", te escribimos de RidePerks sobre la verificación de tu cuenta.",
-                      )!
-                    }
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Contactar por WhatsApp ↗
-                  </a>
-                )}
-                {v.url && <ReviewForm id={v.id} />}
+                </div>
               </article>
             ))}
-            <div className="rp-actions">
-              {page > 0 && (
-                <Link
-                  className="rp-button secondary"
-                  href={"/admin/platform?tab=" + tab + "&page=" + (page - 1)}
+          {tab === "benefits" &&
+            (rows as Benefit[]).map((b) => (
+              <article className="rp-panel" key={b.id}>
+                <h2>{b.title}</h2>
+                <p className="rp-muted mt-2">{b.discount_label}</p>
+                <span
+                  className={"rp-badge " + (b.is_active ? "good" : "pending")}
                 >
-                  Anterior
-                </Link>
-              )}
-              {(result.count || 0) > (page + 1) * 50 && (
-                <Link
-                  className="rp-button secondary"
-                  href={"/admin/platform?tab=" + tab + "&page=" + (page + 1)}
-                >
-                  Siguiente
-                </Link>
-              )}
-            </div>
-          </section>
-          {(tab === "businesses" || tab === "benefits") && (
-            <aside className="rp-panel">
-              <h2 className="mb-5">
-                {edit ? "Editar" : "Agregar"}{" "}
-                {tab === "businesses" ? "comercio" : "beneficio"}
-              </h2>
-              {edit && (
-                <Link
-                  className="rp-text-link mb-4"
-                  href={"/admin/platform?tab=" + tab}
-                >
-                  Agregar otro →
-                </Link>
-              )}
-              {tab === "businesses" ? (
-                <BusinessForm
-                  key={edit?.id || "new"}
-                  business={edit as Business | undefined}
-                  accounts={accountOptions}
+                  {b.is_active ? "Publicado" : "Pausado"}
+                </span>
+                <div className="rp-actions mt-4">
+                  <Link
+                    className="rp-text-link"
+                    href={"/admin/platform?tab=benefits&edit=" + b.id}
+                  >
+                    Editar beneficio
+                  </Link>
+                  <ToggleForm
+                    table="rp_benefits"
+                    id={b.id}
+                    active={b.is_active}
+                  />
+                </div>
+              </article>
+            ))}
+          {tab === "drivers" &&
+            (rows as Profile[]).map((p) => (
+              <article className="rp-panel" key={p.id}>
+                <div className="rp-heading">
+                  <h2>{p.full_name || "Cuenta sin nombre"}</h2>
+                  <span className="rp-badge">
+                    {p.closed_at
+                      ? "Cuenta cerrada"
+                      : p.role === "business"
+                        ? "Comercio"
+                        : statuses[p.status]}
+                  </span>
+                </div>
+                <p className="rp-muted mt-2">
+                  {p.phone} · {p.platform}
+                </p>
+                <p className="rp-muted break-all my-3">ID de cuenta: {p.id}</p>
+                {p.role === "driver" && !p.closed_at && (
+                  <>
+                    <Link
+                      className="rp-text-link"
+                      href={"/admin/access?driver=" + p.id}
+                    >
+                      Administrar membresía y acceso →
+                    </Link>
+                    <DriverStatusForm
+                      id={p.id}
+                      suspended={p.status === "suspended"}
+                    />
+                  </>
+                )}
+                {!p.closed_at && <CloseProfileForm id={p.id} />}
+              </article>
+            ))}
+          {tab === "support" &&
+            rows.map((r) => (
+              <article className="rp-panel" key={r.id}>
+                <h2>
+                  {
+                    (
+                      {
+                        benefit: "Beneficio",
+                        account: "Cuenta",
+                        privacy: "Datos personales",
+                        delete: "Solicitud de eliminación",
+                      } as Record<string, string>
+                    )[r.topic]
+                  }
+                </h2>
+                {(() => {
+                  const person = contacts.get(r.driver_id);
+                  const link = whatsapp(
+                    person?.phone,
+                    "Hola " +
+                      (person?.full_name.split(" ")[0] || "") +
+                      ", te escribimos de RidePerks sobre tu solicitud de ayuda.",
+                  );
+                  return (
+                    <p className="rp-muted mt-2">
+                      {person?.full_name || "Cuenta sin nombre"}
+                      {person?.phone ? " · " + person.phone : ""}{" "}
+                      {link && (
+                        <a
+                          className="rp-text-link"
+                          href={link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Escribir por WhatsApp ↗
+                        </a>
+                      )}
+                    </p>
+                  );
+                })()}
+                <p className="rp-muted break-all mt-2">
+                  Cuenta:{" "}
+                  <Link
+                    className="rp-text-link"
+                    href={"/admin/platform?tab=drivers&q=" + r.driver_id}
+                  >
+                    {r.driver_id}
+                  </Link>
+                </p>
+                <p className="my-4 whitespace-pre-line">{r.message}</p>
+                <p className="rp-muted mb-4">
+                  Busca el ID en Cuentas para contactar por WhatsApp. Resolver
+                  esta solicitud no elimina datos automáticamente.
+                </p>
+                <ResolveSupport id={r.id} />
+              </article>
+            ))}
+          {verificationRows.map((v) => (
+            <article className="rp-panel" key={v.id}>
+              <h2>{v.name}</h2>
+              <p className="rp-muted mb-3">
+                {v.platform} · Enviada el {dateLabel(v.created_at)}
+              </p>
+              {v.url && (
+                // The private signed URL must not be cached by the public image optimizer.
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={v.url}
+                  alt={"Captura del perfil de " + v.name}
+                  className="rp-verification-preview"
                 />
+              )}
+              {v.url ? (
+                <a
+                  className="rp-text-link"
+                  href={v.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Abrir imagen privada (enlace válido 5 min) ↗
+                </a>
               ) : (
-                <BenefitForm
-                  key={edit?.id || "new"}
-                  businesses={shops.data || []}
-                  benefit={edit as Benefit | undefined}
-                />
+                <p className="rp-error">
+                  No pudimos abrir la imagen. Recarga la página antes de
+                  revisar.
+                </p>
               )}
-            </aside>
-          )}
-        </div>
-      </main>
-    </div>
+              {whatsapp(
+                v.phone,
+                "Hola " +
+                  v.name.split(" ")[0] +
+                  ", te escribimos de RidePerks sobre la verificación de tu cuenta.",
+              ) && (
+                <a
+                  className="rp-text-link"
+                  href={whatsapp(
+                    v.phone,
+                    "Hola " +
+                      v.name.split(" ")[0] +
+                      ", te escribimos de RidePerks sobre la verificación de tu cuenta.",
+                  )!}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Contactar por WhatsApp ↗
+                </a>
+              )}
+              {v.url && <ReviewForm id={v.id} />}
+            </article>
+          ))}
+          <div className="rp-actions">
+            {page > 0 && (
+              <Link
+                className="rp-button secondary"
+                href={"/admin/platform?tab=" + tab + "&page=" + (page - 1)}
+              >
+                Anterior
+              </Link>
+            )}
+            {(result.count || 0) > (page + 1) * 50 && (
+              <Link
+                className="rp-button secondary"
+                href={"/admin/platform?tab=" + tab + "&page=" + (page + 1)}
+              >
+                Siguiente
+              </Link>
+            )}
+          </div>
+        </section>
+        {(tab === "businesses" || tab === "benefits") && (
+          <aside className="rp-panel">
+            <h2 className="mb-5">
+              {edit ? "Editar" : "Agregar"}{" "}
+              {tab === "businesses" ? "comercio" : "beneficio"}
+            </h2>
+            {edit && (
+              <Link
+                className="rp-text-link mb-4"
+                href={"/admin/platform?tab=" + tab}
+              >
+                Agregar otro →
+              </Link>
+            )}
+            {tab === "businesses" ? (
+              <BusinessForm
+                key={edit?.id || "new"}
+                business={edit as Business | undefined}
+                accounts={accountOptions}
+              />
+            ) : (
+              <BenefitForm
+                key={edit?.id || "new"}
+                businesses={shops.data || []}
+                benefit={edit as Benefit | undefined}
+              />
+            )}
+          </aside>
+        )}
+      </div>
+    </AdminShell>
   );
 }

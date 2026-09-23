@@ -2,9 +2,13 @@ import Link from "next/link";
 import { requireAdmin, currentProfile } from "@/lib/platform/data";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
 import { AdminIdentity, AccessForm } from "@/components/platform/AccessForms";
-import { Heading } from "@/components/platform/ui";
+import { Heading, Empty } from "@/components/platform/ui";
+import AdminShell from "@/components/platform/AdminShell";
 import { uuidSchema } from "@/lib/platform/validation";
-import "../../platform.css";
+export const metadata = {
+  title: "Acceso de conductores · RidePerks",
+  robots: { index: false, follow: false },
+};
 export default async function Page({
   searchParams,
 }: {
@@ -38,10 +42,7 @@ export default async function Page({
   if (p?.error || access?.error || events?.error)
     throw new Error("No pudimos consultar el acceso.");
   return (
-    <main className="rp-app rp-main rp-stack">
-      <Link className="rp-text-link" href="/admin/platform?tab=drivers">
-        ← Cuentas
-      </Link>
+    <AdminShell>
       <Heading title="Acceso de conductores">
         Administra membresías y accesos promocionales.
       </Heading>
@@ -56,45 +57,65 @@ export default async function Page({
       </details>
       {p?.data ? (
         <>
-          <h2>{p.data.full_name}</h2>
-          <p>
-            Estado:{" "}
-            {access?.data.status === "enabled"
-              ? "Habilitado"
-              : access?.data.status === "suspended"
-                ? "Suspendido"
-                : "Cancelado"}{" "}
-            ·{" "}
-            {access?.data.lifetime
-              ? "Lifetime"
-              : access?.data.valid_until
-                ? "Vigencia: " +
-                  new Date(access.data.valid_until).toLocaleString("es-PA", {
-                    timeZone: "America/Panama",
-                  })
-                : "Sin vigencia registrada"}
-          </p>
-          <AccessForm driverId={p.data.id} />
+          <section className="rp-panel rp-stack">
+            <Link className="rp-text-link" href="/admin/platform?tab=drivers">
+              ← Volver a Cuentas
+            </Link>
+            <h2>{p.data.full_name}</h2>
+            <p className="rp-muted">
+              Estado:{" "}
+              {access?.data.status === "enabled"
+                ? "Habilitado"
+                : access?.data.status === "suspended"
+                  ? "Suspendido"
+                  : "Cancelado"}{" "}
+              ·{" "}
+              {access?.data.lifetime
+                ? "Lifetime"
+                : access?.data.valid_until
+                  ? "Vigencia: " +
+                    new Date(access.data.valid_until).toLocaleString("es-PA", {
+                      timeZone: "America/Panama",
+                    })
+                  : "Sin vigencia registrada"}
+            </p>
+            <AccessForm driverId={p.data.id} />
+          </section>
           <h2>Últimos cambios de acceso</h2>
-          {events?.data?.map((e) => (
-            <article className="rp-list-row" key={e.id}>
-              <div>
-                <p>{e.detail.reason}</p>
-                <p className="rp-muted">
-                  {(e.rp_profiles as unknown as { full_name: string })
-                    ?.full_name || "Administrador"}{" "}
-                  ·{" "}
-                  {new Date(e.created_at).toLocaleString("es-PA", {
-                    timeZone: "America/Panama",
-                  })}
-                </p>
-              </div>
-            </article>
-          ))}
+          {events?.data?.length ? (
+            <div className="rp-list">
+              {events.data.map((e) => (
+                <article className="rp-list-row" key={e.id}>
+                  <div>
+                    <p>{e.detail.reason}</p>
+                    <p className="rp-muted">
+                      {(e.rp_profiles as unknown as { full_name: string })
+                        ?.full_name || "Administrador"}{" "}
+                      ·{" "}
+                      {new Date(e.created_at).toLocaleString("es-PA", {
+                        timeZone: "America/Panama",
+                      })}
+                    </p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : (
+            <p className="rp-muted">Todavía no hay cambios registrados.</p>
+          )}
         </>
       ) : (
-        <p>Selecciona un conductor desde Cuentas para administrar su acceso.</p>
+        <Empty
+          title="Elige un conductor"
+          href="/admin/platform?tab=drivers"
+          label="Ir a Cuentas"
+        >
+          <p>
+            Abre «Administrar membresía y acceso» desde una cuenta para ver su
+            estado y cambiarlo.
+          </p>
+        </Empty>
       )}
-    </main>
+    </AdminShell>
   );
 }

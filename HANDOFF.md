@@ -72,18 +72,21 @@ Curves are Tailwind tokens in `app/globals.css` (`ease-snappy`, `ease-move`,
    — `components/ui/sign-in.tsx` `AuthShell` with class `.rp-auth`, which
    re-points the shadcn-style Tailwind tokens to the palette (light only). The
    layout/design of these screens is intentionally unchanged; only colors.
-3. **Platform** (`/driver/*`, `/business/*`, `/account/password`,
-   `/admin/platform|payments|reviews|access`, `/privacidad`, `/terminos`) —
-   plain CSS in `app/platform.css`, `.rp-*` class names, no Tailwind colors.
-   Tokens `--rp-*` on `.rp-app` (shared with `.rp-auth`). Light/dark only via
-   `html[data-rp-theme]`, `localStorage` `rp_app_theme`, set by
-   `components/platform/ThemeScript.tsx` + toggle in
-   `components/platform/theme.tsx`. Driver and business shells have the
-   toggle; admin pages are light. **Class names are the platform's API** —
+3. **Platform** (`/driver/*`, `/business/*`, `/account/password`, all of
+   `/admin/*`, `/privacidad`, `/terminos`) — plain CSS in `app/platform.css`,
+   `.rp-*` class names, no Tailwind colors. Tokens `--rp-*` on `.rp-app`
+   (shared with `.rp-auth`). Light/dark only via `html[data-rp-theme]`,
+   `localStorage` `rp_app_theme`, set by `components/platform/ThemeScript.tsx`
+   + toggle in `components/platform/theme.tsx`. Driver, business and admin
+   shells all have the toggle. **Class names are the platform's API** —
    restyle in `platform.css`, don't rename. Mobile-first: sticky glass header
    and a floating pill bottom nav under 700px.
 
-`/admin` (waitlist) and `/admin/login` keep their older Tailwind/navy look.
+Admin: every signed-in `/admin/*` page wraps its content in
+`components/platform/AdminShell.tsx` (glass header like the business portal,
+section nav in `AdminNav.tsx`, logout). The waitlist table turns into one card
+per row under 900px. `/admin/login` uses the same `AuthShell` as `/login` and
+lands on `/admin/platform` by default.
 
 ## Landing structure
 

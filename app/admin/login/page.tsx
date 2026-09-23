@@ -2,15 +2,16 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import LoginForm from "./LoginForm";
 
-export const metadata: Metadata = { title: "Admin · RidePerks" };
+export const metadata: Metadata = {
+  title: "Admin · RidePerks",
+  robots: { index: false, follow: false },
+};
 
 export default function AdminLoginPage() {
-  // LoginForm renders its own full-viewport <main> (background effect,
-  // layout, everything). Don't wrap it in a second one here — nesting it
-  // inside a flex-centered <main> made it size to its content instead of
-  // the screen, which is why the background only covered a small box.
+  // LoginForm renders the full-viewport AuthShell itself; don't wrap it in
+  // another layout container.
   return (
-    <Suspense fallback={<div className="min-h-[100dvh] bg-navy" />}>
+    <Suspense fallback={<div className="min-h-[100dvh] bg-[#efffc8]" />}>
       <LoginForm />
     </Suspense>
   );

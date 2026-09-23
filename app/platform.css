@@ -224,22 +224,6 @@ html[data-rp-theme="dark"] .rp-sidebar {
   display: none;
 }
 
-/* Standalone admin pages without the sidebar shell. */
-.rp-page-header {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
-  padding: calc(14px + env(safe-area-inset-top, 0px)) 32px 14px;
-  background: var(--rp-glass);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
-  backdrop-filter: blur(18px) saturate(160%);
-  border-bottom: 1px solid var(--rp-border);
-}
 .rp-workspace {
   margin-left: 256px;
 }
@@ -415,6 +399,10 @@ html[data-rp-theme="dark"] .rp-sidebar {
 }
 .rp-panel.rp-stack {
   gap: 16px;
+}
+/* A lone action in a stacked panel keeps its natural width on desktop. */
+.rp-panel.rp-stack > .rp-button {
+  align-self: flex-start;
 }
 .rp-actions {
   display: flex;
@@ -944,25 +932,193 @@ html[data-rp-theme="dark"] .rp-field select {
 .rp-subnav::-webkit-scrollbar {
   display: none;
 }
-.rp-subnav a {
+/* Links (tabs) or buttons (filters, aria-pressed) share the same segment. */
+.rp-subnav :is(a, button) {
   display: inline-flex;
   align-items: center;
+  flex-shrink: 0;
   padding: 0 16px;
   min-height: 42px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
   font-size: 0.9rem;
   font-weight: 500;
   border-radius: 999px;
   white-space: nowrap;
+  cursor: pointer;
   transition:
     background-color 200ms ease,
+    color 200ms ease,
     scale 160ms var(--rp-ease);
 }
-.rp-subnav a:active {
+.rp-subnav :is(a, button):active {
   scale: 0.96;
 }
-.rp-subnav a[aria-current] {
+.rp-subnav :is(a[aria-current], button[aria-pressed="true"]) {
   background: var(--rp-text);
   color: var(--rp-bg);
+}
+@media (hover: hover) and (pointer: fine) {
+  .rp-subnav :is(a:not([aria-current]), button[aria-pressed="false"]):hover {
+    background: var(--rp-surface-3);
+  }
+}
+
+/* Waitlist table: a real table on wide screens, one card per row on phones. */
+.rp-waitlist-tools {
+  gap: 12px;
+}
+.rp-table-wrap {
+  border: 1px solid var(--rp-border);
+  border-radius: 24px;
+  background: var(--rp-surface);
+  overflow-x: auto;
+}
+.rp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.rp-table th {
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--rp-muted);
+  white-space: nowrap;
+  border-bottom: 1px solid var(--rp-border);
+}
+.rp-table td {
+  padding: 12px 16px;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--rp-border);
+}
+.rp-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+.rp-table a {
+  text-decoration: underline;
+  text-decoration-color: var(--rp-border-strong);
+  text-underline-offset: 4px;
+  white-space: nowrap;
+}
+.rp-table-pos {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--rp-muted);
+}
+.rp-table-name {
+  font-weight: 600;
+}
+.rp-table-date {
+  white-space: nowrap;
+  color: var(--rp-muted);
+}
+.rp-badge strong {
+  font-weight: 700;
+}
+.rp-status-select {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: var(--rp-surface-3);
+  color: var(--rp-text);
+}
+.rp-status-select[data-status="verified"] {
+  background: var(--rp-accent);
+  color: var(--rp-accent-fg);
+}
+.rp-status-select[data-status="rejected"] {
+  background: var(--rp-danger-bg);
+  color: var(--rp-danger-fg);
+}
+.rp-status-select select {
+  appearance: none;
+  min-height: 36px;
+  padding: 6px 32px 6px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.rp-status-select svg {
+  position: absolute;
+  right: 12px;
+  pointer-events: none;
+}
+@media (max-width: 900px) {
+  .rp-table-wrap {
+    border: 0;
+    background: transparent;
+    overflow: visible;
+  }
+  .rp-table,
+  .rp-table tbody,
+  .rp-table tr,
+  .rp-table td {
+    display: block;
+  }
+  .rp-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .rp-table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .rp-table tr {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px 12px;
+    padding: 18px 20px;
+    border: 1px solid var(--rp-border);
+    border-radius: 22px;
+    background: var(--rp-surface);
+  }
+  .rp-table td,
+  .rp-table tbody tr:last-child td {
+    padding: 0;
+    border: 0;
+  }
+  .rp-table a {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  /* Position + name form the card title; the rest get their column name. */
+  .rp-table td:not(.rp-table-pos, .rp-table-name) {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    text-align: right;
+  }
+  .rp-table td:not(.rp-table-pos, .rp-table-name)::before {
+    content: attr(data-label);
+    font-size: 0.8rem;
+    color: var(--rp-muted);
+    text-align: left;
+  }
+  .rp-table-pos {
+    align-self: center;
+  }
+  .rp-table-pos::before {
+    content: "#";
+  }
+  .rp-table-name {
+    font-size: 1.05rem;
+  }
 }
 .rp-admin-grid {
   display: grid;
@@ -1080,6 +1236,7 @@ html[data-rp-theme="dark"] .rp-field select {
 }
 .rp-business-header nav a {
   display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
   min-height: 40px;
   padding: 0 14px;
@@ -1093,8 +1250,12 @@ html[data-rp-theme="dark"] .rp-field select {
 .rp-business-header nav a:active {
   scale: 0.96;
 }
+.rp-business-header nav a[aria-current] {
+  background: var(--rp-accent);
+  color: var(--rp-accent-fg);
+}
 @media (hover: hover) and (pointer: fine) {
-  .rp-business-header nav a:hover {
+  .rp-business-header nav a:not([aria-current]):hover {
     background: var(--rp-surface-2);
   }
 }
@@ -1432,6 +1593,9 @@ label.rp-field :is(input, select, textarea) {
   .rp-form > .rp-button {
     width: 100%;
   }
+  .rp-panel.rp-stack > .rp-button {
+    align-self: stretch;
+  }
   .rp-filters {
     align-items: stretch;
   }
@@ -1448,9 +1612,6 @@ label.rp-field :is(input, select, textarea) {
   }
   .rp-list-row {
     gap: 12px;
-  }
-  .rp-page-header {
-    padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 12px;
   }
   .rp-business-header {
     margin: 10px 10px 0;

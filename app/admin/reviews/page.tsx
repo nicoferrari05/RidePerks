@@ -5,9 +5,13 @@ import {
   BenefitReview,
   BusinessChangeReview,
 } from "@/components/platform/AccessForms";
-import { Heading } from "@/components/platform/ui";
+import { Heading, Empty } from "@/components/platform/ui";
+import AdminShell from "@/components/platform/AdminShell";
 import { categories } from "@/lib/platform/types";
-import "../../platform.css";
+export const metadata = {
+  title: "Revisiones · RidePerks",
+  robots: { index: false, follow: false },
+};
 export default async function Page() {
   await requireAdmin();
   const { data, error } = await getSupabaseAdmin()
@@ -25,19 +29,21 @@ export default async function Page() {
     .limit(50);
   if (changes.error) throw new Error("No pudimos cargar los cambios.");
   return (
-    <main className="rp-app rp-main rp-stack">
-      <Link href="/admin/platform" className="rp-text-link">
-        ← Administración
-      </Link>
+    <AdminShell>
       <Heading title="Beneficios por aprobar">
         Propuestas recibidas de los comercios, de la más antigua a la más
         reciente.
       </Heading>
       <Link href="/admin/access" className="rp-text-link">
-        Vincular mi identidad administrativa
+        Vincular mi identidad administrativa →
       </Link>
       {!data.length && !changes.data.length && (
-        <p>No hay propuestas pendientes.</p>
+        <Empty title="No hay propuestas pendientes">
+          <p>
+            Los beneficios nuevos y los cambios de datos de los comercios
+            aparecerán aquí.
+          </p>
+        </Empty>
       )}
       {changes.data.map((c) => (
         <article key={c.id} className="rp-panel rp-stack">
@@ -78,6 +84,6 @@ export default async function Page() {
           <BenefitReview id={r.id} />
         </article>
       ))}
-    </main>
+    </AdminShell>
   );
 }
