@@ -1141,6 +1141,12 @@ html[data-rp-theme="dark"] .rp-field select {
   position: relative;
   z-index: 50;
 }
+/* Yappy's button renders without shadow DOM, so Tailwind's preflight
+   (`* { margin: 0 }`) strips the browser's `margin: auto` that its fixed,
+   inset: 0 <dialog> relies on to center. Give it back. */
+btn-yappy dialog {
+  margin: auto;
+}
 .rp-skip {
   position: fixed;
   top: 8px;
