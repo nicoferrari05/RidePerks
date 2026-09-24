@@ -50,7 +50,10 @@ one page with long-form text.
 | Ash grey `#A5CBC3` | Part of the palette but **intentionally unused**; the user asked to avoid it |
 
 Font: Geist (`next/font`), wordmark "RIDEPERKS" as plain text (no pill) via
-`<LogoMark variant="text" />`. Motion follows Emil Kowalski's guidance
+`<LogoMark variant="text" />`. App icon: mint circle with "RP" on black
+(`app/icon.png`, `public/favicon.ico`, `apple-touch-icon.png`, PWA icons; the
+maskable one is shrunk into the 80% safe zone). Share card: `public/share.jpg`
+(wordmark on the dot matrix), declared once in `lib/share.ts`. Motion follows Emil Kowalski's guidance
 (`/emil-design-eng` skill): buttons scale to 0.97 on press in 160ms with
 `ease-snappy` (`cubic-bezier(0.23,1,0.32,1)`); on-screen movement uses
 `ease-move`; panels use `ease-drawer`; hover effects only on pointer devices;

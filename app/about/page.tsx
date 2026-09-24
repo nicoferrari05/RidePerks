@@ -11,6 +11,7 @@ import AboutFAQ from "@/components/sections/AboutFAQ";
 import JoinCTA from "@/components/sections/JoinCTA";
 import Footer from "@/components/sections/Footer";
 import LandingShell from "@/components/landing/LandingShell";
+import { SHARE_IMAGE } from "@/lib/share";
 
 const title = "Sobre RidePerks · El club de beneficios para conductores";
 const description =
@@ -26,20 +27,13 @@ export const metadata: Metadata = {
     siteName: "RidePerks",
     locale: "es_PA",
     type: "website",
-    images: [
-      {
-        url: "/og-image.jpg",
-        width: 1600,
-        height: 849,
-        alt: "Tú manejas para ganar más. RidePerks te ayuda a gastar menos.",
-      },
-    ],
+    images: [SHARE_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
     title,
     description,
-    images: ["/og-image.jpg"],
+    images: [SHARE_IMAGE],
   },
 };
 

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Fraunces, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { SHARE_IMAGE } from "@/lib/share";
 
 // Primary body font — matches production (rideperks.app uses Geist).
 const geist = Geist({
@@ -30,11 +31,19 @@ const jetbrainsMono = JetBrains_Mono({
 
 const title = "RidePerks · Tu trabajo rinde más.";
 const description =
-  "El club de beneficios para conductores de Uber, InDrive y PedidosYa en Panamá. Descuentos reales en gasolina, comida, mantenimiento y más. Únete a la lista de espera.";
+  "El club de beneficios para conductores de Uber, InDrive y PedidosYa en Panamá. Descuentos reales en gasolina, comida, mantenimiento y más. Crea tu cuenta.";
 
 export const metadata: Metadata = {
   appleWebApp: { capable: true, title: "RidePerks", statusBarStyle: "default" },
-  icons: { apple: "/apple-touch-icon.png" },
+  // Declared in full: setting `icons` here replaces the automatic link for
+  // app/icon.png, so list every size explicitly.
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "48x48" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
   metadataBase: new URL("https://rideperks.app"),
   title,
   description,
@@ -45,24 +54,25 @@ export const metadata: Metadata = {
     siteName: "RidePerks",
     locale: "es_PA",
     type: "website",
-    images: [
-      {
-        url: "/og-image.jpg",
-        width: 1600,
-        height: 849,
-        alt: "Tú manejas para ganar más. RidePerks te ayuda a gastar menos.",
-      },
-    ],
+    images: [SHARE_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
     title,
     description,
-    images: ["/og-image.jpg"],
+    images: [SHARE_IMAGE],
   },
 };
 
-export const viewport: Viewport = { width: "device-width", initialScale: 1, viewportFit: "cover", themeColor: "#041429" };
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#efffc8" },
+    { media: "(prefers-color-scheme: dark)", color: "#100b00" },
+  ],
+};
 
 export default function RootLayout({
   children,

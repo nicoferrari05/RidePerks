@@ -6,65 +6,71 @@
     <meta name="color-scheme" content="light only" />
     <meta name="supported-color-schemes" content="light only" />
     <title>Cambia tu contraseña · RidePerks</title>
-    <!-- Las mismas tipografías de la landing donde el cliente las soporta
-         (Apple Mail, iOS). En el resto caen a fuentes del sistema similares. -->
+    <!-- Geist, la tipografía de la landing, donde el cliente la soporta
+         (Apple Mail, iOS). En el resto cae a Helvetica/Arial.
+         Colores sólidos (sin rgba) porque varios clientes no los soportan:
+         son los tokens --lp-* de app/globals.css ya mezclados con su fondo. -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;600;700&family=Fraunces:ital,wght@1,400&family=JetBrains+Mono:wght@500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;800&family=JetBrains+Mono:wght@400&display=swap"
       rel="stylesheet"
     />
   </head>
-  <body style="margin:0;padding:0;background-color:#fdfaf4;">
-    <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#fdfaf4;">
+  <body style="margin:0;padding:0;background-color:#efffc8;">
+    <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#efffc8;">
       Usa este enlace para elegir una nueva contraseña. Es de un solo uso.
     </div>
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#fdfaf4;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#efffc8" style="background-color:#efffc8;">
       <tr>
         <td align="center" style="padding:28px 16px 40px;">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:540px;">
-            <!-- Logo: la misma pastilla RIDEPERKS del Nav -->
+            <!-- Wordmark: el mismo LogoMark variant="text" del Nav -->
             <tr>
-              <td align="center" style="padding:0 0 28px;">
-                <table role="presentation" cellpadding="0" cellspacing="0" border="0">
-                  <tr>
-                    <td align="center" bgcolor="#041429" style="background-color:#041429;border:1px solid #1d2f47;border-radius:999px;padding:10px 24px;font-family:Geist,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:18px;font-weight:800;letter-spacing:-0.3px;color:#f5f1ea;">
-                      RIDEPERKS
-                    </td>
-                  </tr>
-                </table>
+              <td style="padding:0 4px 24px;font-family:Geist,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:22px;line-height:1;font-weight:800;letter-spacing:-0.5px;color:#100b00;">
+                RIDEPERKS
               </td>
             </tr>
 
-            <!-- Tarjeta principal (bone, como Beneficios) -->
+            <!-- Tarjeta: la superficie de «Crea tu cuenta» (JoinCTA) -->
             <tr>
-              <td bgcolor="#f5f1ea" style="background-color:#f5f1ea;border:1px solid #d4d0ca;border-radius:24px;padding:44px 32px 40px;">
-                <p style="margin:0 0 18px;font-family:'JetBrains Mono',Menlo,Consolas,monospace;font-size:12px;font-weight:500;letter-spacing:1.7px;color:#cf3b18;">
-                  RECUPERAR ACCESO
-                </p>
-                <h1 style="margin:0 0 20px;font-family:Geist,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:38px;line-height:1.05;font-weight:700;letter-spacing:-1px;color:#041429;">
-                  Elige tu nueva
-                  <em style="font-family:Fraunces,Georgia,'Times New Roman',serif;font-style:italic;font-weight:400;color:#cf3b18;">contraseña.</em>
+              <td bgcolor="#e2f3b3" style="background-color:#e2f3b3;border:1px solid #d0ddac;border-radius:28px;padding:40px 28px 32px;">
+                <h1 style="margin:0 0 16px;font-family:Geist,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:40px;line-height:1.02;font-weight:500;letter-spacing:-1.6px;color:#100b00;">
+                  Elige una nueva contraseña.
                 </h1>
-                <p style="margin:0 0 32px;font-family:Geist,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:17px;line-height:1.55;color:#050911;opacity:0.8;">
+                <p style="margin:0 0 28px;font-family:Geist,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:16px;line-height:1.55;color:#3b341f;">
                   Recibimos una solicitud para cambiar la contraseña de tu cuenta de RidePerks. Pulsa el botón para elegir una nueva.
                 </p>
+
+                <!-- Botón: el PillLink de la landing (pastilla verde + flecha en su círculo) -->
                 <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 32px;">
                   <tr>
-                    <td align="center" bgcolor="#cf3b18" style="background-color:#cf3b18;border-radius:999px;">
-                      <a href="{{ .ConfirmationURL }}" target="_blank" style="display:inline-block;padding:16px 34px;font-family:Geist,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;border-radius:999px;">
-                        Cambiar mi contraseña
-                      </a>
+                    <td bgcolor="#85cb33" style="background-color:#85cb33;border-radius:999px;padding:6px 6px 6px 24px;">
+                      <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                        <tr>
+                          <td style="padding-right:16px;">
+                            <a href="{{ .ConfirmationURL }}" target="_blank" style="display:inline-block;font-family:Geist,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:40px;font-weight:600;color:#100b00;text-decoration:none;">
+                              Cambiar mi contraseña
+                            </a>
+                          </td>
+                          <td width="40" height="40" align="center" valign="middle" bgcolor="#100b00" style="width:40px;height:40px;background-color:#100b00;border-radius:999px;">
+                            <a href="{{ .ConfirmationURL }}" target="_blank" style="display:block;width:40px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:18px;line-height:40px;font-weight:700;color:#85cb33;text-decoration:none;text-align:center;">
+                              &#8599;&#xFE0E;
+                            </a>
+                          </td>
+                        </tr>
+                      </table>
                     </td>
                   </tr>
                 </table>
+
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                   <tr>
-                    <td style="border-top:1px solid #d4d0ca;padding-top:22px;">
-                      <p style="margin:0 0 8px;font-family:Geist,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.6;color:#66635e;">
-                        <strong style="color:#041429;">¿No fuiste tú?</strong> Ignora este correo: tu contraseña actual sigue igual. El enlace es de un solo uso y vence pronto.
+                    <td style="border-top:1px solid #d0ddac;padding-top:20px;">
+                      <p style="margin:0 0 8px;font-family:Geist,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.6;color:#3b341f;">
+                        <strong style="font-weight:600;color:#100b00;">¿No fuiste tú?</strong> Ignora este correo: tu contraseña actual sigue igual. El enlace es de un solo uso y vence pronto.
                       </p>
-                      <p style="margin:0;font-family:Geist,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:12px;line-height:1.6;color:#66635e;">
+                      <p style="margin:0;font-family:Geist,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.6;color:#3b341f;">
                         ¿El botón no funciona?
-                        <a href="{{ .ConfirmationURL }}" target="_blank" style="color:#ab2a09;text-decoration:underline;">Abre este enlace</a>.
+                        <a href="{{ .ConfirmationURL }}" target="_blank" style="color:#100b00;font-weight:600;text-decoration:underline;">Abre este enlace</a>.
                       </p>
                     </td>
                   </tr>
@@ -72,26 +78,23 @@
               </td>
             </tr>
 
-            <tr><td height="16" style="height:16px;line-height:16px;font-size:0;">&nbsp;</td></tr>
+            <tr><td height="12" style="height:12px;line-height:12px;font-size:0;">&nbsp;</td></tr>
 
-            <!-- Bloque navy (como el Manifiesto de la landing) -->
+            <!-- Banda oscura: la frase del Manifiesto y el pie del Footer -->
             <tr>
-              <td align="center" bgcolor="#041429" style="background-color:#041429;border-radius:24px;padding:40px 28px;">
-                <p style="margin:0;font-family:Geist,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:26px;line-height:1.2;font-weight:600;letter-spacing:-0.6px;color:#f5f1ea;">
-                  Tú manejas para ganar más.<br />
-                  RidePerks te ayuda a
-                  <em style="font-family:Fraunces,Georgia,'Times New Roman',serif;font-style:italic;font-weight:400;color:#cf3b18;">gastar menos.</em>
+              <td bgcolor="#100b00" style="background-color:#100b00;border-radius:28px;padding:36px 28px 24px;">
+                <p style="margin:0 0 28px;font-family:Geist,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:26px;line-height:1.1;font-weight:500;letter-spacing:-1px;color:#efffc8;">
+                  <span style="color:#acb68c;">Tú manejas para ganar más.</span><br />
+                  Nosotros te ayudamos a gastar menos.
                 </p>
-              </td>
-            </tr>
-
-            <!-- Pie -->
-            <tr>
-              <td align="center" style="padding:28px 16px 0;">
-                <p style="margin:0;font-family:'JetBrains Mono',Menlo,Consolas,monospace;font-size:11px;letter-spacing:1.2px;color:#66635e;">
-                  © 2026 RIDEPERKS · PANAMÁ ·
-                  <a href="https://rideperks.app" target="_blank" style="color:#66635e;text-decoration:underline;">RIDEPERKS.APP</a>
-                </p>
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td style="border-top:1px solid #34321f;padding-top:18px;font-family:'JetBrains Mono',Menlo,Consolas,monospace;font-size:11px;line-height:1.6;letter-spacing:1px;color:#acb68c;">
+                      © 2026 RIDEPERKS · PANAMÁ ·
+                      <a href="https://rideperks.app" target="_blank" style="color:#acb68c;text-decoration:underline;">RIDEPERKS.APP</a>
+                    </td>
+                  </tr>
+                </table>
               </td>
             </tr>
           </table>
