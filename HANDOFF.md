@@ -50,10 +50,24 @@ one page with long-form text.
 | Ash grey `#A5CBC3` | Part of the palette but **intentionally unused**; the user asked to avoid it |
 
 Font: Geist (`next/font`), wordmark "RIDEPERKS" as plain text (no pill) via
-`<LogoMark variant="text" />`. App icon: mint circle with "RP" on black
-(`app/icon.png`, `public/favicon.ico`, `apple-touch-icon.png`, PWA icons; the
-maskable one is shrunk into the 80% safe zone). Share card: `public/share.jpg`
-(wordmark on the dot matrix), declared once in `lib/share.ts`. Motion follows Emil Kowalski's guidance
+`<LogoMark variant="text" />`.
+
+Icons and share card, all made from images the user supplied (resized only,
+never redrawn):
+
+- Browser tab (`app/icon.png`, `public/favicon.ico`): the mint "RP" circle cut
+  out on a **transparent** background (the user asked for no black square).
+- `apple-touch-icon.png`, `icon-192/512.png`: same art on its black field (iOS
+  fills transparency with black anyway). `icon-maskable-512.png` shrinks the
+  circle into Android's 80% safe zone.
+- `app/layout.tsx` declares every icon link explicitly: setting `icons` in
+  metadata suppresses Next's automatic link for `app/icon.png`.
+- Share card: `public/share.jpg` (970×610, wordmark on the dot matrix), declared
+  once in `lib/share.ts` and used by `/` and `/about`. Rename the file if it
+  changes again: WhatsApp/Facebook/X cache by URL.
+- `theme-color` is mint in light / black in dark; manifest colors are black.
+
+Motion follows Emil Kowalski's guidance
 (`/emil-design-eng` skill): buttons scale to 0.97 on press in 160ms with
 `ease-snappy` (`cubic-bezier(0.23,1,0.32,1)`); on-screen movement uses
 `ease-move`; panels use `ease-drawer`; hover effects only on pointer devices;
@@ -83,7 +97,12 @@ Curves are Tailwind tokens in `app/globals.css` (`ease-snappy`, `ease-move`,
    + toggle in `components/platform/theme.tsx`. Driver, business and admin
    shells all have the toggle. **Class names are the platform's API** —
    restyle in `platform.css`, don't rename. Mobile-first: sticky glass header
-   and a floating pill bottom nav under 700px.
+   and a floating pill bottom nav under 700px. The bottom nav has six tabs, so
+   the active state is a green pill **behind the icon only** (a filled pill
+   around each label overflowed); labels shrink further at ≤360px. The mobile
+   header insets the theme switcher 6px on every side of the glass bar.
+   `.rp-app * { min-width: 0 }` lets flex children shrink below their text:
+   horizontal nav links need `flex-shrink: 0`.
 
 Admin: every signed-in `/admin/*` page wraps its content in
 `components/platform/AdminShell.tsx` (glass header like the business portal,
@@ -104,7 +123,9 @@ Manifesto, HowItWorks, Pricing, JoinCTA (`#unete`), Footer, MobileCTA.
 - `components/landing/InfoCard.tsx`: card with icon + title; hover shades it,
   tapping slides up a detail panel (Escape/close button dismisses). Used by
   Benefits (with a link to `/driver/benefits?category=…`) and HowItWorks.
-  Icons must be passed as rendered elements (server → client boundary).
+  Icons must be passed as rendered elements (server → client boundary). Front
+  and panel share one grid cell, so the card is as tall as the longer of the
+  two (an absolutely positioned panel clipped its text on phones).
 - `components/landing/PillLink.tsx`: the one CTA shape (pill + arrow circle).
 - The funnel is **create account**, not the waitlist. `Waitlist.tsx`,
   `WaitlistForm.tsx`, `Counter.tsx` are unused but kept; `/api/waitlist`
@@ -126,11 +147,31 @@ Manifesto, HowItWorks, Pricing, JoinCTA (`#unete`), Footer, MobileCTA.
   proposals reviewed in `/admin/reviews`, name/address/category changes also
   reviewed (`rp_business_changes`), stats, help form. A benefit paused by an
   admin (`admin_paused`) can't be reactivated by the merchant.
+- **Business PIN (scan without an account)**: sign-in has a third tab, PIN
+  (`/pin`), for on-site staff (pump attendant, mechanic, waiter). They type
+  the business's 6–8 digit PIN, the camera opens, and a scan registers the
+  use at once (no preview step) under that business (`redeemed_via = 'pin'`,
+  `redeemed_by` null; the owner's history shows "Confirmado con PIN"). Admins
+  **type** each PIN in `/admin/platform` → Comercios → Editar comercio; the
+  app never generates one. Only an HMAC of the PIN is stored (key:
+  `ADMIN_SESSION_SECRET`, so rotating that secret invalidates every PIN). The
+  device gets a signed 12h `rp_pin` cookie carrying the business's
+  `pin_version`; changing/removing the PIN or pausing the business signs out
+  every device. Logic in `lib/pinAuth.ts`, `lib/platform/pin-actions.ts`,
+  `app/api/pin/redeem`, `rp_redeem_token_pin` (migration
+  `202610130001_business_pins.sql`). Rate limits: 10 PIN attempts per IP and
+  200 overall per 10 min.
 - **Admin**: shared `ADMIN_PASSWORD` cookie for `/admin/*`, plus a personal
   identity in `rp_admin_users` (self-enroll at `/admin/access`) required for
   access grants, benefit/business reviews and manual payment credit. As of
   the last session nobody had enrolled yet; remind the user.
-- **Payments**: `free_access = false` (billing live). Daily Vercel cron
+- **Payments**: `free_access = false` (billing live). Yappy's `<btn-yappy>` is
+  an Angular element **without shadow DOM**, so our global CSS (Tailwind
+  preflight) reaches its markup. Its payment `<dialog>` relies on the
+  browser's `margin: auto` to center; `platform.css` restores it with
+  `btn-yappy dialog { margin: auto }`. The dialog only exists during a real
+  payment, so test layout changes with a replica, not a fake transaction.
+  Daily Vercel cron
   `/api/cron/daily` (`vercel.json`, needs `CRON_SECRET`) expires pending
   orders older than 24h and emails renewal reminders. `/admin/payments` can
   credit an order manually with a reason (audited).
@@ -138,8 +179,11 @@ Manifesto, HowItWorks, Pricing, JoinCTA (`#unete`), Footer, MobileCTA.
   `soporte@rideperks.app`); app emails (receipt, verification result,
   renewal reminder) go through `lib/email.ts` using `RESEND_API_KEY` /
   `EMAIL_FROM`. The branded password-reset template is
-  `supabase/email-templates/recovery.html` (paste it into Supabase → Auth →
-  Emails → Templates → Reset Password).
+  `supabase/email-templates/recovery.html`, rebuilt in the current identity
+  (plain wordmark, JoinCTA-style card, PillLink-style button, manifesto band,
+  mono footer; solid hex colors because many mail clients drop `rgba`). The
+  repo file doesn't sync: the user pastes it into Supabase → Auth → Emails →
+  Templates → Reset Password. As of the last session that paste was pending.
 - **Security**: optional Cloudflare Turnstile on registration (active only if
   both keys are set). HSTS on. CSP ships as **report-only** in
   `next.config.mjs`; switch to enforcing after confirming Yappy on
@@ -150,6 +194,7 @@ Manifesto, HowItWorks, Pricing, JoinCTA (`#unete`), Footer, MobileCTA.
 Migrations in `supabase/migrations/`, applied manually in order via the SQL
 Editor (`node scripts/prepare-supabase.mjs` bundles them into
 `artifacts/ACTIVAR_RIDEPERKS.sql`, idempotent). Latest:
+`202610130001_business_pins.sql` (business PINs, `redeemed_via`); before it
 `202609120001_hardening_and_ops.sql` (admin_paused, catalog_live,
 business-owner role check, `rp_business_changes`, payment expiry/credit).
 Confirm with the user that it's applied in production before relying on it.
@@ -158,20 +203,49 @@ through server code with the service-role key.
 
 ## Verifying UI without credentials
 
-There's no `.env.local` here, so logged-in pages can't be opened directly.
-Pattern used repeatedly: create a throwaway route (e.g. `app/zz-preview/`)
-that renders the real components with fake data, screenshot it with a small
-Playwright script (`artifacts/` is gitignored and holds such scripts), then
-**delete the route before committing** and rebuild (stale `.next/types` will
-otherwise make `tsc` complain about the deleted route).
+Don't sign in to verify UI: a `.env.local` exists, but assume it points at
+production data. Pattern used repeatedly: create a throwaway route (e.g.
+`app/zz-preview/`) that renders the real components with fake data, screenshot
+it with a small Playwright script (`artifacts/` is gitignored and holds such
+scripts, e.g. `shot-mobile.mjs`, `shot-admin.mjs`), then **delete the route
+before committing** and rebuild (stale `.next/types` will otherwise make `tsc`
+complain about the deleted route).
 
-Serving locally: `npm run build && npx next start -p 3100`. When restarting,
-kill whatever still listens on 3100 first (PowerShell:
+- Client components that fetch (the waitlist `AdminDashboard`) can be fed fake
+  data with Playwright's `page.route("**/api/admin/entries", …)`.
+- `aria-current` depends on the real pathname; in a preview route, set it with
+  `page.evaluate` (and wait ~300ms, or the screenshot catches the transition).
+- The user reviews on an iPhone: check the iPhone 15 and iPhone SE (320px)
+  viewports, light and dark.
+- `next dev` shows an "N" / "Issue" badge bottom-left; it's dev-only.
+
+Serving locally: `npm run build && npx next start -p 3100` (or `next dev`).
+When restarting, kill whatever still listens on 3100 first (PowerShell:
 `Get-NetTCPConnection -LocalPort 3100 -State Listen` → `Stop-Process`),
-otherwise the old build keeps being served.
+otherwise the old build keeps being served. A stale server from an earlier
+session was found on 3100 once, returning 404 for new routes.
+
+Committing: stage explicit paths, then check `git show --stat HEAD` **before**
+pushing. A pathspec for an already-deleted file makes `git add` abort
+entirely; that once pushed a commit containing only a deletion, which broke
+the share image until a follow-up commit.
+
+## Last session (September 23, 2026)
+
+Mobile polish from the user's iPhone screenshots, all pushed to `main`:
+landing InfoCard clipping, bottom nav active pill, mobile header inset
+(`497d785`); every `/admin` screen moved to the new identity with
+`AdminShell` (`3e72cc7`); new icons, share card, theme colors and recovery
+email (`febb7fc` + `758c6af`); transparent round favicon (`8156d10`); Yappy
+dialog centered (`00f927d`). The user keeps sending phone screenshots of
+things that look off; expect more of that.
 
 ## Open items / ideas not done
 
+- Paste the new `recovery.html` into Supabase (by the user).
+- Confirm on a real phone that the Yappy payment dialog is centered.
+- `public/offline.html` (PWA offline page) still uses the old navy/ember
+  colors; the user was told and hasn't asked for it yet.
 - Enforce the CSP (see above).
 - Admin enrollment in `rp_admin_users` (one-time, by the user).
 - Turn on `catalog_live` once there are approved benefits.

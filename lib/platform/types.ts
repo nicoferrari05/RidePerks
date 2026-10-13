@@ -17,6 +17,7 @@ export type Business = {
   description: string;
   is_active: boolean;
   owner_user_id: string | null;
+  pin_set_at?: string | null;
 };
 export type Benefit = {
   id: string;

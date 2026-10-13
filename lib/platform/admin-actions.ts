@@ -7,6 +7,7 @@ import { firstError, uuidSchema } from "./validation";
 import type { ActionState } from "./types";
 import { notifyVerification } from "@/lib/email";
 import { businessSchema, benefitSchema } from "./catalog-validation";
+import { hashPin, pinProblem } from "@/lib/pinAuth";
 
 const PHOTO_BUCKET = "rp-verifications";
 // Verification screenshots are only needed while a review is pending: once
@@ -228,6 +229,40 @@ export async function setDriverStatus(
   if (error) return { error: "No pudimos actualizar la cuenta." };
   refresh();
   return { success: "Cuenta actualizada." };
+}
+// The PIN is typed by the admin (RidePerks hands it to the business); it is
+// never generated here and only its keyed hash is stored. Saving or removing
+// it signs out every device that used the previous PIN.
+export async function setBusinessPin(
+  _: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  await requireAdmin();
+  const id = uuidSchema.safeParse(form.get("id"));
+  if (!id.success) return { error: "Comercio inválido." };
+  const remove = form.get("remove") === "true";
+  const pin = String(form.get("pin") || "").replace(/\s/g, "");
+  if (!remove) {
+    const problem = pinProblem(pin);
+    if (problem) return { error: problem };
+  }
+  const { error } = await getSupabaseAdmin().rpc("rp_set_business_pin", {
+    p_business: id.data,
+    p_hash: remove ? null : hashPin(pin),
+  });
+  if (error)
+    return {
+      error:
+        error.code === "P0001" ? error.message : "No pudimos guardar el PIN.",
+    };
+  revalidatePath("/admin/platform");
+  return {
+    success: remove
+      ? "PIN eliminado. Los dispositivos que lo usaban ya no pueden registrar canjes."
+      : "PIN guardado: " +
+        pin +
+        ". Por seguridad no lo volveremos a mostrar; compártelo solo con el comercio.",
+  };
 }
 export async function setCatalogLive(
   _: ActionState,

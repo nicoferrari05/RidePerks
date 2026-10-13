@@ -8,9 +8,15 @@ import {
   setDriverStatus,
   closeProfile,
   setCatalogLive,
+  setBusinessPin,
 } from "@/lib/platform/admin-actions";
 import { Feedback } from "./Forms";
-import { categories, type Business, type Benefit } from "@/lib/platform/types";
+import {
+  categories,
+  dateLabel,
+  type Business,
+  type Benefit,
+} from "@/lib/platform/types";
 function Input({
   name,
   label,
@@ -318,6 +324,73 @@ export function CloseProfileForm({ id }: { id: string }) {
         </button>
       </form>
     </details>
+  );
+}
+// Staff PIN for on-site scanning without an account. The admin types it;
+// nothing here generates one.
+export function BusinessPinForm({
+  id,
+  pinSetAt,
+}: {
+  id: string;
+  pinSetAt: string | null;
+}) {
+  const [state, action, pending] = useActionState(setBusinessPin, {});
+  return (
+    <form action={action} className="rp-form">
+      <input type="hidden" name="id" value={id} />
+      <h3>PIN para escanear sin cuenta</h3>
+      <p className="rp-muted">
+        {pinSetAt
+          ? "PIN configurado el " + dateLabel(pinSetAt) + "."
+          : "Este comercio todavía no tiene PIN."}{" "}
+        El personal lo escribe en Iniciar sesión → PIN y puede registrar canjes
+        sin cuenta. Cambiarlo o quitarlo cierra la sesión de todos los
+        dispositivos que usaban el anterior.
+      </p>
+      <div className="rp-field">
+        <label htmlFor={"pin-" + id}>
+          {pinSetAt ? "PIN nuevo" : "PIN"} (de 6 a 8 números)
+        </label>
+        <input
+          id={"pin-" + id}
+          name="pin"
+          inputMode="numeric"
+          pattern="[0-9]{6,8}"
+          maxLength={8}
+          required
+          autoComplete="off"
+          onInput={(e) => {
+            e.currentTarget.value = e.currentTarget.value.replace(/\D/g, "");
+          }}
+        />
+      </div>
+      <Feedback state={state} />
+      <div className="rp-actions">
+        <button className="rp-button" disabled={pending}>
+          {pending ? "Guardando…" : pinSetAt ? "Cambiar PIN" : "Guardar PIN"}
+        </button>
+        {pinSetAt && (
+          <button
+            name="remove"
+            value="true"
+            formNoValidate
+            className="rp-button secondary"
+            disabled={pending}
+            onClick={(e) => {
+              if (
+                !confirm(
+                  "Los dispositivos que usan este PIN dejarán de registrar canjes. ¿Quitar el PIN?",
+                )
+              )
+                e.preventDefault();
+            }}
+          >
+            Quitar PIN
+          </button>
+        )}
+      </div>
+    </form>
   );
 }
 export function CatalogToggle({ live }: { live: boolean }) {

@@ -12,6 +12,7 @@ import {
   DriverStatusForm,
   CloseProfileForm,
   CatalogToggle,
+  BusinessPinForm,
 } from "@/components/platform/AdminForms";
 import {
   type Business,
@@ -97,7 +98,10 @@ export default async function Page({
       .eq("id", params.edit)
       .maybeSingle();
     if (row.error) throw new Error("No pudimos cargar el registro.");
-    edit = row.data || undefined;
+    // The PIN hash never leaves the server (the edit form is a client component).
+    const { pin_hash, ...rest } = row.data || {};
+    void pin_hash;
+    edit = row.data ? (rest as Business | Benefit) : undefined;
   }
   let accountOptions: {
     id: string;
@@ -258,6 +262,11 @@ export default async function Page({
                   {b.owner_user_id
                     ? "Cuenta del comercio vinculada"
                     : "Falta vincular la cuenta del comercio"}
+                </p>
+                <p className="rp-muted">
+                  {b.pin_set_at
+                    ? "PIN de escaneo configurado"
+                    : "Sin PIN de escaneo"}
                 </p>
                 <div className="rp-actions mt-4">
                   <Link
@@ -477,11 +486,27 @@ export default async function Page({
               </Link>
             )}
             {tab === "businesses" ? (
-              <BusinessForm
-                key={edit?.id || "new"}
-                business={edit as Business | undefined}
-                accounts={accountOptions}
-              />
+              <>
+                <BusinessForm
+                  key={edit?.id || "new"}
+                  business={edit as Business | undefined}
+                  accounts={accountOptions}
+                />
+                {edit ? (
+                  <div className="mt-8">
+                    <BusinessPinForm
+                      key={edit.id}
+                      id={edit.id}
+                      pinSetAt={(edit as Business).pin_set_at || null}
+                    />
+                  </div>
+                ) : (
+                  <p className="rp-muted mt-6">
+                    Guarda el comercio y ábrelo con «Editar comercio» para
+                    asignarle un PIN de escaneo.
+                  </p>
+                )}
+              </>
             ) : (
               <BenefitForm
                 key={edit?.id || "new"}

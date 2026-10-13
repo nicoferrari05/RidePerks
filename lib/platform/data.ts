@@ -4,7 +4,9 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
 import { ADMIN_COOKIE_NAME, verifySessionToken } from "@/lib/adminAuth";
+import { PIN_COOKIE_NAME, readPinSession } from "@/lib/pinAuth";
 import { authConfigured, createAuthClient } from "./supabase";
+import { uuidSchema } from "./validation";
 import type {
   Profile,
   Benefit,
@@ -66,6 +68,44 @@ export async function requireAdmin() {
   const token = (await cookies()).get(ADMIN_COOKIE_NAME)?.value;
   if (!(await verifySessionToken(token)))
     redirect("/admin/login?next=/admin/platform");
+}
+// The business behind this device's PIN session, or null when there is no
+// session or its PIN was changed/removed or the business paused since.
+export const pinBusiness = cache(async () => {
+  const session = readPinSession((await cookies()).get(PIN_COOKIE_NAME)?.value);
+  if (!session) return null;
+  const { data, error } = await getSupabaseAdmin()
+    .from("rp_businesses")
+    .select("id,name,address")
+    .eq("id", session.businessId)
+    .eq("is_active", true)
+    .eq("pin_version", session.version)
+    .not("pin_hash", "is", null)
+    .maybeSingle();
+  if (error) throw new Error("No pudimos consultar el comercio.");
+  return data
+    ? {
+        ...(data as Pick<Business, "id" | "name" | "address">),
+        version: session.version,
+      }
+    : null;
+});
+// Accepts either the full token (from the QR/camera) or the six-character
+// fallback code a driver can read out loud / type by hand. The redeem
+// transactions only ever see a real token uuid — this is a plain, read-only
+// lookup ahead of them, not a security boundary.
+export async function resolveQrToken(value: unknown) {
+  const raw = typeof value === "string" ? value.trim() : "";
+  if (uuidSchema.safeParse(raw).success) return raw;
+  if (!/^[0-9a-f]{6}$/i.test(raw)) return null;
+  const resolved = await getSupabaseAdmin()
+    .from("rp_qr_tokens")
+    .select("token")
+    .eq("short_code", raw.toUpperCase())
+    .eq("status", "pending")
+    .gt("expires_at", new Date().toISOString())
+    .maybeSingle();
+  return resolved.data ? (resolved.data.token as string) : null;
 }
 export const getBenefits = cache(async (): Promise<Benefit[]> => {
   await requireDriver();

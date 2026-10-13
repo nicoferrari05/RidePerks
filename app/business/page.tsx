@@ -32,7 +32,7 @@ export default async function Page({
       ? await Promise.all([
           db
             .from("rp_redemptions")
-            .select("id,benefit_title,redeemed_at")
+            .select("id,benefit_title,redeemed_at,redeemed_via")
             .eq("business_id", business.id)
             .order("redeemed_at", { ascending: false })
             .limit(30),
@@ -166,7 +166,11 @@ export default async function Page({
                               {dateLabel(r.redeemed_at)}
                             </p>
                           </div>
-                          <span className="rp-badge good">Confirmado</span>
+                          <span className="rp-badge good">
+                            {r.redeemed_via === "pin"
+                              ? "Confirmado con PIN"
+                              : "Confirmado"}
+                          </span>
                         </div>
                       ))}
                     </div>

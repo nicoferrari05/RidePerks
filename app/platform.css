@@ -1197,6 +1197,21 @@ btn-yappy dialog {
 .rp-access-switch a:not([aria-current]):hover {
   background: #e2f3b3;
 }
+/* Sign-in has three tabs (Conductor, Comercio, PIN): on narrow phones they
+   size to their labels, and below 360px the icons give way to the text. */
+@media (max-width: 420px) {
+  .rp-access-switch a {
+    flex: 1 1 auto;
+    gap: 6px;
+    padding: 0 6px;
+    font-size: 0.85rem;
+  }
+}
+@media (max-width: 360px) {
+  .rp-access-switch a svg {
+    display: none;
+  }
+}
 .rp-verification-preview {
   display: block;
   width: 100%;

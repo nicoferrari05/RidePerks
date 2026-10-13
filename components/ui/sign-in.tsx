@@ -4,6 +4,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { Eye, EyeOff } from "lucide-react";
 import { login } from "@/lib/platform/auth-actions";
+import { enterPin } from "@/lib/platform/pin-actions";
 
 // Dynamically imported (ssr:false), same as the homepage splash and the
 // admin login background — react-three-fiber/three isn't otherwise part
@@ -216,5 +217,69 @@ export function SignInPage({
         </p>
       </div>
     </AuthShell>
+  );
+}
+
+// Business PIN entry for on-site staff (no account). Digits only; on success
+// the action sets the PIN session and reloads /pin with the camera open.
+export function PinForm() {
+  const [state, formAction, pending] = useActionState(enterPin, {});
+  const [showPin, setShowPin] = useState(false);
+
+  return (
+    <form action={formAction} className="space-y-4">
+      <div className="animate-element animate-delay-400">
+        <label htmlFor="pin" className="text-sm font-medium text-muted-foreground">
+          PIN del comercio
+        </label>
+        <GlassInputWrapper>
+          <div className="relative">
+            <input
+              id="pin"
+              name="pin"
+              type={showPin ? "text" : "password"}
+              inputMode="numeric"
+              pattern="[0-9]{6,8}"
+              minLength={6}
+              maxLength={8}
+              required
+              autoFocus
+              autoComplete="off"
+              placeholder="••••••"
+              onInput={(e) => {
+                e.currentTarget.value = e.currentTarget.value.replace(/\D/g, "");
+              }}
+              className="w-full rounded-2xl bg-transparent p-3.5 pr-12 text-base tracking-[0.3em] focus:outline-none"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPin((v) => !v)}
+              aria-label={showPin ? "Ocultar PIN" : "Mostrar PIN"}
+              className="absolute inset-y-0 right-3 flex items-center"
+            >
+              {showPin ? (
+                <EyeOff className="h-5 w-5 text-muted-foreground transition-colors hover:text-foreground" />
+              ) : (
+                <Eye className="h-5 w-5 text-muted-foreground transition-colors hover:text-foreground" />
+              )}
+            </button>
+          </div>
+        </GlassInputWrapper>
+      </div>
+
+      {state.error && (
+        <p role="alert" className="rounded-2xl bg-ember-soft px-4 py-3 text-sm text-ember-2">
+          {state.error}
+        </p>
+      )}
+
+      <button
+        type="submit"
+        disabled={pending}
+        className="animate-element animate-delay-500 w-full rounded-2xl bg-primary py-3.5 font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-wait disabled:opacity-60"
+      >
+        {pending ? "Un momento…" : "Confirmar PIN y escanear"}
+      </button>
+    </form>
   );
 }

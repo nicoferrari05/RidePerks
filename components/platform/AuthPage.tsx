@@ -1,32 +1,41 @@
 import Link from "next/link";
-import { CarFront, Store } from "lucide-react";
+import { CarFront, KeyRound, Store } from "lucide-react";
 import { AuthShell, SignInPage } from "@/components/ui/sign-in";
 import { AuthForm } from "./Forms";
 import "@/app/platform.css";
 
-function AudienceSwitch({
+// Sign-in screens offer a third way in: a business PIN for on-site staff
+// (no account). Registration only has the two account types.
+export function AudienceSwitch({
   mode,
-  business,
+  active,
 }: {
-  mode: "register" | "recover";
-  business: boolean;
+  mode: "login" | "register";
+  active: "driver" | "business" | "pin";
 }) {
+  const login = mode === "login";
   return (
     <nav className="rp-access-switch animate-element animate-delay-100" aria-label="Tipo de acceso">
       <Link
-        href={mode === "register" ? "/register" : "/login"}
-        aria-current={!business ? "page" : undefined}
+        href={login ? "/login" : "/register"}
+        aria-current={active === "driver" ? "page" : undefined}
       >
         <CarFront size={18} />
         Conductor
       </Link>
       <Link
-        href={mode === "register" ? "/business/register" : "/business/login"}
-        aria-current={business ? "page" : undefined}
+        href={login ? "/business/login" : "/business/register"}
+        aria-current={active === "business" ? "page" : undefined}
       >
         <Store size={18} />
         Comercio
       </Link>
+      {login && (
+        <Link href="/pin" aria-current={active === "pin" ? "page" : undefined}>
+          <KeyRound size={18} />
+          PIN
+        </Link>
+      )}
     </nav>
   );
 }
@@ -60,7 +69,9 @@ export default function AuthPage({
             ? "El enlace venció o ya fue utilizado. Inicia sesión o solicita uno nuevo."
             : undefined
         }
-        audienceSwitch={<AudienceSwitch mode="register" business={business} />}
+        audienceSwitch={
+          <AudienceSwitch mode="login" active={business ? "business" : "driver"} />
+        }
         createAccountHref={business ? "/business/register" : "/register"}
         createAccountLabel={business ? "Registrar responsable →" : "Crear cuenta gratis →"}
         createAccountQuestion={
@@ -92,7 +103,9 @@ export default function AuthPage({
         >
           ← Volver a RidePerks
         </Link>
-        {mode !== "recover" && <AudienceSwitch mode={mode} business={business} />}
+        {mode === "register" && (
+          <AudienceSwitch mode="register" active={business ? "business" : "driver"} />
+        )}
         <h1 className="animate-element animate-delay-200 text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
           {title}
         </h1>

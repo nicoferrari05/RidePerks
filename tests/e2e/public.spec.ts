@@ -20,6 +20,7 @@ for (const width of [320, 375, 430, 1440]) {
       "/recover",
       "/business/login",
       "/business/register",
+      "/pin",
     ]) {
       await page.goto(path);
       await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
@@ -137,4 +138,53 @@ test("landing hero, theme switcher and merchant entry are visible", async ({ pag
   await expect(page.getByLabel("Nombre del responsable")).toBeVisible();
   await page.getByRole("link", { name: "Conductor", exact: true }).click();
   await expect(page).toHaveURL(/\/register$/);
+});
+test("sign-in offers a PIN tab for on-site staff", async ({
+  page,
+  request,
+}) => {
+  for (const path of ["/login", "/business/login"]) {
+    await page.goto(path);
+    const tabs = page.getByRole("navigation", { name: "Tipo de acceso" });
+    await expect(tabs.getByRole("link", { name: "Comercio" })).toHaveAttribute(
+      "href",
+      "/business/login",
+    );
+    await expect(tabs.getByRole("link", { name: "PIN" })).toHaveAttribute(
+      "href",
+      "/pin",
+    );
+  }
+  await page.goto("/register");
+  await expect(
+    page
+      .getByRole("navigation", { name: "Tipo de acceso" })
+      .getByRole("link", { name: "PIN" }),
+  ).toHaveCount(0);
+  await page.goto("/pin");
+  await expect(page.getByRole("link", { name: "PIN" })).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
+  const pin = page.getByLabel("PIN del comercio");
+  await expect(pin).toHaveAttribute("inputmode", "numeric");
+  await pin.pressSequentially("12ab34");
+  await expect(pin).toHaveValue("1234");
+  const origin = new URL(page.url()).origin;
+  expect(
+    (
+      await request.post("/api/pin/redeem", {
+        headers: { origin },
+        data: { token: "ABC123" },
+      })
+    ).status(),
+  ).toBe(401);
+  expect(
+    (
+      await request.post("/api/pin/redeem", {
+        headers: { origin: "https://evil.example" },
+        data: {},
+      })
+    ).status(),
+  ).toBe(403);
 });

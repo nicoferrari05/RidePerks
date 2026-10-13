@@ -12,6 +12,7 @@ const migrationFiles = [
   "202609110002_access_and_review.sql",
   "202609110003_close_profile.sql",
   "202609120001_hardening_and_ops.sql",
+  "202610130001_business_pins.sql",
 ];
 const migrations = migrationFiles.map((name) =>
   readFileSync(
@@ -886,5 +887,86 @@ test("stale pending orders expire and an admin can credit an order manually", as
     );
   } finally {
     await db.exec("update rp_settings set value='true' where key='free_access'");
+  }
+});
+test("a business PIN redeems only that business's codes and stops working once changed", async () => {
+  const f = await fixture(),
+    other = await fixture(),
+    hash = "a".repeat(64);
+  const version = async (shop) =>
+    (await db.query("select pin_version from rp_businesses where id=$1", [shop]))
+      .rows[0].pin_version;
+  const pinRedeem = (shop, v, token) =>
+    db.query("select rp_redeem_token_pin($1,$2,$3) as value", [shop, v, token]);
+  // No PIN set: a session for that business can't exist.
+  await assert.rejects(pinRedeem(f.shop, 0, (await issue(f)).token), /PIN ya no es válido/);
+  await db.query("select rp_set_business_pin($1,$2)", [f.shop, hash]);
+  await assert.rejects(
+    db.query("select rp_set_business_pin($1,$2)", [other.shop, hash]),
+    /otro comercio/,
+  );
+  await assert.rejects(
+    db.query("select rp_set_business_pin($1,'1234')", [f.shop]),
+    /PIN inválido/,
+  );
+  const v = await version(f.shop);
+  await assert.rejects(
+    pinRedeem(f.shop, v, (await issue(other)).token),
+    /otro comercio/,
+  );
+  const code = await issue(f);
+  const result = (await pinRedeem(f.shop, v, code.token)).rows[0].value;
+  assert.equal(result.benefit_title, "Beneficio de prueba");
+  assert.equal(result.discount_label, "Ahorra $2");
+  const row = (
+    await db.query(
+      "select redeemed_by,redeemed_via,business_id from rp_redemptions where driver_id=$1",
+      [f.driver],
+    )
+  ).rows[0];
+  assert.equal(row.redeemed_by, null);
+  assert.equal(row.redeemed_via, "pin");
+  assert.equal(row.business_id, f.shop);
+  await assert.rejects(pinRedeem(f.shop, v, code.token), /ya fue usado/);
+  // PIN redemptions count in the owner's statistics like any other.
+  const stats = (
+    await db.query(
+      "select rp_business_stats($1,$2,now()-interval '7 days',now()+interval '1 second') as value",
+      [f.owner, f.shop],
+    )
+  ).rows[0].value;
+  assert.equal(stats.uses, 1);
+  // Changing the PIN, removing it or pausing the business signs out old sessions.
+  await db.query("select rp_set_business_pin($1,$2)", [f.shop, "b".repeat(64)]);
+  await assert.rejects(pinRedeem(f.shop, v, (await issue(f)).token), /PIN ya no es válido/);
+  const v2 = await version(f.shop);
+  await db.query("update rp_businesses set is_active=false where id=$1", [f.shop]);
+  await assert.rejects(pinRedeem(f.shop, v2, (await issue(other)).token), /PIN ya no es válido/);
+  await db.query("update rp_businesses set is_active=true where id=$1", [f.shop]);
+  await db.query("select rp_set_business_pin($1,null)", [f.shop]);
+  assert.equal(
+    (await db.query("select pin_hash from rp_businesses where id=$1", [f.shop]))
+      .rows[0].pin_hash,
+    null,
+  );
+  await assert.rejects(
+    pinRedeem(f.shop, await version(f.shop), (await issue(f)).token),
+    /PIN ya no es válido/,
+  );
+  // The freed PIN can now be given to another business.
+  await db.query("select rp_set_business_pin($1,$2)", [other.shop, hash]);
+});
+test("business PIN functions are inaccessible to browser database roles", async () => {
+  for (const role of ["anon", "authenticated"]) {
+    await db.exec("set role " + role);
+    await assert.rejects(
+      db.query("select rp_set_business_pin($1,null)", [randomUUID()]),
+      /permission denied/,
+    );
+    await assert.rejects(
+      db.query("select rp_redeem_token_pin($1,0,$2)", [randomUUID(), randomUUID()]),
+      /permission denied/,
+    );
+    await db.exec("reset role");
   }
 });
