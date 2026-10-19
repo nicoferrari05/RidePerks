@@ -1,35 +1,36 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { currentProfile } from "@/lib/platform/data";
-import { Logo, Heading } from "@/components/platform/ui";
+import { SubHeader } from "@/components/platform/ui";
 import { PasswordForm } from "@/components/platform/Forms";
 import PlatformThemeScript from "@/components/platform/ThemeScript";
 import "../../platform.css";
 export const metadata = {
-  title: "Actualizar contraseña · RidePerks",
+  title: "Contraseña · RidePerks",
   robots: { index: false, follow: false },
 };
+// Reached from the recovery email and from the business account screen.
 export default async function Page() {
   const profile = await currentProfile();
   if (!profile) redirect("/recover");
   return (
     <div className="rp-app">
       <PlatformThemeScript />
-      <main className="rp-main rp-stack max-w-xl">
-        <Logo />
-        <Heading title="Elige tu nueva contraseña">
+      <main className="rp-main rp-stack">
+        <SubHeader
+          back={
+            profile.role === "business"
+              ? "/business/account"
+              : "/driver/profile"
+          }
+          backLabel="Volver a tu cuenta"
+          title="Contraseña"
+        />
+        <h2 className="rp-title">Elige tu nueva contraseña</h2>
+        <p className="rp-muted">
           Usa al menos 10 caracteres y una contraseña que no repitas en otros
           servicios.
-        </Heading>
-        <section className="rp-panel">
-          <PasswordForm />
-        </section>
-        <Link
-          className="rp-text-link"
-          href={profile.role === "business" ? "/business" : "/driver/profile"}
-        >
-          Volver a mi cuenta →
-        </Link>
+        </p>
+        <PasswordForm />
       </main>
     </div>
   );

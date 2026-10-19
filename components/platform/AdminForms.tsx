@@ -17,6 +17,7 @@ import {
   type Business,
   type Benefit,
 } from "@/lib/platform/types";
+import { Button } from "@/components/ui/button";
 function Input({
   name,
   label,
@@ -124,9 +125,9 @@ export function BusinessForm({
         </p>
       )}
       <Feedback state={state} />
-      <button className="rp-button" disabled={pending}>
+      <Button type="submit" size="lg" disabled={pending}>
         {pending ? "Guardando…" : "Guardar comercio"}
-      </button>
+      </Button>
     </form>
   );
 }
@@ -205,9 +206,9 @@ export function BenefitForm({
         value={b?.valid_until || ""}
       />
       <Feedback state={state} />
-      <button className="rp-button" disabled={pending || !businesses.length}>
+      <Button type="submit" size="lg" disabled={pending || !businesses.length}>
         {pending ? "Guardando…" : "Guardar beneficio"}
-      </button>
+      </Button>
     </form>
   );
 }
@@ -226,9 +227,9 @@ export function ToggleForm({
       <input type="hidden" name="id" value={id} />
       <input type="hidden" name="table" value={table} />
       <input type="hidden" name="active" value={String(!active)} />
-      <button className="rp-button secondary" disabled={pending}>
+      <Button type="submit" variant="secondary" size="md" disabled={pending}>
         {pending ? "Guardando…" : active ? "Pausar" : "Activar"}
-      </button>
+      </Button>
       <Feedback state={state} />
     </form>
   );
@@ -244,22 +245,27 @@ export function ReviewForm({ id }: { id: string }) {
       </div>
       <Feedback state={state} />
       <div className="rp-actions">
-        <button
+        <Button
+          type="submit"
+          size="lg"
           name="approved"
           value="true"
-          className="rp-button"
+
           disabled={pending}
         >
           Aprobar verificación
-        </button>
-        <button
+        </Button>
+        <Button
+          type="submit"
+          variant="secondary"
+          size="md"
           name="approved"
           value="false"
-          className="rp-button secondary"
+
           disabled={pending}
         >
           Solicitar corrección
-        </button>
+        </Button>
       </div>
     </form>
   );
@@ -280,9 +286,9 @@ export function DriverStatusForm({
         name="status"
         value={suspended ? "pending" : "suspended"}
       />
-      <button className="rp-button secondary" disabled={pending}>
+      <Button type="submit" variant="secondary" size="md" disabled={pending}>
         {suspended ? "Reactivar para revisión" : "Suspender cuenta"}
-      </button>
+      </Button>
       <Feedback state={state} />
     </form>
   );
@@ -319,9 +325,9 @@ export function CloseProfileForm({ id }: { id: string }) {
           />
         </div>
         <Feedback state={state} />
-        <button className="rp-button secondary" disabled={pending}>
+        <Button type="submit" variant="secondary" size="md" disabled={pending}>
           {pending ? "Cerrando…" : "Confirmar cierre de cuenta"}
-        </button>
+        </Button>
       </form>
     </details>
   );
@@ -367,15 +373,18 @@ export function BusinessPinForm({
       </div>
       <Feedback state={state} />
       <div className="rp-actions">
-        <button className="rp-button" disabled={pending}>
+        <Button type="submit" size="lg" disabled={pending}>
           {pending ? "Guardando…" : pinSetAt ? "Cambiar PIN" : "Guardar PIN"}
-        </button>
+        </Button>
         {pinSetAt && (
-          <button
+          <Button
+            type="submit"
+            variant="secondary"
+            size="md"
             name="remove"
             value="true"
             formNoValidate
-            className="rp-button secondary"
+
             disabled={pending}
             onClick={(e) => {
               if (
@@ -387,7 +396,7 @@ export function BusinessPinForm({
             }}
           >
             Quitar PIN
-          </button>
+          </Button>
         )}
       </div>
     </form>
@@ -404,9 +413,9 @@ export function CatalogToggle({ live }: { live: boolean }) {
         Actívalo cuando haya beneficios aprobados para publicar.
       </p>
       <Feedback state={state} />
-      <button className="rp-button secondary" disabled={pending}>
+      <Button type="submit" variant="secondary" size="md" disabled={pending}>
         {live ? "Ocultar catálogo" : "Publicar catálogo"}
-      </button>
+      </Button>
     </form>
   );
 }

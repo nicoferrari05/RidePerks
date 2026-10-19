@@ -2,6 +2,8 @@
 import Link from "next/link";
 import { TriangleAlert } from "lucide-react";
 import "../../platform.css";
+import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button-variants";
 export default function ErrorPage({ reset }: { reset: () => void }) {
   return (
     <div className="rp-app">
@@ -13,10 +15,13 @@ export default function ErrorPage({ reset }: { reset: () => void }) {
             Revisa la conexión y que la migración de Supabase esté aplicada.
           </p>
           <div className="rp-actions" style={{ justifyContent: "center" }}>
-            <button className="rp-button" onClick={reset}>
+            <Button size="lg" onClick={reset}>
               Volver a intentar
-            </button>
-            <Link className="rp-button secondary" href="/admin">
+            </Button>
+            <Link
+              className={buttonVariants({ variant: "secondary", size: "md" })}
+              href="/admin"
+            >
               Ir a la lista de espera
             </Link>
           </div>

@@ -2,6 +2,7 @@
 import { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Camera, CheckCircle2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 type Result = {
   driver_name: string;
   benefit_title: string;
@@ -137,29 +138,34 @@ export default function BusinessScanner({ pin = false }: { pin?: boolean }) {
     <div className="rp-stack">
       {pin && done}
       <div className="rp-panel rp-stack">
-        <h2>Validar un beneficio</h2>
         <p className="rp-muted">
           {pin
-            ? "Apunta la cámara al QR del conductor. El canje se registra al leerlo. Si la cámara falla, escribe el código de 6 caracteres."
-            : "Escanea el QR o escribe el código de 6 caracteres que te dicte el conductor. Confirma únicamente cuando vayas a aplicar el descuento."}
+            ? "Apunta la cámara al QR del conductor: el canje se registra al leerlo."
+            : "Escanea el QR del conductor y confirma cuando vayas a aplicar el descuento."}
         </p>
         <div
           id="rp-scanner"
           style={{ display: camera ? "block" : "none", width: "100%" }}
         />
         {camera ? (
-          <button className="rp-button secondary" onClick={stop}>
+          <Button
+            variant="secondary"
+            size="lg"
+            className="w-full"
+            onClick={stop}
+          >
             Cerrar cámara
-          </button>
+          </Button>
         ) : (
-          <button
-            className={"rp-button" + (pin ? "" : " secondary")}
+          <Button
+            size="lg"
+            className="w-full"
             onClick={start}
             disabled={busy}
+            leftIcon={<Camera aria-hidden="true" />}
           >
-            <Camera size={20} />
-            {pin && result ? "Escanear otro QR" : "Escanear QR"}
-          </button>
+            {result ? "Escanear otro QR" : "Escanear QR"}
+          </Button>
         )}
         <form
           onSubmit={(e) => {
@@ -169,7 +175,7 @@ export default function BusinessScanner({ pin = false }: { pin?: boolean }) {
           className="rp-form"
         >
           <div className="rp-field">
-            <label htmlFor="token">Código del conductor</label>
+            <label htmlFor="token">¿Falla la cámara? Escribe el código</label>
             <input
               id="token"
               value={token}
@@ -204,9 +210,13 @@ export default function BusinessScanner({ pin = false }: { pin?: boolean }) {
               </p>
             </section>
           )}
-          <button
-            className={"rp-button" + (pin ? " secondary" : "")}
-            disabled={busy || !token}
+          <Button
+            type="submit"
+            variant={!pin && preview ? "default" : "secondary"}
+            size="lg"
+            className="w-full"
+            disabled={!token}
+            loading={busy}
           >
             {busy
               ? pin
@@ -217,7 +227,7 @@ export default function BusinessScanner({ pin = false }: { pin?: boolean }) {
                 : preview
                   ? "Confirmar y aplicar beneficio"
                   : "Consultar beneficio"}
-          </button>
+          </Button>
         </form>
       </div>
       {!pin && done}

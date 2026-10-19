@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import QRCode from "react-qr-code";
 import Link from "next/link";
 import { CheckCircle2, QrCode, Copy } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button-variants";
 type Token = {
   token: string;
   short_code?: string;
@@ -88,39 +90,45 @@ export default function BenefitCode({
   }
   if (!verified)
     return (
-      <div className="rp-panel rp-qr">
-        <QrCode size={30} />
+      <section className="rp-qr">
+        <QrCode size={32} aria-hidden="true" />
         <h2>Verifica tu cuenta para usarlo</h2>
         <p className="rp-muted">
-          Puedes explorar los beneficios mientras revisamos tu perfil de
-          conductor.
+          Mientras revisamos tu perfil puedes explorar los beneficios.
         </p>
-        <Link href="/driver/verify" className="rp-button">
+        <Link
+          href="/driver/verify"
+          className={buttonVariants({ size: "lg", className: "w-full" })}
+        >
           Verificar mi cuenta
         </Link>
-      </div>
+      </section>
     );
   return (
-    <section className="rp-panel rp-qr">
-      <h2>
-        {code?.status === "used"
-          ? "Beneficio confirmado"
-          : code && seconds > 0
-            ? "Muéstralo en el comercio"
-            : "¿Ya estás en el comercio?"}
-      </h2>
+    <section className="rp-qr" aria-live="polite">
       {code?.status === "used" ? (
         <>
-          <CheckCircle2 size={56} className="text-[var(--rp-accent-text)]" />
-          <p className="rp-success" role="status">
-            El comercio confirmó tu beneficio. Ya está en tu historial.
-          </p>
-          <Link href="/driver/history" className="rp-button">
-            Ver historial
+          <CheckCircle2
+            size={48}
+            className="text-[var(--rp-accent-text)]"
+            aria-hidden="true"
+          />
+          <h2>Beneficio confirmado</h2>
+          <p className="rp-muted">El comercio lo registró en tu actividad.</p>
+          <Link
+            href="/driver/history"
+            className={buttonVariants({
+              variant: "secondary",
+              size: "lg",
+              className: "w-full",
+            })}
+          >
+            Ver actividad
           </Link>
         </>
       ) : code && seconds > 0 ? (
         <>
+          <h2>Muéstralo en el comercio</h2>
           <div className="rp-qr-canvas">
             <QRCode
               value={code.token}
@@ -134,16 +142,13 @@ export default function BenefitCode({
             <strong>
               {Math.floor(seconds / 60)}:{String(seconds % 60).padStart(2, "0")}
             </strong>
+            . Si la cámara falla, dicta este código:
           </p>
-          <p className="rp-muted">
-            Si la cámara no funciona, dicta o escribe este código en el
-            comercio:
-          </p>
-          <code className="rp-short-code">
-            {code.short_code || code.token}
-          </code>
-          <button
-            className="rp-text-link"
+          <code className="rp-short-code">{code.short_code || code.token}</code>
+          <Button
+            variant="ghost"
+            size="md"
+            leftIcon={<Copy aria-hidden="true" />}
             onClick={async () => {
               try {
                 await navigator.clipboard.writeText(
@@ -155,29 +160,25 @@ export default function BenefitCode({
               }
             }}
           >
-            <Copy size={16} />
             {copied ? "Código copiado" : "Copiar código"}
-          </button>
+          </Button>
         </>
       ) : (
         <>
-          <QrCode size={36} />
+          <h2>{code ? "Tu código venció" : "¿Ya estás en el comercio?"}</h2>
           <p className="rp-muted">
             {code
-              ? "Tu código venció. Genera uno nuevo cuando te atiendan."
-              : "Genera tu código cuando te atiendan. Es válido por dos minutos y se puede usar una sola vez."}
+              ? "Genera uno nuevo cuando te atiendan."
+              : "Genera tu código cuando te atiendan. Dura dos minutos y sirve una sola vez."}
           </p>
-          <button
-            className="rp-button w-full"
+          <Button
+            size="lg"
+            className="w-full"
             onClick={generate}
-            disabled={busy}
+            loading={busy}
           >
-            {busy
-              ? "Generando…"
-              : code
-                ? "Generar nuevo código"
-                : "Generar mi código"}
-          </button>
+            {code ? "Generar nuevo código" : "Generar mi código"}
+          </Button>
         </>
       )}
       {error && (

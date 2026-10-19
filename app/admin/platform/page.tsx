@@ -23,6 +23,8 @@ import {
   dateLabel,
   platforms,
 } from "@/lib/platform/types";
+import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button-variants";
 export const metadata = {
   title: "Administrar plataforma · RidePerks",
   robots: { index: false, follow: false },
@@ -191,7 +193,9 @@ export default async function Page({
             <label htmlFor="q">Buscar por nombre o ID de cuenta</label>
             <input name="q" id="q" defaultValue={search} maxLength={100} />
           </div>
-          <button className="rp-button dark">Buscar cuenta</button>
+          <Button type="submit" size="lg">
+            Buscar cuenta
+          </Button>
         </form>
       )}
       <nav className="rp-subnav" aria-label="Administración">
@@ -455,7 +459,7 @@ export default async function Page({
           <div className="rp-actions">
             {page > 0 && (
               <Link
-                className="rp-button secondary"
+                className={buttonVariants({ variant: "secondary", size: "md" })}
                 href={"/admin/platform?tab=" + tab + "&page=" + (page - 1)}
               >
                 Anterior
@@ -463,7 +467,7 @@ export default async function Page({
             )}
             {(result.count || 0) > (page + 1) * 50 && (
               <Link
-                className="rp-button secondary"
+                className={buttonVariants({ variant: "secondary", size: "md" })}
                 href={"/admin/platform?tab=" + tab + "&page=" + (page + 1)}
               >
                 Siguiente

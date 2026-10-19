@@ -75,10 +75,11 @@ export async function proxy(request: NextRequest) {
       },
     },
   });
-  const {
-    data: { user },
-  } = await auth.auth.getUser();
-  if (!user && protectedPath) {
+  // getClaims verifies the session JWT locally against the project's
+  // asymmetric signing keys (no round trip to Supabase Auth on every
+  // navigation) and still refreshes an expired session through the cookies.
+  const { data } = await auth.auth.getClaims();
+  if (!data?.claims?.sub && protectedPath) {
     const target = new URL(loginPath, request.url);
     target.searchParams.set("next", pathname + request.nextUrl.search);
     const redirect = NextResponse.redirect(target);

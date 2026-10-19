@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { KeyRound } from "lucide-react";
 import { pinBusiness } from "@/lib/platform/data";
 import { leavePin } from "@/lib/platform/pin-actions";
 import { AuthShell, PinForm } from "@/components/ui/sign-in";
 import { AudienceSwitch } from "@/components/platform/AuthPage";
-import { Heading, Logo } from "@/components/platform/ui";
+import { Logo } from "@/components/platform/ui";
+import { Button } from "@/components/ui/button";
 import BusinessScanner from "@/components/platform/BusinessScanner";
 import PlatformThemeScript from "@/components/platform/ThemeScript";
-import { PlatformThemeToggle } from "@/components/platform/theme";
 import "../platform.css";
+import "../auth.css";
 export const metadata: Metadata = {
   title: "Escanear con PIN · RidePerks",
   robots: { index: false, follow: false },
@@ -44,19 +44,22 @@ export default async function Page() {
   return (
     <div className="rp-app">
       <PlatformThemeScript />
-      <header className="rp-business-header">
+      <header className="rp-pinbar">
         <Logo />
-        <span className="rp-badge">
-          <KeyRound size={14} />
-          Escaneo con PIN
-        </span>
-        <PlatformThemeToggle />
-        <form action={leavePin} className="ml-auto">
-          <button className="rp-text-link">Salir</button>
+        <form action={leavePin}>
+          <Button type="submit" variant="secondary" size="md">
+            Salir
+          </Button>
         </form>
       </header>
       <main className="rp-main rp-stack">
-        <Heading title={business.name}>{business.address}</Heading>
+        <div className="rp-heading">
+          <div>
+            <span className="rp-badge">Escaneo con PIN</span>
+            <h1>{business.name}</h1>
+            <p className="rp-muted">{business.address}</p>
+          </div>
+        </div>
         <BusinessScanner pin />
         <p className="rp-muted">
           Cada canje queda registrado en el portal del comercio. Este acceso

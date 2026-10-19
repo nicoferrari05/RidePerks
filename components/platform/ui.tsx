@@ -5,12 +5,12 @@ import {
   Wrench,
   HeartPulse,
   Gift,
-  ArrowUpRight,
-  Inbox,
+  ArrowLeft,
+  ChevronRight,
 } from "lucide-react";
 import LogoMark from "@/components/LogoMark";
+import { buttonVariants } from "@/components/ui/button-variants";
 import type { Benefit } from "@/lib/platform/types";
-import { categories } from "@/lib/platform/types";
 export function Logo() {
   return (
     <Link href="/" className="rp-logo" aria-label="RidePerks, inicio">
@@ -29,8 +29,8 @@ export function CategoryIcon({ category }: { category: string }) {
       } as Record<string, typeof Fuel>
     )[category] || Gift;
   return (
-    <div className={"rp-category-icon " + category}>
-      <Icon size={21} aria-hidden="true" />
+    <div className="rp-category-icon">
+      <Icon aria-hidden="true" />
     </div>
   );
 }
@@ -38,23 +38,17 @@ export type CatalogBenefit = Pick<
   Benefit,
   "id" | "title" | "category" | "discount_label"
 > & { rp_businesses: Pick<Benefit["rp_businesses"], "name" | "address"> };
+// The discount leads (it's what a driver scans for); title and business follow.
 export function BenefitCard({ benefit: b }: { benefit: CatalogBenefit }) {
   return (
     <Link className="rp-benefit" href={"/driver/benefits/" + b.id}>
-      <div className="rp-benefit-top">
-        <CategoryIcon category={b.category} />
-        <span className="rp-badge">{categories[b.category] || b.category}</span>
-      </div>
-      <h3>{b.title}</h3>
-      <p className="rp-muted">
-        {b.rp_businesses.name} · {b.rp_businesses.address}
-      </p>
-      <div className="rp-benefit-foot">
+      <CategoryIcon category={b.category} />
+      <div>
         <strong>{b.discount_label}</strong>
-        <span className="flex items-center gap-1">
-          Ver beneficio <ArrowUpRight size={17} aria-hidden="true" />
-        </span>
+        <span>{b.title}</span>
+        <span>{b.rp_businesses.name}</span>
       </div>
+      <ChevronRight size={20} aria-hidden="true" />
     </Link>
   );
 }
@@ -71,11 +65,13 @@ export function Empty({
 }) {
   return (
     <div className="rp-empty">
-      <Inbox size={30} aria-hidden="true" />
       <h2>{title}</h2>
       <div className="rp-muted">{children}</div>
       {href && (
-        <Link href={href} className="rp-button secondary">
+        <Link
+          href={href}
+          className={buttonVariants({ variant: "secondary", size: "md" })}
+        >
           {label}
         </Link>
       )}
@@ -96,5 +92,42 @@ export function Heading({
         {children && <p className="rp-muted">{children}</p>}
       </div>
     </div>
+  );
+}
+/** Detail-screen header: round back button and a centered title. */
+export function SubHeader({
+  back,
+  backLabel,
+  title,
+}: {
+  back: string;
+  backLabel: string;
+  title: string;
+}) {
+  return (
+    <div className="rp-subhead">
+      <Link href={back} className="rp-back" aria-label={backLabel}>
+        <ArrowLeft size={20} aria-hidden="true" />
+      </Link>
+      <h1>{title}</h1>
+    </div>
+  );
+}
+/** Settings-style row: label, optional value, chevron. */
+export function MenuLink({
+  href,
+  label,
+  value,
+}: {
+  href: string;
+  label: string;
+  value?: React.ReactNode;
+}) {
+  return (
+    <Link href={href}>
+      <span>{label}</span>
+      {value && <span className="rp-menu-value">{value}</span>}
+      <ChevronRight size={18} aria-hidden="true" />
+    </Link>
   );
 }

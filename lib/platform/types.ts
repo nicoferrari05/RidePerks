@@ -82,11 +82,14 @@ export function money(value: number) {
   return new Intl.NumberFormat("es-PA", {
     style: "currency",
     currency: "USD",
+    currencyDisplay: "narrowSymbol",
   }).format(value);
 }
 export function dateLabel(value: string) {
   return new Intl.DateTimeFormat("es-PA", {
-    dateStyle: "medium",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
     timeZone: "America/Panama",
   }).format(new Date(value));
 }

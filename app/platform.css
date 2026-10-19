@@ -1,85 +1,103 @@
-/* RidePerks platform (driver, business, admin tools). Same identity as the
-   landing: frosted mint / pitch black / yellow green / dark khaki, Geist,
-   pill buttons, rounded cards, glass bars. Light by default; the driver and
-   business shells can switch to dark (html[data-rp-theme="dark"]).
-   Class names are the platform's public API: pages and forms depend on
-   them, so restyle here rather than renaming. */
+/* RidePerks platform (driver, business, admin). Mobile first, in the spirit
+   of Uber / Airbnb: white background, soft gray cards without borders, one
+   big number or title per screen, few icons, one green action color and a
+   black floating dock (components/ui/spotlight-dock.tsx). Dark mode (black
+   with white text) is chosen in Cuenta → Apariencia and lives on
+   html[data-rp-theme="dark"].
+   Class names are the platform's API: pages and forms depend on them, so
+   restyle here rather than renaming. Every rule is scoped to .rp-app so it
+   never reaches the auth screens (app/auth.css), and vice versa. */
 
-/* Tokens are shared with the auth screens (.rp-auth), which reuse the
-   platform's form controls and messages but always stay light. */
-.rp-app,
-.rp-auth {
-  --rp-bg: #efffc8;
-  --rp-surface: #f7ffe0;
-  --rp-surface-2: #e2f3b3;
-  --rp-surface-3: #d6ec9c;
+.rp-app {
+  --rp-bg: #ffffff;
+  --rp-surface: #f4f4f1;
+  --rp-surface-2: #e9e9e4;
+  --rp-raised: #ffffff;
   --rp-text: #100b00;
-  --rp-muted: #4a4430;
-  --rp-border: rgba(16, 11, 0, 0.13);
-  --rp-border-strong: rgba(16, 11, 0, 0.24);
+  --rp-muted: #6b675e;
+  --rp-faint: #9a968b;
+  --rp-line: rgba(16, 11, 0, 0.08);
+  --rp-line-strong: rgba(16, 11, 0, 0.16);
   --rp-accent: #85cb33;
-  --rp-accent-hover: #77b82c;
   --rp-accent-fg: #100b00;
-  --rp-accent-text: #3d6b10;
-  --rp-band: #100b00;
-  --rp-band-fg: #efffc8;
-  --rp-band-muted: rgba(239, 255, 200, 0.68);
-  --rp-band-line: rgba(239, 255, 200, 0.14);
-  --rp-glass: rgba(239, 255, 200, 0.8);
-  --rp-glass-line: rgba(255, 255, 255, 0.6);
-  --rp-glass-hi: rgba(255, 255, 255, 0.85);
-  --rp-input: #f7ffe0;
-  --rp-input-focus: #fbffef;
-  --rp-danger-bg: #ffe2d6;
-  --rp-danger-fg: #8a2810;
-  --rp-success-bg: #dff3c4;
-  --rp-success-fg: #2f5a0c;
-  --rp-shadow: 0 18px 40px -26px rgba(16, 11, 0, 0.45);
+  --rp-accent-text: #3f7a12;
+  --rp-accent-soft: #eef8e1;
+  --rp-hero: #100b00;
+  --rp-hero-fg: #ffffff;
+  --rp-hero-muted: rgba(255, 255, 255, 0.62);
+  --rp-hero-surface: rgba(255, 255, 255, 0.1);
+  --rp-danger: #d93a14;
+  --rp-danger-bg: #fdece7;
+  --rp-danger-fg: #a12a0b;
+  --rp-success-bg: #eef8e1;
+  --rp-success-fg: #3f7a12;
+  --rp-warn-bg: #fdf3dc;
+  --rp-warn-fg: #7d5300;
+  /* Dock: light, but still reads as a floating bar (hairline + shadow). */
+  --rp-dock: #ffffff;
+  --rp-dock-fg: #100b00;
+  --rp-dock-muted: #8a867c;
+  --rp-dock-line: rgba(16, 11, 0, 0.08);
+  --rp-dock-spot: rgba(16, 11, 0, 0.09);
+  --rp-dock-shadow:
+    0 1px 2px rgba(16, 11, 0, 0.06), 0 14px 32px -12px rgba(16, 11, 0, 0.28);
+  --rp-shadow:
+    0 1px 2px rgba(16, 11, 0, 0.06), 0 6px 16px -8px rgba(16, 11, 0, 0.18);
   --rp-ease: cubic-bezier(0.23, 1, 0.32, 1);
   --rp-ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
-  --sw-tint: #efffc8;
-  --sw-ink: var(--rp-text);
-}
-.rp-app {
+
+  /* Tokens read by components/ui/button. */
+  --background: var(--rp-bg);
+  --foreground: var(--rp-text);
+  --primary: var(--rp-accent);
+  --primary-foreground: var(--rp-accent-fg);
+  --muted: var(--rp-surface);
+  --muted-foreground: var(--rp-muted);
+  --border: var(--rp-surface);
+  --border-strong: var(--rp-line-strong);
+  --card: var(--rp-raised);
+  --destructive: var(--rp-danger);
+  --primitive-radius-control: 999px;
+  --primitive-control-height-sm: 2.25rem;
+  --primitive-control-height-md: 2.75rem;
+  --primitive-control-height-lg: 3.25rem;
+  --primitive-ring: var(--rp-text);
+
   min-height: 100dvh;
   background: var(--rp-bg);
   color: var(--rp-text);
-  transition:
-    background-color 300ms ease,
-    color 300ms ease;
+  font-variant-numeric: tabular-nums;
 }
 html[data-rp-theme="dark"] .rp-app {
   --rp-bg: #100b00;
-  --rp-surface: #1a1509;
-  --rp-surface-2: #241e10;
-  --rp-surface-3: #3b341f;
-  --rp-text: #efffc8;
-  --rp-muted: #c3c9a8;
-  --rp-border: rgba(239, 255, 200, 0.12);
-  --rp-border-strong: rgba(239, 255, 200, 0.24);
+  --rp-surface: #1d1a13;
+  --rp-surface-2: #2a261d;
+  --rp-raised: #26221a;
+  --rp-text: #ffffff;
+  --rp-muted: #aaa69c;
+  --rp-faint: #78746a;
+  --rp-line: rgba(255, 255, 255, 0.08);
+  --rp-line-strong: rgba(255, 255, 255, 0.18);
   --rp-accent-text: #a6e05e;
-  --rp-band: #3b341f;
-  --rp-band-fg: #efffc8;
-  --rp-band-muted: rgba(239, 255, 200, 0.7);
-  --rp-band-line: rgba(239, 255, 200, 0.14);
-  --rp-glass: rgba(26, 21, 9, 0.82);
-  --rp-glass-line: rgba(239, 255, 200, 0.12);
-  --rp-glass-hi: rgba(239, 255, 200, 0.08);
-  --rp-input: #1a1509;
-  --rp-input-focus: #241e10;
-  --rp-danger-bg: rgba(207, 59, 24, 0.2);
+  --rp-accent-soft: rgba(133, 203, 51, 0.14);
+  --rp-hero: #1d1a13;
+  --rp-danger-bg: rgba(217, 58, 20, 0.18);
   --rp-danger-fg: #ffb49e;
-  --rp-success-bg: rgba(133, 203, 51, 0.16);
+  --rp-success-bg: rgba(133, 203, 51, 0.14);
   --rp-success-fg: #b8ec7c;
-  --rp-shadow: 0 18px 40px -26px rgba(0, 0, 0, 0.8);
-  --sw-tint: #1a1509;
-  --sw-rim: rgba(239, 255, 200, 0.16);
-  --sw-hi: rgba(239, 255, 200, 0.12);
-  --sw-thumb-top: rgba(239, 255, 200, 0.22);
-  --sw-thumb-bottom: rgba(239, 255, 200, 0.08);
+  --rp-warn-bg: rgba(231, 177, 64, 0.16);
+  --rp-warn-fg: #f3cf7d;
+  --rp-dock: #1d1a13;
+  --rp-dock-fg: #ffffff;
+  --rp-dock-muted: #8f8b80;
+  --rp-dock-line: rgba(255, 255, 255, 0.1);
+  --rp-dock-spot: rgba(255, 255, 255, 0.22);
+  --rp-dock-shadow: 0 16px 36px -14px rgba(0, 0, 0, 0.8);
+  --rp-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 20px -10px rgba(0, 0, 0, 0.7);
 }
 body:has(.rp-app) {
-  background: #efffc8;
+  background: #ffffff;
 }
 html[data-rp-theme="dark"] body:has(.rp-app) {
   background: #100b00;
@@ -96,682 +114,807 @@ html[data-rp-theme="dark"] body:has(.rp-app) {
 .rp-app h3 {
   text-wrap: balance;
 }
-.rp-app h1 {
-  font-size: clamp(2rem, 4.5vw, 2.75rem);
-  font-weight: 500;
-  line-height: 1.05;
+.rp-app h1,
+.rp-app .rp-title {
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.1;
   letter-spacing: -0.035em;
 }
 .rp-app h2 {
-  font-size: 1.3rem;
-  font-weight: 550;
+  font-size: 1.2rem;
+  font-weight: 600;
   line-height: 1.3;
   letter-spacing: -0.02em;
 }
 .rp-app h3 {
-  font-size: 1.02rem;
+  font-size: 1rem;
   font-weight: 600;
+  line-height: 1.35;
   letter-spacing: -0.01em;
 }
 .rp-app p {
   text-wrap: pretty;
 }
 .rp-app a,
-.rp-app button {
+.rp-app button,
+.rp-app summary {
   -webkit-tap-highlight-color: transparent;
 }
 .rp-app :is(a, button, input, select, textarea, summary):focus-visible {
   outline: 2px solid var(--rp-text);
   outline-offset: 3px;
 }
-.rp-muted {
+.rp-app .rp-muted {
   color: var(--rp-muted);
-  font-size: 0.92rem;
-  line-height: 1.6;
-}
-
-/* ---------- Shell: desktop sidebar ---------- */
-.rp-sidebar {
-  display: flex;
-  position: fixed;
-  inset: 12px auto 12px 12px;
-  width: 232px;
-  padding: 28px 16px 20px;
-  border-radius: 28px;
-  background: var(--rp-band);
-  color: var(--rp-band-fg);
-  flex-direction: column;
-  z-index: 30;
-}
-html[data-rp-theme="dark"] .rp-sidebar {
-  background: #1a1509;
-  border: 1px solid var(--rp-border);
-}
-.rp-sidebar .rp-logo {
-  margin: 0 0 40px 12px;
-  color: var(--rp-band-fg);
-}
-.rp-sidebar nav {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.rp-sidebar nav a {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-height: 46px;
-  padding: 0 14px;
-  border-radius: 999px;
-  font-size: 0.92rem;
-  font-weight: 500;
-  color: var(--rp-band-muted);
-  transition:
-    background-color 200ms ease,
-    color 200ms ease,
-    scale 160ms var(--rp-ease);
-}
-.rp-sidebar nav a:active {
-  scale: 0.97;
-}
-.rp-nav-icon {
-  display: inline-flex;
-}
-.rp-sidebar nav a[aria-current] {
-  background: var(--rp-accent);
-  color: var(--rp-accent-fg);
-}
-@media (hover: hover) and (pointer: fine) {
-  .rp-sidebar nav a:not([aria-current]):hover {
-    background: rgba(239, 255, 200, 0.08);
-    color: var(--rp-band-fg);
-  }
-}
-.rp-sidebar-foot {
-  margin-top: auto;
-  padding: 16px 12px 0;
-  border-top: 1px solid var(--rp-band-line);
-  font-size: 0.82rem;
-  color: var(--rp-band-muted);
+  font-size: 0.94rem;
   line-height: 1.55;
 }
-.rp-sidebar-foot strong {
-  color: var(--rp-band-fg);
-  display: block;
+.rp-app .rp-skip {
+  position: absolute;
+  left: 16px;
+  top: -60px;
+  z-index: 60;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--rp-text);
+  color: var(--rp-bg);
   font-weight: 600;
 }
-.rp-sidebar-foot a {
-  display: flex;
-  align-items: center;
-  min-height: 44px;
-  color: var(--rp-band-fg);
-  font-weight: 600;
+.rp-app .rp-skip:focus {
+  top: 16px;
 }
 
-/* The wordmark (components/platform/ui.tsx Logo) inherits its color. */
-.rp-logo {
-  display: inline-flex;
-  color: var(--rp-text);
-  border-radius: 8px;
-  transition: opacity 160ms ease, scale 160ms var(--rp-ease);
-}
-.rp-logo:active {
-  scale: 0.97;
+/* ---------- Dock (components/ui/spotlight-dock.tsx) ---------- */
+.rp-app .rp-dock {
+  border: 1px solid var(--rp-dock-line);
+  background: var(--rp-dock);
+  box-shadow: var(--rp-dock-shadow);
+  /* Its own compositing layer: page scroll never repaints it. */
+  transform: translateZ(0);
 }
 
-.rp-mobile-header,
-.rp-bottomnav {
-  display: none;
-}
-
-.rp-workspace {
-  margin-left: 256px;
-}
-.rp-topbar {
-  position: sticky;
-  top: 12px;
-  z-index: 20;
-  margin: 12px 24px 0 0;
-  min-height: 64px;
-  padding: 8px 8px 8px 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  border-radius: 999px;
-  background: var(--rp-glass);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
-  backdrop-filter: blur(18px) saturate(160%);
-  border: 1px solid var(--rp-glass-line);
-  box-shadow:
-    inset 0 1px 0 var(--rp-glass-hi),
-    var(--rp-shadow);
-}
-.rp-topbar > span {
-  font-size: 0.88rem;
-  color: var(--rp-muted);
-}
-.rp-topbar-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.rp-profile-link {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 4px 4px 4px 14px;
-  border-radius: 999px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  transition:
-    background-color 200ms ease,
-    scale 160ms var(--rp-ease);
-}
-.rp-profile-link:active {
-  scale: 0.97;
-}
-@media (hover: hover) and (pointer: fine) {
-  .rp-profile-link:hover {
-    background: var(--rp-surface-2);
-  }
-}
-.rp-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--rp-accent);
-  color: var(--rp-accent-fg);
-  display: grid;
-  place-items: center;
-  font-size: 0.8rem;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-.rp-main {
+/* ---------- Page frame ---------- */
+.rp-app .rp-main {
   width: 100%;
-  max-width: 1160px;
-  margin: auto;
-  padding: 36px 40px 56px;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: calc(24px + env(safe-area-inset-top, 0px)) 20px
+    calc(124px + env(safe-area-inset-bottom, 0px));
 }
-.rp-stack {
+.rp-app .rp-main.wide {
+  max-width: 1080px;
+}
+.rp-app .rp-stack {
   display: flex;
   flex-direction: column;
   gap: 28px;
 }
-.rp-heading {
+.rp-app .rp-stack.tight {
+  gap: 12px;
+}
+.rp-app .rp-heading {
   display: flex;
-  align-items: flex-start;
   justify-content: space-between;
-  gap: 20px;
-}
-.rp-heading p {
-  margin-top: 10px;
-  max-width: 62ch;
-}
-.rp-section-head {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-
-/* ---------- Links and buttons (same pill language as the landing) ---------- */
-.rp-text-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  min-height: 44px;
-  color: var(--rp-text);
-  font-size: 0.9rem;
-  font-weight: 600;
-  text-decoration: underline;
-  text-decoration-color: var(--rp-border-strong);
-  text-underline-offset: 4px;
-  transition:
-    text-decoration-color 200ms ease,
-    scale 160ms var(--rp-ease);
-}
-.rp-text-link:active {
-  scale: 0.97;
-}
-@media (hover: hover) and (pointer: fine) {
-  .rp-text-link:hover {
-    text-decoration-color: currentColor;
-  }
-}
-.rp-button {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  min-height: 50px;
-  padding: 12px 24px;
-  border-radius: 999px;
-  background: var(--rp-accent);
-  color: var(--rp-accent-fg);
-  font: inherit;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  border: 0;
-  text-align: center;
-  box-shadow: 0 10px 24px -14px rgba(16, 11, 0, 0.5);
-  transition:
-    background-color 200ms ease,
-    box-shadow 200ms ease,
-    scale 160ms var(--rp-ease);
-}
-.rp-button:active {
-  scale: 0.97;
-}
-@media (hover: hover) and (pointer: fine) {
-  .rp-button:hover {
-    background: var(--rp-accent-hover);
-  }
-}
-.rp-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  scale: 1;
-}
-.rp-button.secondary {
-  background: transparent;
-  color: var(--rp-text);
-  border: 1px solid var(--rp-border-strong);
-  box-shadow: none;
-}
-@media (hover: hover) and (pointer: fine) {
-  .rp-button.secondary:hover {
-    background: var(--rp-surface-2);
-  }
-}
-.rp-button.dark {
-  background: var(--rp-text);
-  color: var(--rp-bg);
-}
-@media (hover: hover) and (pointer: fine) {
-  .rp-button.dark:hover {
-    background: var(--rp-text);
-    opacity: 0.9;
-  }
-}
-.rp-panel.rp-stack {
+  align-items: flex-end;
   gap: 16px;
 }
-/* A lone action in a stacked panel keeps its natural width on desktop. */
-.rp-panel.rp-stack > .rp-button {
-  align-self: flex-start;
-}
-.rp-actions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
-/* ---------- Surfaces ---------- */
-.rp-panel {
-  padding: 28px;
-  border: 1px solid var(--rp-border);
-  border-radius: 28px;
-  background: var(--rp-surface);
-}
-.rp-callout {
-  display: flex;
-  gap: 16px;
-  padding: 26px;
-  border-radius: 28px;
-  background: var(--rp-band);
-  color: var(--rp-band-fg);
-}
-.rp-callout h2 {
-  color: var(--rp-band-fg);
-}
-.rp-callout p {
-  margin: 8px 0 18px;
-  color: var(--rp-band-muted);
-  max-width: 60ch;
-  font-size: 0.92rem;
-  line-height: 1.6;
-}
-.rp-callout > svg {
-  flex-shrink: 0;
-  color: var(--rp-accent);
-  margin-top: 3px;
-}
-.rp-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 11px;
-  border-radius: 999px;
-  background: var(--rp-surface-2);
-  color: var(--rp-text);
-  font-size: 0.76rem;
-  font-weight: 600;
-  white-space: nowrap;
-}
-.rp-badge.good {
-  background: var(--rp-accent);
-  color: var(--rp-accent-fg);
-}
-.rp-badge.pending {
-  background: var(--rp-surface-3);
-  color: var(--rp-text);
-}
-
-/* ---------- Driver dashboard ---------- */
-.rp-summary {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  gap: 16px;
-}
-.rp-balance {
-  padding: 28px;
-  background: var(--rp-band);
-  color: var(--rp-band-fg);
-  border-radius: 28px;
+.rp-app .rp-heading > div {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  gap: 6px;
 }
-.rp-balance > p {
-  color: var(--rp-band-muted);
-  font-size: 0.92rem;
-}
-.rp-balance strong {
-  font-size: clamp(2.75rem, 7vw, 3.5rem);
-  font-weight: 500;
-  letter-spacing: -0.045em;
-  line-height: 1;
-  margin: 14px 0 10px;
-  font-variant-numeric: tabular-nums;
-}
-.rp-progress {
-  width: 100%;
-  height: 8px;
-  margin-top: 14px;
-  border-radius: 999px;
-  background: var(--rp-band-line);
-  overflow: hidden;
-}
-.rp-progress-bar {
-  height: 100%;
-  border-radius: 999px;
-  background: var(--rp-accent);
-  transition: width 500ms var(--rp-ease);
-}
-.rp-progress-label {
-  margin-top: 12px;
-  font-size: 0.88rem;
-  color: var(--rp-band-muted);
-  line-height: 1.5;
-}
-.rp-progress-label strong {
-  font-size: inherit;
-  letter-spacing: 0;
-  margin: 0;
-  color: var(--rp-accent);
-  font-weight: 700;
-}
-.rp-balance .rp-balance-foot {
+.rp-app .rp-section-head {
   display: flex;
   justify-content: space-between;
-  gap: 16px;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.rp-app .rp-logo {
+  display: inline-flex;
   align-items: center;
-  border-top: 1px solid var(--rp-band-line);
-  margin-top: 20px;
-  padding-top: 12px;
-  width: 100%;
-  font-size: 0.85rem;
-  color: var(--rp-band-muted);
+  font-size: 1rem;
 }
-.rp-balance a {
-  color: var(--rp-band-fg);
-  text-decoration-color: var(--rp-band-line);
+
+/* Sub-page header: back button, centered title (like a native detail view). */
+.rp-app .rp-subhead {
+  display: grid;
+  grid-template-columns: 44px 1fr 44px;
+  align-items: center;
+  gap: 8px;
+  margin: -8px 0 4px;
 }
-.rp-savings-switch {
-  display: flex;
-  gap: 4px;
-  background: var(--rp-band-line);
-  border-radius: 999px;
-  padding: 4px;
-  margin-bottom: 18px;
-}
-.rp-savings-switch button {
-  flex: 1;
-  white-space: nowrap;
-  min-height: 38px;
-  padding: 6px 16px;
-  border-radius: 999px;
-  font-size: 0.82rem;
+.rp-app .rp-subhead > h1 {
+  text-align: center;
+  font-size: 1rem;
   font-weight: 600;
-  color: var(--rp-band-muted);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rp-app .rp-back {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: var(--rp-surface);
+  color: var(--rp-text);
+  transition: scale 160ms var(--rp-ease);
+}
+.rp-app .rp-back:active {
+  scale: 0.94;
+}
+
+/* Greeting row on Inicio: avatar, name, one line of context. */
+.rp-app .rp-hello {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.rp-app .rp-hello :is(strong, h1) {
+  display: block;
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.rp-app .rp-hello span {
+  color: var(--rp-muted);
+  font-size: 0.88rem;
+}
+.rp-app .rp-avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  background: var(--rp-surface-2);
+  color: var(--rp-text);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.rp-app .rp-avatar.large {
+  width: 76px;
+  height: 76px;
+  font-size: 1.5rem;
+}
+
+/* ---------- Surfaces ---------- */
+/* On a gray card, secondary buttons and fields switch to the raised (white)
+   surface so they never blend into it. */
+.rp-app :is(.rp-panel, .rp-callout, .rp-qr, .rp-empty, .rp-list) {
+  --muted: var(--rp-raised);
+  --border: var(--rp-raised);
+}
+.rp-app .rp-panel {
+  padding: 20px;
+  border-radius: 24px;
+  background: var(--rp-surface);
+}
+.rp-app .rp-panel.rp-stack {
+  gap: 16px;
+}
+.rp-app .rp-callout {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 20px;
+  border-radius: 24px;
+  background: var(--rp-accent-soft);
+}
+.rp-app .rp-callout p {
+  color: var(--rp-muted);
+  font-size: 0.94rem;
+  line-height: 1.55;
+}
+.rp-app .rp-callout .wensity-button {
+  margin-top: 6px;
+}
+
+/* The one dark card per screen: the big number lives here. */
+.rp-app .rp-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 24px;
+  border-radius: 28px;
+  background: var(--rp-hero);
+  color: var(--rp-hero-fg);
+}
+.rp-app .rp-hero-label {
+  color: var(--rp-hero-muted);
+  font-size: 0.92rem;
+}
+.rp-app .rp-hero-value {
+  font-size: clamp(2.75rem, 13vw, 3.75rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.045em;
+  margin: 4px 0 2px;
+}
+.rp-app .rp-hero-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  color: var(--rp-hero-muted);
+  font-size: 0.86rem;
+}
+.rp-app .rp-hero a {
+  color: var(--rp-hero-fg);
+}
+.rp-app .rp-progress {
+  height: 6px;
+  margin-top: 14px;
+  border-radius: 999px;
+  background: var(--rp-hero-surface);
+  overflow: hidden;
+}
+.rp-app .rp-progress-bar {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--rp-accent);
+  transition: width 400ms var(--rp-ease);
+}
+.rp-app .rp-progress-label {
+  color: var(--rp-hero-muted);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+.rp-app .rp-progress-label strong {
+  color: var(--rp-hero-fg);
+  font-weight: 600;
+}
+
+/* A big number without a card (Actividad). */
+.rp-app .rp-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.rp-app .rp-stat strong {
+  font-size: clamp(2.75rem, 13vw, 3.5rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+/* Account header: large avatar, name, one line, status. */
+.rp-app .rp-profile-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.rp-app .rp-profile-card > div:last-child {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+/* ---------- Segmented control (tabs inside a screen) ---------- */
+.rp-app .rp-segmented {
+  display: flex;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--rp-surface);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.rp-app .rp-segmented::-webkit-scrollbar {
+  display: none;
+}
+.rp-app .rp-segmented > :is(a, button) {
+  display: inline-flex;
+  flex: 1 0 auto;
+  justify-content: center;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: 999px;
+  color: var(--rp-muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 200ms ease,
+    color 200ms ease,
+    box-shadow 200ms ease,
+    scale 160ms var(--rp-ease);
+}
+.rp-app .rp-segmented > :is(a, button):active {
+  scale: 0.97;
+}
+.rp-app
+  .rp-segmented
+  > :is([aria-current="page"], [aria-selected="true"], [aria-pressed="true"]) {
+  background: var(--rp-raised);
+  color: var(--rp-text);
+  box-shadow: var(--rp-shadow);
+}
+.rp-app .rp-hero .rp-segmented {
+  background: var(--rp-hero-surface);
+  align-self: flex-start;
+  margin-bottom: 12px;
+}
+.rp-app .rp-hero .rp-segmented > :is(a, button) {
+  min-height: 34px;
+  padding: 0 14px;
+  color: var(--rp-hero-muted);
+  font-size: 0.85rem;
+}
+.rp-app .rp-hero .rp-segmented > [aria-selected="true"] {
+  background: var(--rp-hero-fg);
+  color: #100b00;
+  box-shadow: none;
+}
+/* Older markup names for the same control. */
+.rp-app .rp-subnav {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin: 0 -20px;
+  padding: 0 20px;
+}
+.rp-app .rp-subnav::-webkit-scrollbar {
+  display: none;
+}
+.rp-app .rp-subnav > :is(a, button),
+.rp-app .rp-category-chips > a {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  min-height: 38px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: var(--rp-surface);
+  color: var(--rp-text);
+  font-size: 0.9rem;
+  font-weight: 500;
+  white-space: nowrap;
   cursor: pointer;
   transition:
     background-color 200ms ease,
     color 200ms ease,
     scale 160ms var(--rp-ease);
 }
-.rp-savings-switch button:active {
+.rp-app .rp-subnav > :is(a, button):active,
+.rp-app .rp-category-chips > a:active {
   scale: 0.96;
 }
-.rp-savings-switch button[aria-selected="true"] {
-  background: var(--rp-accent);
-  color: var(--rp-accent-fg);
+.rp-app .rp-subnav > :is([aria-current="page"], [aria-pressed="true"]),
+.rp-app .rp-category-chips > [aria-current="page"] {
+  background: var(--rp-text);
+  color: var(--rp-bg);
 }
-.rp-member {
+.rp-app .rp-category-chips {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin: 0 -20px;
+  padding: 0 20px;
 }
-.rp-member .rp-logo {
-  margin-bottom: 28px;
-  font-size: 1.1rem;
+.rp-app .rp-category-chips::-webkit-scrollbar {
+  display: none;
 }
-.rp-member-name {
-  font-size: 1.35rem;
-  font-weight: 550;
-  letter-spacing: -0.02em;
-  overflow-wrap: anywhere;
+@media (hover: hover) and (pointer: fine) {
+  .rp-app
+    .rp-subnav
+    > :is(a, button):not([aria-current], [aria-pressed="true"]):hover,
+  .rp-app .rp-category-chips > a:not([aria-current]):hover {
+    background: var(--rp-surface-2);
+  }
 }
 
 /* ---------- Benefits ---------- */
-.rp-grid {
+.rp-app .rp-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  grid-template-columns: 1fr;
+  gap: 10px;
 }
-.rp-benefit {
-  display: flex;
-  flex-direction: column;
-  padding: 24px;
-  border: 1px solid var(--rp-border);
-  border-radius: 28px;
+.rp-app .rp-benefit {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px 14px 14px;
+  border-radius: 22px;
   background: var(--rp-surface);
+  color: var(--rp-text);
   transition:
     background-color 200ms ease,
-    box-shadow 200ms ease,
-    translate 200ms var(--rp-ease),
     scale 160ms var(--rp-ease);
 }
-.rp-benefit:active {
+.rp-app .rp-benefit:active {
   scale: 0.98;
 }
 @media (hover: hover) and (pointer: fine) {
-  .rp-benefit:hover {
+  .rp-app .rp-benefit:hover {
     background: var(--rp-surface-2);
-    translate: 0 -2px;
-    box-shadow: var(--rp-shadow);
   }
 }
-.rp-benefit-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 26px;
+.rp-app .rp-benefit strong {
+  display: block;
+  font-size: 1.02rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
-/* Category icons: bare line icons, like the landing cards. */
-.rp-category-icon {
-  width: 40px;
-  height: 40px;
+.rp-app .rp-benefit span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--rp-muted);
+  font-size: 0.88rem;
+}
+.rp-app .rp-benefit > svg {
+  color: var(--rp-faint);
+}
+.rp-app .rp-category-icon {
   display: grid;
   place-items: center;
-  color: var(--rp-text);
   flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: var(--rp-raised);
+  color: var(--rp-text);
 }
-.rp-category-icon svg {
-  width: 28px;
-  height: 28px;
-  stroke-width: 1.6;
+.rp-app .rp-category-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 1.75;
 }
-.rp-benefit h3 {
-  font-size: 1.2rem;
-  font-weight: 550;
-  letter-spacing: -0.02em;
-  margin-bottom: 6px;
-}
-.rp-benefit .rp-muted {
-  margin: 6px 0 22px;
-}
-.rp-benefit-foot {
+/* Horizontal rail of tiles (featured benefits on Inicio). */
+.rp-app .rp-rail {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding-top: 16px;
-  border-top: 1px solid var(--rp-border);
-  margin-top: auto;
-  font-size: 0.86rem;
+  gap: 10px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 20px;
+  scrollbar-width: none;
+  margin: 0 -20px;
+  padding: 0 20px;
 }
-.rp-benefit-foot strong {
-  color: var(--rp-accent-text);
-  font-weight: 700;
+.rp-app .rp-rail::-webkit-scrollbar {
+  display: none;
 }
-.rp-empty {
-  padding: 40px 24px;
-  border: 1px dashed var(--rp-border-strong);
-  border-radius: 28px;
-  text-align: center;
+.rp-app .rp-rail > .rp-benefit {
+  flex: 0 0 min(78%, 300px);
+  scroll-snap-align: start;
+  grid-template-columns: 1fr;
+  align-content: start;
+  gap: 18px;
+  padding: 18px;
 }
-.rp-empty svg {
-  margin: 0 auto 16px;
-  color: var(--rp-muted);
-}
-.rp-empty p {
-  max-width: 48ch;
-  margin: 10px auto 18px;
+.rp-app .rp-rail > .rp-benefit > svg {
+  display: none;
 }
 
-/* ---------- Lists ---------- */
-.rp-list {
+/* ---------- Lists and menus ---------- */
+.rp-app .rp-list {
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--rp-border);
-  border-radius: 24px;
+  padding: 2px 18px;
+  border-radius: 22px;
   background: var(--rp-surface);
-  padding: 4px 20px;
 }
-.rp-list-row {
+.rp-app .rp-list-row {
   display: flex;
-  gap: 20px;
-  align-items: center;
   justify-content: space-between;
-  padding: 18px 0;
-  border-bottom: 1px solid var(--rp-border);
+  align-items: center;
+  gap: 14px;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--rp-line);
 }
-.rp-list-row:last-child {
+.rp-app .rp-list-row:last-child {
   border-bottom: 0;
 }
-.rp-list-row p {
-  margin-top: 4px;
+.rp-app .rp-list-row h2,
+.rp-app .rp-list-row h3 {
+  font-size: 0.98rem;
+  font-weight: 600;
 }
-/* A list row used on its own (outside .rp-list) keeps just its divider. */
-.rp-stack > .rp-list-row,
-section > .rp-list-row {
-  padding: 16px 0;
+.rp-app .rp-list-row p {
+  color: var(--rp-muted);
+  font-size: 0.86rem;
+  line-height: 1.5;
 }
-.rp-amount {
-  font-family: var(--font-mono);
-  color: var(--rp-accent-text);
+.rp-app .rp-amount {
+  flex-shrink: 0;
   font-weight: 600;
   white-space: nowrap;
 }
-
-/* ---------- Forms ---------- */
-.rp-form {
+/* Settings-style rows: label, optional value, chevron. */
+.rp-app .rp-menu {
   display: flex;
   flex-direction: column;
-  gap: 18px;
 }
-.rp-field {
+.rp-app .rp-menu-title {
+  margin: 0 0 4px;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+.rp-app .rp-menu > :is(a, button, .rp-menu-row) {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 60px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--rp-line);
+  color: var(--rp-text);
+  font: inherit;
+  font-size: 1rem;
+  text-align: left;
+  cursor: pointer;
+  transition: opacity 160ms ease;
+}
+.rp-app .rp-menu > :is(a, button):active {
+  opacity: 0.6;
+}
+.rp-app .rp-menu > :is(a, button, .rp-menu-row) > span:first-child {
+  flex: 1;
+}
+.rp-app .rp-menu-value {
+  color: var(--rp-muted);
+  font-size: 0.92rem;
+  white-space: nowrap;
+}
+.rp-app .rp-menu > :is(a, button) > svg {
+  flex-shrink: 0;
+  color: var(--rp-faint);
+}
+.rp-app .rp-menu > .rp-menu-row {
+  cursor: default;
+}
+.rp-app .rp-menu > .rp-menu-row .rp-segmented {
+  flex: 0 0 auto;
+}
+
+/* Accordion rows (details/summary) used for longer content in place. */
+.rp-app details {
+  border-bottom: 1px solid var(--rp-line);
+}
+.rp-app details > summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  min-height: 60px;
+  padding: 8px 0;
+  list-style: none;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.rp-app details > summary::-webkit-details-marker {
+  display: none;
+}
+.rp-app details > summary::after {
+  content: "";
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border-right: 2px solid var(--rp-faint);
+  border-bottom: 2px solid var(--rp-faint);
+  rotate: 45deg;
+  translate: 0 -2px;
+  transition: rotate 200ms var(--rp-ease);
+}
+.rp-app details[open] > summary::after {
+  rotate: 225deg;
+  translate: 0 2px;
+}
+.rp-app details > :not(summary) {
+  margin-bottom: 20px;
+}
+.rp-app details > summary.rp-text-link {
+  min-height: 44px;
+}
+
+/* ---------- Text and status ---------- */
+.rp-app .rp-text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  color: var(--rp-text);
+  font-size: 0.94rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    opacity 160ms ease,
+    scale 160ms var(--rp-ease);
+}
+.rp-app .rp-text-link:active {
+  scale: 0.97;
+}
+@media (hover: hover) and (pointer: fine) {
+  .rp-app .rp-text-link:hover {
+    opacity: 0.65;
+  }
+}
+.rp-app .rp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: var(--rp-surface-2);
+  color: var(--rp-text);
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.rp-app .rp-stack > .rp-badge {
+  align-self: flex-start;
+}
+.rp-app .rp-badge.good {
+  background: var(--rp-success-bg);
+  color: var(--rp-success-fg);
+}
+.rp-app .rp-badge.pending {
+  background: var(--rp-warn-bg);
+  color: var(--rp-warn-fg);
+}
+.rp-app .rp-badge strong {
+  font-weight: 700;
+}
+.rp-app .rp-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 24px 22px;
+  border-radius: 24px;
+  background: var(--rp-surface);
+}
+.rp-app .rp-empty h1,
+.rp-app .rp-empty h2 {
+  font-size: 1.1rem;
+}
+.rp-app .rp-empty .wensity-button {
+  margin-top: 8px;
+}
+.rp-app .rp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.rp-app .rp-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  counter-reset: step;
+}
+.rp-app .rp-steps li {
+  display: flex;
+  gap: 14px;
+  color: var(--rp-muted);
+  font-size: 0.94rem;
+  line-height: 1.55;
+}
+.rp-app .rp-steps li::before {
+  counter-increment: step;
+  content: counter(step);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: var(--rp-surface-2);
+  color: var(--rp-text);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* ---------- Forms ---------- */
+.rp-app .rp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.rp-app .rp-field {
   display: flex;
   flex-direction: column;
   gap: 8px;
-}
-.rp-field label {
   font-size: 0.88rem;
-  font-weight: 600;
+  font-weight: 500;
 }
-.rp-field :is(input, select, textarea) {
-  min-height: 52px;
-  padding: 13px 18px;
+.rp-app .rp-field[hidden] {
+  display: none;
+}
+.rp-app .rp-field label {
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+.rp-app .rp-field :is(input, select, textarea) {
   width: 100%;
-  border: 1px solid var(--rp-border-strong);
-  border-radius: 18px;
-  background: var(--rp-input);
+  min-height: 52px;
+  padding: 14px 16px;
+  border: 1px solid transparent;
+  border-radius: 16px;
+  background: var(--rp-surface);
+  color: var(--rp-text);
   font: inherit;
   font-size: 16px;
-  color: var(--rp-text);
+  font-weight: 400;
   transition:
-    border-color 180ms ease,
     background-color 180ms ease,
+    border-color 180ms ease,
     box-shadow 180ms ease;
 }
-.rp-field :is(input, select, textarea):focus {
+.rp-app .rp-panel .rp-field :is(input, select, textarea),
+.rp-app .rp-callout .rp-field :is(input, select, textarea) {
+  background: var(--rp-raised);
+}
+.rp-app .rp-field :is(input, select, textarea):focus {
   outline: none;
   border-color: var(--rp-text);
-  background: var(--rp-input-focus);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--rp-accent) 35%, transparent);
+  background: var(--rp-raised);
 }
-.rp-field select {
+.rp-app .rp-field select {
+  appearance: none;
+  padding-right: 44px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--rp-muted) 50%),
+    linear-gradient(135deg, var(--rp-muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 22px) 50%,
+    calc(100% - 16px) 50%;
+  background-size: 6px 6px;
+  background-repeat: no-repeat;
   color-scheme: light;
 }
-html[data-rp-theme="dark"] .rp-field select {
+html[data-rp-theme="dark"] .rp-app .rp-field select {
   color-scheme: dark;
 }
-.rp-field textarea {
-  min-height: 116px;
+.rp-app .rp-field textarea {
+  min-height: 120px;
   resize: vertical;
 }
-.rp-field input::placeholder,
-.rp-field textarea::placeholder {
-  color: var(--rp-muted);
-  opacity: 0.8;
+.rp-app .rp-field :is(input, textarea)::placeholder {
+  color: var(--rp-faint);
 }
-.rp-field input[type="file"] {
+.rp-app .rp-field input[type="file"] {
   padding: 10px;
-  font-size: 0.88rem;
+  font-size: 0.9rem;
 }
-.rp-field input::file-selector-button {
-  padding: 8px 14px;
+.rp-app .rp-field input::file-selector-button {
+  height: 36px;
+  padding: 0 14px;
   margin-right: 12px;
   border: 0;
   border-radius: 999px;
-  background: var(--rp-surface-3);
-  color: var(--rp-text);
+  background: var(--rp-text);
+  color: var(--rp-bg);
   font: inherit;
   font-weight: 600;
 }
-.rp-error,
-.rp-success {
-  padding: 14px 18px;
-  border-radius: 18px;
+.rp-app .rp-field .rp-muted {
+  font-size: 0.84rem;
+  font-weight: 400;
+}
+.rp-app :is(.rp-error, .rp-success) {
+  padding: 12px 16px;
+  border-radius: 16px;
   font-size: 0.9rem;
-  line-height: 1.6;
+  line-height: 1.55;
   opacity: 1;
   transform: translateY(0);
   transition:
@@ -779,324 +922,309 @@ html[data-rp-theme="dark"] .rp-field select {
     transform 200ms ease-out;
 }
 @starting-style {
-  .rp-error,
-  .rp-success {
+  .rp-app :is(.rp-error, .rp-success) {
     opacity: 0;
     transform: translateY(-4px);
   }
 }
-.rp-error {
-  color: var(--rp-danger-fg);
+.rp-app .rp-error {
   background: var(--rp-danger-bg);
+  color: var(--rp-danger-fg);
 }
-.rp-success {
-  color: var(--rp-success-fg);
+.rp-app .rp-success {
   background: var(--rp-success-bg);
+  color: var(--rp-success-fg);
 }
-.rp-check {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  font-size: 0.88rem;
-  line-height: 1.6;
-}
-.rp-check input {
-  width: 20px;
-  height: 20px;
-  margin-top: 2px;
-  accent-color: var(--rp-accent);
-  flex-shrink: 0;
-}
-.rp-check a {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-.rp-password {
-  position: relative;
-}
-.rp-password input {
-  padding-right: 54px;
-}
-.rp-password button {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  width: 44px;
-  height: 44px;
-  display: grid;
-  place-items: center;
-  border-radius: 999px;
-  cursor: pointer;
-  color: var(--rp-muted);
-}
-
-/* ---------- Detail / QR ---------- */
-.rp-detail {
-  display: grid;
-  grid-template-columns: 1.3fr 1fr;
-  gap: 16px;
-  align-items: start;
-}
-.rp-detail h2 {
-  margin-bottom: 12px;
-}
-.rp-detail p {
-  line-height: 1.7;
-}
-.rp-qr {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  align-items: center;
-  text-align: center;
-}
-.rp-qr-canvas {
-  background: #fff;
-  padding: 18px;
-  border-radius: 24px;
-  max-width: 100%;
-  box-shadow: var(--rp-shadow);
-}
-.rp-qr-canvas svg {
-  display: block;
-  width: 220px;
-  max-width: 100%;
-  height: auto;
-}
-.rp-qr code {
-  display: block;
-  overflow-wrap: anywhere;
-  font-size: 0.8rem;
-  line-height: 1.8;
-}
-.rp-short-code {
-  display: block;
-  font-size: 2.25rem;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  padding: 6px 18px;
-  border-radius: 18px;
-  background: var(--rp-surface-2);
-}
-.rp-steps {
-  counter-reset: steps;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin: 20px 0;
-}
-.rp-steps li {
+.rp-app .rp-check {
   display: flex;
   align-items: flex-start;
   gap: 12px;
   font-size: 0.92rem;
-  line-height: 1.6;
+  line-height: 1.55;
 }
-.rp-steps li:before {
-  counter-increment: steps;
-  content: counter(steps);
-  min-width: 28px;
-  height: 28px;
-  background: var(--rp-accent);
-  color: var(--rp-accent-fg);
-  border-radius: 50%;
+.rp-app .rp-check input {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  accent-color: var(--rp-accent);
+}
+.rp-app .rp-check a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.rp-app .rp-password {
+  position: relative;
+}
+.rp-app .rp-password input {
+  padding-right: 54px;
+}
+.rp-app .rp-password button {
+  position: absolute;
+  top: 4px;
+  right: 4px;
   display: grid;
   place-items: center;
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  color: var(--rp-muted);
+  cursor: pointer;
+}
+.rp-app .rp-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px;
+}
+.rp-app .rp-filters .rp-field {
+  flex: 1 1 240px;
+}
+/* Buttons never overflow a narrow column. */
+.rp-app .wensity-button {
+  max-width: 100%;
+}
+.rp-app .wensity-button > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------- Benefit detail and codes ---------- */
+.rp-app .rp-detail {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px;
+}
+.rp-app .rp-detail-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+.rp-app .rp-detail-hero .rp-category-icon {
+  background: var(--rp-surface);
+}
+.rp-app .rp-qr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 24px 20px;
+  border-radius: 28px;
+  background: var(--rp-surface);
+  text-align: center;
+}
+.rp-app .rp-qr .wensity-button {
+  width: 100%;
+}
+.rp-app .rp-qr-canvas {
+  padding: 16px;
+  border-radius: 22px;
+  background: #ffffff;
+  line-height: 0;
+}
+.rp-app .rp-qr-canvas svg {
+  width: min(220px, 62vw);
+  height: auto;
+}
+.rp-app .rp-short-code {
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-size: 2rem;
   font-weight: 600;
+  letter-spacing: 0.18em;
+}
+
+/* ---------- Business ---------- */
+.rp-app .rp-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.rp-app .rp-metrics > div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px;
+  border-radius: 22px;
+  background: var(--rp-surface);
+}
+.rp-app .rp-metrics dt {
+  color: var(--rp-muted);
+  font-size: 0.84rem;
+}
+.rp-app .rp-metrics dd {
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+.rp-app .rp-metrics dd.rp-muted {
+  font-size: 0.92rem;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+/* Top bar of single-purpose screens (scan with PIN, standalone pages). */
+.rp-app .rp-pinbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: calc(12px + env(safe-area-inset-top, 0px)) 20px 0;
 }
 
 /* ---------- Admin ---------- */
-.rp-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: end;
+.rp-app .rp-admin-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px;
+  align-items: start;
 }
-.rp-filters .rp-field {
-  flex: 1;
-  min-width: 160px;
-}
-.rp-subnav {
-  display: flex;
-  gap: 6px;
-  padding: 4px;
-  border-radius: 999px;
+.rp-app .rp-verification-preview {
+  display: block;
+  width: 100%;
+  max-width: 520px;
+  max-height: 360px;
+  margin: 12px 0;
+  border-radius: 18px;
+  object-fit: contain;
+  object-position: left center;
   background: var(--rp-surface-2);
-  overflow-x: auto;
-  scrollbar-width: none;
-  align-self: flex-start;
-  max-width: 100%;
 }
-.rp-subnav::-webkit-scrollbar {
-  display: none;
-}
-/* Links (tabs) or buttons (filters, aria-pressed) share the same segment. */
-.rp-subnav :is(a, button) {
-  display: inline-flex;
-  align-items: center;
-  flex-shrink: 0;
-  padding: 0 16px;
-  min-height: 42px;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  font: inherit;
-  font-size: 0.9rem;
-  font-weight: 500;
-  border-radius: 999px;
-  white-space: nowrap;
-  cursor: pointer;
-  transition:
-    background-color 200ms ease,
-    color 200ms ease,
-    scale 160ms var(--rp-ease);
-}
-.rp-subnav :is(a, button):active {
-  scale: 0.96;
-}
-.rp-subnav :is(a[aria-current], button[aria-pressed="true"]) {
-  background: var(--rp-text);
-  color: var(--rp-bg);
-}
-@media (hover: hover) and (pointer: fine) {
-  .rp-subnav :is(a:not([aria-current]), button[aria-pressed="false"]):hover {
-    background: var(--rp-surface-3);
-  }
-}
-
-/* Waitlist table: a real table on wide screens, one card per row on phones. */
-.rp-waitlist-tools {
-  gap: 12px;
-}
-.rp-table-wrap {
-  border: 1px solid var(--rp-border);
+.rp-app .rp-skeleton {
+  min-height: 120px;
   border-radius: 24px;
   background: var(--rp-surface);
-  overflow-x: auto;
+  animation: rp-pulse 1.2s ease-in-out infinite;
 }
-.rp-table {
+/* Opacity only: composited, no repaint per frame on slow phones. */
+@keyframes rp-pulse {
+  50% {
+    opacity: 0.55;
+  }
+}
+.rp-app .rp-waitlist-tools {
+  gap: 12px;
+}
+.rp-app .rp-table-wrap {
+  overflow-x: auto;
+  border-radius: 22px;
+  background: var(--rp-surface);
+}
+.rp-app .rp-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.9rem;
 }
-.rp-table th {
+.rp-app .rp-table th {
   padding: 14px 16px;
-  text-align: left;
-  font-size: 0.78rem;
-  font-weight: 600;
+  border-bottom: 1px solid var(--rp-line);
   color: var(--rp-muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-align: left;
   white-space: nowrap;
-  border-bottom: 1px solid var(--rp-border);
 }
-.rp-table td {
-  padding: 12px 16px;
+.rp-app .rp-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--rp-line);
   vertical-align: middle;
-  border-bottom: 1px solid var(--rp-border);
 }
-.rp-table tbody tr:last-child td {
+.rp-app .rp-table tbody tr:last-child td {
   border-bottom: 0;
 }
-.rp-table a {
+.rp-app .rp-table a {
+  font-weight: 500;
   text-decoration: underline;
-  text-decoration-color: var(--rp-border-strong);
-  text-underline-offset: 4px;
+  text-decoration-color: var(--rp-line-strong);
+  text-underline-offset: 3px;
   white-space: nowrap;
 }
-.rp-table-pos {
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
+.rp-app .rp-table-pos {
   color: var(--rp-muted);
-}
-.rp-table-name {
   font-weight: 600;
 }
-.rp-table-date {
-  white-space: nowrap;
+.rp-app .rp-table-name {
+  font-weight: 600;
+}
+.rp-app .rp-table-date {
   color: var(--rp-muted);
+  white-space: nowrap;
 }
-.rp-badge strong {
-  font-weight: 700;
-}
-.rp-status-select {
+.rp-app .rp-status-select {
   position: relative;
   display: inline-flex;
   align-items: center;
   border-radius: 999px;
-  background: var(--rp-surface-3);
-  color: var(--rp-text);
+  background: var(--rp-surface-2);
 }
-.rp-status-select[data-status="verified"] {
-  background: var(--rp-accent);
-  color: var(--rp-accent-fg);
+.rp-app .rp-status-select[data-status="verified"] {
+  background: var(--rp-success-bg);
+  color: var(--rp-success-fg);
 }
-.rp-status-select[data-status="rejected"] {
+.rp-app .rp-status-select[data-status="rejected"] {
   background: var(--rp-danger-bg);
   color: var(--rp-danger-fg);
 }
-.rp-status-select select {
+.rp-app .rp-status-select select {
   appearance: none;
-  min-height: 36px;
-  padding: 6px 32px 6px 14px;
+  min-height: 34px;
+  padding: 0 32px 0 14px;
   border: 0;
   border-radius: 999px;
   background: transparent;
   color: inherit;
   font: inherit;
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   font-weight: 600;
   cursor: pointer;
 }
-.rp-status-select svg {
+.rp-app .rp-status-select svg {
   position: absolute;
-  right: 12px;
+  right: 10px;
   pointer-events: none;
 }
 @media (max-width: 900px) {
-  .rp-table-wrap {
-    border: 0;
-    background: transparent;
+  .rp-app .rp-table-wrap {
     overflow: visible;
+    background: transparent;
   }
-  .rp-table,
-  .rp-table tbody,
-  .rp-table tr,
-  .rp-table td {
+  .rp-app .rp-table,
+  .rp-app .rp-table tbody,
+  .rp-app .rp-table tr,
+  .rp-app .rp-table td {
     display: block;
   }
-  .rp-table thead {
+  .rp-app .rp-table thead {
     position: absolute;
     width: 1px;
     height: 1px;
     overflow: hidden;
     clip-path: inset(50%);
   }
-  .rp-table tbody {
+  .rp-app .rp-table tbody {
     display: flex;
     flex-direction: column;
     gap: 10px;
   }
-  .rp-table tr {
+  .rp-app .rp-table tr {
     display: grid;
     grid-template-columns: auto 1fr;
     gap: 8px 12px;
-    padding: 18px 20px;
-    border: 1px solid var(--rp-border);
+    padding: 18px;
     border-radius: 22px;
     background: var(--rp-surface);
   }
-  .rp-table td,
-  .rp-table tbody tr:last-child td {
+  .rp-app .rp-table td,
+  .rp-app .rp-table tbody tr:last-child td {
     padding: 0;
     border: 0;
   }
-  .rp-table a {
+  .rp-app .rp-table a {
     white-space: normal;
     overflow-wrap: anywhere;
   }
-  /* Position + name form the card title; the rest get their column name. */
-  .rp-table td:not(.rp-table-pos, .rp-table-name) {
+  .rp-app .rp-table td:not(.rp-table-pos, .rp-table-name) {
     grid-column: 1 / -1;
     display: flex;
     justify-content: space-between;
@@ -1104,564 +1232,80 @@ html[data-rp-theme="dark"] .rp-field select {
     gap: 12px;
     text-align: right;
   }
-  .rp-table td:not(.rp-table-pos, .rp-table-name)::before {
+  .rp-app .rp-table td:not(.rp-table-pos, .rp-table-name)::before {
     content: attr(data-label);
-    font-size: 0.8rem;
     color: var(--rp-muted);
+    font-size: 0.8rem;
     text-align: left;
   }
-  .rp-table-pos {
-    align-self: center;
-  }
-  .rp-table-pos::before {
+  .rp-app .rp-table-pos::before {
     content: "#";
   }
-  .rp-table-name {
-    font-size: 1.05rem;
+  .rp-app .rp-table-name {
+    font-size: 1.02rem;
   }
 }
-.rp-admin-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(260px, 360px);
-  gap: 20px;
-  align-items: start;
-}
-.rp-skeleton {
-  min-height: 140px;
-  border-radius: 28px;
-  background: var(--rp-surface-2);
-  animation: rp-pulse 1.2s ease-in-out infinite alternate;
-}
-@keyframes rp-pulse {
-  to {
-    opacity: 0.5;
-  }
-}
-.rp-yappy-host {
+
+/* ---------- Yappy ---------- */
+/* Yappy's dialog and backdrop live inside its element; this stacking context
+   keeps them above the fixed dock. */
+.rp-app .rp-yappy-host {
   position: relative;
   z-index: 50;
 }
-/* Yappy's button renders without shadow DOM, so Tailwind's preflight
-   (`* { margin: 0 }`) strips the browser's `margin: auto` that its fixed,
-   inset: 0 <dialog> relies on to center. Give it back. */
+/* Yappy's <btn-yappy> has no shadow DOM: Tailwind's preflight resets the
+   dialog's margin, and its centering relies on the browser default. */
 btn-yappy dialog {
   margin: auto;
 }
-.rp-skip {
-  position: fixed;
-  top: 8px;
-  left: 8px;
-  transform: translateY(-160%);
-  z-index: 60;
-  padding: 12px 16px;
-  border-radius: 999px;
-  background: var(--rp-text);
-  color: var(--rp-bg);
-  transition: transform 150ms ease-out;
-}
-.rp-skip:focus {
-  transform: translateY(0);
-}
 
-/* ---------- Access switch (driver / business) ---------- */
-.rp-access-switch {
-  display: flex;
-  gap: 4px;
-  border: 1px solid var(--rp-border);
-  border-radius: 999px;
-  padding: 4px;
+/* ---------- Larger screens ---------- */
+@media (min-width: 760px) {
+  .rp-app .rp-main {
+    padding-top: calc(48px + env(safe-area-inset-top, 0px));
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+  .rp-app :is(h1, .rp-title) {
+    font-size: 2.5rem;
+  }
+  .rp-app .rp-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .rp-app .rp-metrics {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .rp-app .rp-subnav,
+  .rp-app .rp-category-chips,
+  .rp-app .rp-rail {
+    margin: 0;
+    padding: 0;
+  }
+  .rp-app .rp-hero {
+    padding: 28px;
+  }
 }
-.rp-access-switch a {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  min-height: 44px;
-  padding: 0 8px;
-  border-radius: 999px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--rp-text);
-  transition:
-    background-color 200ms ease,
-    scale 160ms cubic-bezier(0.23, 1, 0.32, 1);
-}
-.rp-access-switch a:active {
-  scale: 0.97;
-}
-.rp-access-switch a[aria-current] {
-  background: #100b00;
-  color: #efffc8;
-}
-.rp-access-switch a:not([aria-current]):hover {
-  background: #e2f3b3;
-}
-/* Sign-in has three tabs (Conductor, Comercio, PIN): on narrow phones they
-   size to their labels, and below 360px the icons give way to the text. */
-@media (max-width: 420px) {
-  .rp-access-switch a {
-    flex: 1 1 auto;
-    gap: 6px;
-    padding: 0 6px;
-    font-size: 0.85rem;
+@media (min-width: 1000px) {
+  .rp-app .rp-admin-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 380px);
+  }
+  .rp-app .rp-main.wide .rp-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 @media (max-width: 360px) {
-  .rp-access-switch a svg {
-    display: none;
+  .rp-app .rp-main {
+    padding-left: 16px;
+    padding-right: 16px;
   }
-}
-.rp-verification-preview {
-  display: block;
-  width: 100%;
-  max-width: 520px;
-  max-height: 360px;
-  object-fit: contain;
-  object-position: left center;
-  border-radius: 20px;
-  margin: 16px 0;
-  background: var(--rp-surface-2);
-}
-
-/* ---------- Business portal ---------- */
-.rp-business-header {
-  position: sticky;
-  top: 12px;
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin: 12px 16px 0;
-  padding: 8px 8px 8px 22px;
-  border-radius: 28px;
-  background: var(--rp-glass);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
-  backdrop-filter: blur(18px) saturate(160%);
-  border: 1px solid var(--rp-glass-line);
-  box-shadow:
-    inset 0 1px 0 var(--rp-glass-hi),
-    var(--rp-shadow);
-}
-.rp-business-header nav {
-  display: flex;
-  gap: 4px;
-  margin-left: auto;
-  font-size: 0.9rem;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.rp-business-header nav::-webkit-scrollbar {
-  display: none;
-}
-.rp-business-header nav a {
-  display: inline-flex;
-  flex-shrink: 0;
-  align-items: center;
-  min-height: 40px;
-  padding: 0 14px;
-  border-radius: 999px;
-  font-weight: 500;
-  white-space: nowrap;
-  transition:
-    background-color 200ms ease,
-    scale 160ms var(--rp-ease);
-}
-.rp-business-header nav a:active {
-  scale: 0.96;
-}
-.rp-business-header nav a[aria-current] {
-  background: var(--rp-accent);
-  color: var(--rp-accent-fg);
-}
-@media (hover: hover) and (pointer: fine) {
-  .rp-business-header nav a:not([aria-current]):hover {
-    background: var(--rp-surface-2);
+  .rp-app :is(h1, .rp-title) {
+    font-size: 1.75rem;
   }
-}
-.rp-business-header form {
-  display: flex;
-}
-.rp-business-header form .rp-text-link {
-  min-height: 40px;
-  padding: 0 14px;
-  border-radius: 999px;
-  text-decoration: none;
-  background: var(--rp-text);
-  color: var(--rp-bg);
-}
-.rp-business-overview {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 16px;
-  padding: 22px 24px;
-  border: 1px solid var(--rp-border);
-  border-radius: 28px;
-  background: var(--rp-surface);
-}
-.rp-business-overview p {
-  margin-top: 6px;
-}
-.rp-category-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.rp-category-chips .rp-button {
-  min-height: 42px;
-  padding: 8px 18px;
-  font-size: 0.88rem;
-}
-.rp-category-chips [aria-current="page"] {
-  background: var(--rp-text);
-  color: var(--rp-bg);
-  border-color: var(--rp-text);
-}
-.rp-category-chip {
-  border: 1px solid var(--rp-border-strong);
-  border-radius: 999px;
-  padding: 10px 16px;
-  min-height: 44px;
-  font: inherit;
-  font-weight: 600;
-  cursor: pointer;
-  background: transparent;
-  color: var(--rp-text);
-}
-.rp-category-chip[aria-pressed="true"] {
-  background: var(--rp-text);
-  color: var(--rp-bg);
-}
-.rp-metrics {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: 12px;
-}
-.rp-metrics > div {
-  padding: 20px 22px;
-  border: 1px solid var(--rp-border);
-  border-radius: 24px;
-  background: var(--rp-surface);
-}
-.rp-metrics dt {
-  font-size: 0.85rem;
-  color: var(--rp-muted);
-}
-.rp-metrics dd {
-  font-size: 1.75rem;
-  font-weight: 550;
-  letter-spacing: -0.03em;
-  margin-top: 8px;
-}
-.rp-metrics dd.rp-muted {
-  font-size: 1rem;
-  letter-spacing: 0;
-}
-label.rp-field {
-  font-size: 0.88rem;
-  font-weight: 600;
-}
-label.rp-field :is(input, select, textarea) {
-  font-weight: 400;
-}
-.rp-field[hidden] {
-  display: none;
-}
-.rp-app details {
-  border: 1px solid var(--rp-border);
-  border-radius: 24px;
-  background: var(--rp-surface);
-  padding: 0 22px;
-}
-.rp-app details > summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  cursor: pointer;
-  padding: 16px 0;
-  font-weight: 600;
-  min-height: 56px;
-  list-style: none;
-}
-.rp-app details > summary::-webkit-details-marker {
-  display: none;
-}
-.rp-app details > summary::after {
-  content: "+";
-  font-size: 1.3rem;
-  font-weight: 400;
-  line-height: 1;
-  transition: rotate 200ms var(--rp-ease);
-}
-.rp-app details[open] > summary::after {
-  rotate: 45deg;
-}
-.rp-app details[open] {
-  padding-bottom: 22px;
-}
-.rp-app details[open] > summary {
-  margin-bottom: 8px;
-}
-/* Nested panels inside an open disclosure don't need a second frame. */
-.rp-app details .rp-panel {
-  border: 0;
-  padding: 0;
-  background: transparent;
-}
-/* A disclosure used as a text link (admin "Cerrar cuenta", payments) stays
-   inline instead of becoming a card. */
-.rp-app details:has(> summary.rp-text-link) {
-  border: 0;
-  background: transparent;
-  padding: 0;
-}
-.rp-app details > summary.rp-text-link::after {
-  content: none;
-}
-
-/* ---------- Tablet ---------- */
-@media (max-width: 1000px) {
-  .rp-sidebar {
-    width: 208px;
-  }
-  .rp-workspace {
-    margin-left: 232px;
-  }
-  .rp-main {
-    padding: 28px 24px 48px;
-  }
-  .rp-summary,
-  .rp-detail,
-  .rp-admin-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ---------- Phone ---------- */
-@media (max-width: 700px) {
-  .rp-sidebar,
-  .rp-topbar {
-    display: none;
-  }
-  .rp-workspace {
-    margin-left: 0;
-  }
-  /* Sticky glass tab at the top, like the landing header once scrolled. */
-  .rp-mobile-header {
-    position: sticky;
-    top: 0;
-    z-index: 25;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-    margin: 0 10px;
-    /* The glass (::before) starts 6px below the top; the switcher sits 6px
-       inside it on every side so the two pills read as concentric. */
-    padding: calc(12px + env(safe-area-inset-top, 0px)) 6px 6px 18px;
-  }
-  .rp-mobile-header::before {
-    content: "";
-    position: absolute;
-    inset: calc(6px + env(safe-area-inset-top, 0px)) 0 0 0;
-    z-index: -1;
-    border-radius: 999px;
-    background: var(--rp-glass);
-    -webkit-backdrop-filter: blur(18px) saturate(160%);
-    backdrop-filter: blur(18px) saturate(160%);
-    border: 1px solid var(--rp-glass-line);
-    box-shadow:
-      inset 0 1px 0 var(--rp-glass-hi),
-      var(--rp-shadow);
-  }
-  .rp-mobile-header .rp-logo {
-    font-size: 1.05rem;
-  }
-  .rp-mobile-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .rp-mobile-actions .rp-badge {
-    padding: 4px 10px;
-    font-size: 0.72rem;
-  }
-  .rp-main {
-    padding: 20px 16px calc(112px + env(safe-area-inset-bottom, 0px));
-  }
-  .rp-app h1 {
-    font-size: 1.85rem;
-  }
-  .rp-app h2 {
-    font-size: 1.15rem;
-  }
-  /* Floating pill tab bar, thumb-reachable, clear of the home indicator. */
-  .rp-bottomnav {
-    display: flex;
-    position: fixed;
-    z-index: 30;
-    left: 10px;
-    right: 10px;
-    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
-    justify-content: space-between;
-    padding: 6px 4px;
-    border-radius: 999px;
-    background: var(--rp-glass);
-    -webkit-backdrop-filter: blur(20px) saturate(170%);
-    backdrop-filter: blur(20px) saturate(170%);
-    border: 1px solid var(--rp-glass-line);
-    box-shadow:
-      inset 0 1px 0 var(--rp-glass-hi),
-      0 18px 40px -18px rgba(16, 11, 0, 0.5);
-  }
-  /* Six tabs don't leave room for a filled pill around each label, so the
-     active state is a green pill behind the icon only (labels never spill). */
-  .rp-bottomnav a {
-    display: flex;
-    flex: 1 1 0;
-    min-width: 0;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    justify-content: center;
-    min-height: 52px;
-    font-size: 10.5px;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    color: var(--rp-muted);
-    border-radius: 18px;
-    transition:
-      color 200ms ease,
-      scale 160ms var(--rp-ease);
-  }
-  .rp-bottomnav a:active {
-    scale: 0.94;
-  }
-  .rp-nav-icon {
-    display: grid;
-    place-items: center;
-    width: 46px;
-    height: 28px;
-    border-radius: 999px;
-    transition:
-      background-color 200ms ease,
-      color 200ms ease;
-  }
-  .rp-nav-label {
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .rp-bottomnav a[aria-current] {
-    color: var(--rp-text);
-  }
-  .rp-bottomnav a[aria-current] .rp-nav-icon {
-    color: var(--rp-accent-fg);
-    background: var(--rp-accent);
-  }
-  /* Narrow phones (iPhone SE, small Android): six labels still fit whole. */
-  @media (max-width: 360px) {
-    .rp-bottomnav {
-      left: 8px;
-      right: 8px;
-      padding: 6px 2px;
-    }
-    .rp-bottomnav a {
-      font-size: 9.5px;
-      letter-spacing: -0.02em;
-    }
-    .rp-nav-icon {
-      width: 40px;
-    }
-  }
-  .rp-stack {
-    gap: 20px;
-  }
-  .rp-grid,
-  .rp-summary {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-  .rp-panel {
-    padding: 22px 20px;
-    border-radius: 24px;
-  }
-  .rp-benefit {
-    padding: 20px;
-    border-radius: 24px;
-  }
-  .rp-heading {
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-  .rp-balance {
-    padding: 22px 20px;
-    border-radius: 24px;
-  }
-  .rp-callout {
-    flex-direction: column;
-    padding: 22px 20px;
-    gap: 10px;
-    border-radius: 24px;
-  }
-  .rp-callout .rp-button,
-  .rp-qr .rp-button,
-  .rp-form > .rp-button {
-    width: 100%;
-  }
-  .rp-panel.rp-stack > .rp-button {
-    align-self: stretch;
-  }
-  .rp-filters {
-    align-items: stretch;
-  }
-  .rp-filters .rp-field {
-    min-width: 100%;
-  }
-  .rp-section-head {
-    align-items: flex-start;
-    gap: 10px;
-  }
-  .rp-list {
-    padding: 2px 16px;
-    border-radius: 22px;
-  }
-  .rp-list-row {
-    gap: 12px;
-  }
-  .rp-business-header {
-    margin: 10px 10px 0;
-    padding: 8px 8px 8px 18px;
-  }
-  .rp-business-header nav {
-    order: 3;
-    flex-basis: 100%;
-    margin-left: 0;
-    padding-bottom: 2px;
-  }
-  .rp-business-header form {
-    margin-left: auto;
-  }
-  .rp-business-header > .rp-badge {
-    display: none;
-  }
-  .rp-app details {
-    padding: 0 18px;
-    border-radius: 22px;
-  }
-  .rp-metrics {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .rp-metrics dd {
-    font-size: 1.4rem;
-  }
-  .rp-short-code {
-    font-size: 1.9rem;
+  .rp-app .rp-subnav,
+  .rp-app .rp-category-chips,
+  .rp-app .rp-rail {
+    margin: 0 -16px;
+    padding: 0 16px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

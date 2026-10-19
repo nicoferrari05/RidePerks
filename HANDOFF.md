@@ -85,30 +85,68 @@ Curves are Tailwind tokens in `app/globals.css` (`ease-snappy`, `ease-move`,
    `localStorage` `rp_lp_theme`, applied pre-paint by an inline script, and
    cleared when leaving the landing (`ThemeSync`). Tokens live in
    `app/globals.css`; use `bg-lp-bg`, `text-lp-fg`, `bg-lp-accent`, etc.
-2. **Auth screens** (`/login`, `/register`, `/recover`, business login/register)
-   — `components/ui/sign-in.tsx` `AuthShell` with class `.rp-auth`, which
-   re-points the shadcn-style Tailwind tokens to the palette (light only). The
-   layout/design of these screens is intentionally unchanged; only colors.
-3. **Platform** (`/driver/*`, `/business/*`, `/account/password`, all of
-   `/admin/*`, `/privacidad`, `/terminos`) — plain CSS in `app/platform.css`,
-   `.rp-*` class names, no Tailwind colors. Tokens `--rp-*` on `.rp-app`
-   (shared with `.rp-auth`). Light/dark only via `html[data-rp-theme]`,
-   `localStorage` `rp_app_theme`, set by `components/platform/ThemeScript.tsx`
-   + toggle in `components/platform/theme.tsx`. Driver, business and admin
-   shells all have the toggle. **Class names are the platform's API** —
-   restyle in `platform.css`, don't rename. Mobile-first: sticky glass header
-   and a floating pill bottom nav under 700px. The bottom nav has six tabs, so
-   the active state is a green pill **behind the icon only** (a filled pill
-   around each label overflowed); labels shrink further at ≤360px. The mobile
-   header insets the theme switcher 6px on every side of the glass bar.
-   `.rp-app * { min-width: 0 }` lets flex children shrink below their text:
-   horizontal nav links need `flex-shrink: 0`.
-
-Admin: every signed-in `/admin/*` page wraps its content in
-`components/platform/AdminShell.tsx` (glass header like the business portal,
-section nav in `AdminNav.tsx`, logout). The waitlist table turns into one card
-per row under 900px. `/admin/login` uses the same `AuthShell` as `/login` and
-lands on `/admin/platform` by default.
+2. **Auth screens** (`/login`, `/register`, `/recover`, business login/register,
+   `/admin/login`, the `/pin` entry) — `components/ui/sign-in.tsx` `AuthShell`
+   with class `.rp-auth`, which re-points the shadcn-style Tailwind tokens to
+   the mint palette (light only). Their legacy controls (`.rp-field`,
+   `.rp-button`, `.rp-access-switch`…) live in `app/auth.css`, every rule
+   scoped to `.rp-auth`. The user asked to leave these screens as they are.
+3. **Platform** (`/driver/*`, `/business/*`, `/pin` scanner,
+   `/account/password`, all signed-in `/admin/*`, `/privacidad`, `/terminos`)
+   — redesigned October 2026 in the spirit of Uber/Airbnb (the user supplied
+   reference screenshots): **white background, soft gray cards with no
+   borders, one big number or title per screen, few icons, green
+   (`#85CB33`) only on actions**, black hero card for the key number. Plain
+   CSS in `app/platform.css`, every rule scoped to `.rp-app` (CSS stays
+   loaded across client navigation, so unscoped rules would leak into the
+   auth screens). **Class names are the platform's API** — restyle there,
+   don't rename. Dark mode = black (`#100B00`) with white text, chosen only
+   in Cuenta → Apariencia (`ThemeSetting` in `components/platform/theme.tsx`;
+   `localStorage` `rp_app_theme`; default light, the OS preference is
+   ignored on purpose). No theme toggle in headers any more.
+   - **Buttons**: `components/ui/button.tsx` (Base UI, supplied by the user)
+     for every platform/admin button; it defaults to `type="button"`, so form
+     submits need `type="submit"`. Links styled as buttons use
+     `buttonVariants()` from `components/ui/button-variants.ts` (a plain
+     module, callable from server components). Colors come from `--primary`,
+     `--muted`, `--border`… set on `.rp-app`; inside gray cards `--muted`
+     switches to white so secondary buttons stay visible.
+   - **Navigation**: `components/ui/spotlight-dock.tsx`, a floating dock
+     (icon + label, spotlight + sliding bar on the active tab), adapted from a
+     component the user supplied: **light in light mode, dark in dark mode**
+     (`--rp-dock*` tokens in `platform.css`). **Max four tabs.** Driver: Inicio ·
+     Beneficios (Comercios is a segmented tab inside) · Actividad · Cuenta
+     (membership, verification, help, password, profile edit, appearance).
+     Business: Escanear · Actividad · Beneficios · Cuenta (staff only get
+     Escanear · Cuenta); the portal lives in the route group
+     `app/business/(portal)/`. Admin: Plataforma · Revisiones · Pagos · Más
+     (`/admin/more`: access, waitlist, appearance, logout). Dock items are
+     defined in client components (icons can't cross the server→client
+     boundary as props).
+   - Sub-pages use `SubHeader` (round back button + centered title, which is
+     the page's `h1`); big titles under it are `h2.rp-title`. Settings rows
+     use `.rp-menu` + `MenuLink`; longer content opens in place with
+     `<details>`.
+   - Screens are presentational views fed by thin pages:
+     `components/platform/driver/views.tsx`, `driver/account-views.tsx`,
+     `business/views.tsx`, `BusinessMetrics` (`loadBusinessStats`) and
+     `BusinessBenefits` (`loadBusinessBenefits`). That is what makes the
+     fake-data preview route pattern below cheap.
+   - `money()` shows `$10.50` and `dateLabel()` `19 oct 2026`.
+   - **Speed (the user asked for app-like, instant taps on low-end
+     phones)**: the dock lights the tapped tab immediately (optimistic state,
+     before the route arrives); every section has a `loading.tsx` skeleton
+     (`LoadingBlocks`; admin ones render inside `AdminShell` so the dock
+     stays); `experimental.staleTimes.dynamic = 30` keeps visited tabs in the
+     client cache (server actions' `revalidatePath` still refreshes them);
+     `proxy.ts` and `currentProfile()` verify the session with
+     `auth.getClaims()` — local ES256 check, no Supabase Auth round trip per
+     request — and `currentProfile()` treats `closed_at` accounts as signed
+     out. Animations are transform/opacity only (no blur filters, no
+     background-position shimmer). The unused Fraunces font was removed.
+     Testing on `next dev` feels slow because each screen compiles on first
+     visit; judge speed on a production build.
+   - `.rp-app * { min-width: 0 }` lets flex children shrink below their text.
 
 ## Landing structure
 

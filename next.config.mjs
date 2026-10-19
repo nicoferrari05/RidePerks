@@ -18,7 +18,13 @@ const csp = [
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: { serverActions: { bodySizeLimit: "6mb" } },
+  experimental: {
+    serverActions: { bodySizeLimit: "6mb" },
+    // Keep visited screens in the client cache for 30s so moving between
+    // dock tabs is instant. Server actions still refresh what they change
+    // (revalidatePath clears this cache).
+    staleTimes: { dynamic: 30 },
+  },
   async headers() {
     return [
       {

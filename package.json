@@ -17,6 +17,7 @@
   "keywords": [],
   "type": "module",
   "dependencies": {
+    "@base-ui/react": "^1.9.0",
     "@gsap/react": "^2.1.2",
     "@react-three/fiber": "^9.7.0",
     "@supabase/ssr": "^0.12.7",

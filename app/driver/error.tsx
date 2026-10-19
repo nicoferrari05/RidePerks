@@ -1,4 +1,5 @@
 "use client";
+import { Button } from "@/components/ui/button";
 export default function ErrorPage({ reset }: { reset: () => void }) {
   return (
     <div className="rp-empty">
@@ -6,9 +7,9 @@ export default function ErrorPage({ reset }: { reset: () => void }) {
       <p className="rp-muted">
         Comprueba tu conexión e intenta nuevamente. Tus datos siguen guardados.
       </p>
-      <button className="rp-button" onClick={reset}>
+      <Button size="lg" onClick={reset}>
         Volver a intentar
-      </button>
+      </Button>
     </div>
   );
 }

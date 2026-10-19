@@ -2,7 +2,7 @@ import Link from "next/link";
 import { CarFront, KeyRound, Store } from "lucide-react";
 import { AuthShell, SignInPage } from "@/components/ui/sign-in";
 import { AuthForm } from "./Forms";
-import "@/app/platform.css";
+import "@/app/auth.css";
 
 // Sign-in screens offer a third way in: a business PIN for on-site staff
 // (no account). Registration only has the two account types.

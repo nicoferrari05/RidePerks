@@ -165,7 +165,8 @@ test("merchant approval, staff invitation and redemption, dashboard, chips and m
   benefit = (
     await db.from("rp_benefits").select("id").eq("business_id", shop).single()
   ).data!.id;
-  await owner.goto("/business");
+  await owner.goto("/business/account");
+  await owner.getByText("Personal autorizado", { exact: true }).click();
   await owner
     .getByRole("button", { name: "Crear invitación para personal" })
     .click();
@@ -176,9 +177,7 @@ test("merchant approval, staff invitation and redemption, dashboard, chips and m
     .getByRole("button", { name: "Aceptar acceso como personal" })
     .click();
   await expect(staff).toHaveURL(/business$/);
-  await expect(
-    staff.getByRole("heading", { name: "Personal autorizado" }),
-  ).toHaveCount(0);
+  await expect(staff.getByRole("link", { name: "Actividad" })).toHaveCount(0);
   await expect(staff.getByText("Facturación", { exact: true })).toHaveCount(0);
   await expect(
     staff.getByText("Crear un beneficio", { exact: true }),
@@ -200,7 +199,9 @@ test("merchant approval, staff invitation and redemption, dashboard, chips and m
   });
   expect(issued.ok()).toBe(true);
   const code = await issued.json();
-  await staff.getByLabel("Código del conductor").fill(code.short_code);
+  await staff
+    .getByLabel("¿Falla la cámara? Escribe el código")
+    .fill(code.short_code);
   await staff.getByRole("button", { name: "Consultar beneficio" }).click();
   await expect(
     staff.getByText("QA driver " + run.slice(0, 6), { exact: true }),
@@ -217,7 +218,7 @@ test("merchant approval, staff invitation and redemption, dashboard, chips and m
     .eq("business_id", shop)
     .single();
   expect(redeemed.data?.redeemed_by).toBe(users[1]);
-  await owner.goto("/business");
+  await owner.goto("/business/activity");
   await expect(owner.locator("dl")).toContainText(/3[.,]00/);
   for (const width of [375, 1440]) {
     await owner.setViewportSize({ width, height: 900 });
@@ -259,15 +260,16 @@ test("merchant approval, staff invitation and redemption, dashboard, chips and m
     data: { benefit_id: benefit },
   });
   expect(blocked.status()).toBe(400);
-  await owner.goto("/business");
+  await owner.goto("/business/account");
+  await owner.getByText("Personal autorizado", { exact: true }).click();
   await owner.getByRole("button", { name: "Retirar acceso" }).click();
   await expect(
     owner.getByRole("button", { name: "Retirar acceso" }),
   ).toHaveCount(0);
   await staff.reload();
-  await expect(
-    staff.getByRole("heading", { name: "Validar un beneficio" }),
-  ).toHaveCount(0);
+  await expect(staff.getByRole("button", { name: "Escanear QR" })).toHaveCount(
+    0,
+  );
   await ownerContext.close();
   await staffContext.close();
   await driverContext.close();

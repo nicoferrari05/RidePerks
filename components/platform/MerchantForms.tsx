@@ -7,6 +7,7 @@ import {
 } from "@/lib/platform/business-actions";
 import { categories, type Business } from "@/lib/platform/types";
 import { Feedback } from "./Forms";
+import { Button } from "@/components/ui/button";
 type Payload = {
   title?: string;
   description?: string;
@@ -83,9 +84,9 @@ export function MerchantInfo({
         </select>
       </label>
       <Feedback state={state} />
-      <button className="rp-button" disabled={pending}>
+      <Button type="submit" size="lg" disabled={pending}>
         {pending ? "Guardando…" : "Guardar información"}
-      </button>
+      </Button>
     </form>
   );
 }
@@ -200,22 +201,27 @@ export function MerchantBenefitForm({
       </label>
       <Feedback state={state} />
       <div className="rp-actions">
-        <button
+        <Button
+          type="submit"
+          variant="secondary"
+          size="md"
           name="submit"
           value="draft"
-          className="rp-button secondary"
+
           disabled={pending || state.submitted}
         >
           Guardar borrador
-        </button>
-        <button
+        </Button>
+        <Button
+          type="submit"
+          size="lg"
           name="submit"
           value="review"
-          className="rp-button"
+
           disabled={pending || state.submitted}
         >
           Enviar a aprobación
-        </button>
+        </Button>
       </div>
     </form>
   );
@@ -232,9 +238,9 @@ export function MerchantToggle({
     <form action={action}>
       <input type="hidden" name="id" value={id} />
       <input type="hidden" name="active" value={String(!active)} />
-      <button className="rp-button secondary" disabled={pending}>
+      <Button type="submit" variant="secondary" size="md" disabled={pending}>
         {active ? "Pausar beneficio" : "Activar beneficio aprobado"}
-      </button>
+      </Button>
       <Feedback state={state} />
     </form>
   );

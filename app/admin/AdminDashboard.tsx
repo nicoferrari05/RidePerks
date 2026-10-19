@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown } from "lucide-react";
 import { Heading, Empty } from "@/components/platform/ui";
+import { Button } from "@/components/ui/button";
 
 type Platform = "uber" | "indrive" | "pedidosya" | "multiple";
 type EntryStatus = "pending" | "verified" | "rejected";
@@ -194,15 +195,15 @@ export default function AdminDashboard() {
         <p className="rp-muted">
           Muestra u oculta el número de conductores en la página principal.
         </p>
-        <button
-          type="button"
-          className="rp-button secondary"
+        <Button
+          variant="secondary"
+          size="md"
           onClick={toggleCounter}
           disabled={showCounter === null}
           aria-pressed={showCounter ?? false}
         >
           {showCounter ? "Ocultar contador" : "Mostrar contador"}
-        </button>
+        </Button>
       </section>
 
       <div className="rp-stack rp-waitlist-tools">

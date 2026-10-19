@@ -4,7 +4,7 @@ import { FormEvent, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { AuthShell } from "@/components/ui/sign-in";
-import "@/app/platform.css";
+import "@/app/auth.css";
 
 type Status = "idle" | "submitting" | "success" | "error";
 

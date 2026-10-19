@@ -18,10 +18,9 @@
   --color-verde: #338a66;
 
   /* Fonts loaded via next/font in app/layout.tsx, matching production:
-     Geist for body copy, Fraunces italic for the one accent word,
-     JetBrains Mono for the "receipt" voice (labels, IDs, savings math). */
+     Geist for body copy, JetBrains Mono for the "receipt" voice (labels,
+     IDs, savings math). */
   --font-sans: var(--font-geist), "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
-  --font-accent: var(--font-fraunces), Georgia, serif;
   --font-mono: var(--font-jetbrains), ui-monospace, "SFMono-Regular", Menlo, monospace;
 
   /* shadcn-style semantic tokens, mapped onto the brand palette above so

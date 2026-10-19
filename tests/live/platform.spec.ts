@@ -198,7 +198,9 @@ test("driver onboarding, private verification, admin approval and merchant redem
   });
   const merchantPage = await merchant.newPage();
   await signIn(merchantPage, businessEmail);
-  await merchantPage.getByLabel("Código del conductor").fill(token);
+  await merchantPage
+    .getByLabel("¿Falla la cámara? Escribe el código")
+    .fill(token);
   await merchantPage
     .getByRole("button", { name: "Consultar beneficio" })
     .click();
@@ -232,9 +234,7 @@ test("driver onboarding, private verification, admin approval and merchant redem
     .delete()
     .eq("key", "redeem:" + ownerId);
   await page.goto("/driver/history");
-  await expect(
-    page.getByRole("heading", { name: /2,?\.00|2,00/ }),
-  ).toBeVisible();
+  await expect(page.locator(".rp-stat strong")).toContainText(/2[.,]00/);
   const rows = await db
     .from("rp_redemptions")
     .select("id")
@@ -276,10 +276,11 @@ test("driver onboarding, private verification, admin approval and merchant redem
     .fill("Solicitud de prueba QA, se eliminará al terminar.");
   await page.getByRole("button", { name: "Enviar solicitud" }).click();
   await expect(page.getByRole("status")).toContainText("Recibimos");
-  await page.goto("/driver/profile");
+  await page.goto("/driver/profile/edit");
   await page.getByLabel("Nombre completo").fill("Prueba QA Actualizada");
   await page.getByRole("button", { name: "Guardar cambios" }).click();
   await expect(page.getByRole("status")).toContainText("guardados");
+  await page.goto("/driver/profile");
   await page.getByRole("button", { name: "Cerrar sesión" }).click();
   await expect(page).toHaveURL(/\/login/);
   await page.goto("/driver/dashboard");

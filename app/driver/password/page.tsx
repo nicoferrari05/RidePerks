@@ -1,15 +1,18 @@
 import { PasswordForm } from "@/components/platform/Forms";
-import { Heading } from "@/components/platform/ui";
-export const metadata = { title: "Cambiar contraseña · RidePerks" };
+import { SubHeader } from "@/components/platform/ui";
+export const metadata = { title: "Contraseña · RidePerks" };
 export default function Page() {
   return (
-    <div className="rp-stack max-w-xl">
-      <Heading title="Cambia tu contraseña">
+    <div className="rp-stack">
+      <SubHeader
+        back="/driver/profile"
+        backLabel="Volver a Cuenta"
+        title="Contraseña"
+      />
+      <p className="rp-muted">
         Elige una contraseña larga que no uses en otros servicios.
-      </Heading>
-      <section className="rp-panel">
-        <PasswordForm />
-      </section>
+      </p>
+      <PasswordForm />
     </div>
   );
 }

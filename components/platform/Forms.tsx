@@ -16,6 +16,7 @@ import {
   type Profile,
   type ActionState,
 } from "@/lib/platform/types";
+import { Button } from "@/components/ui/button";
 export function Feedback({ state }: { state: ActionState }) {
   return (
     <>
@@ -228,9 +229,9 @@ export function ProfileForm({ profile }: { profile: Profile }) {
       />
       <PlatformField value={profile.platform || ""} />
       <Feedback state={state} />
-      <button className="rp-button" disabled={pending}>
+      <Button type="submit" size="lg" disabled={pending}>
         {pending ? "Guardando…" : "Guardar cambios"}
-      </button>
+      </Button>
     </form>
   );
 }
@@ -254,12 +255,13 @@ export function VerificationForm() {
         </p>
       </div>
       <Feedback state={state} />
-      <button
-        className="rp-button"
+      <Button
+        type="submit"
+        size="lg"
         disabled={pending || Boolean(state.success)}
       >
         {pending ? "Enviando imagen…" : "Enviar para revisión"}
-      </button>
+      </Button>
     </form>
   );
 }
@@ -270,9 +272,9 @@ export function PasswordForm() {
       <Password newPassword label="Nueva contraseña" />
       <Password newPassword name="confirmation" label="Repite la contraseña" />
       <Feedback state={state} />
-      <button className="rp-button" disabled={pending}>
+      <Button type="submit" size="lg" disabled={pending}>
         {pending ? "Guardando…" : "Actualizar contraseña"}
-      </button>
+      </Button>
     </form>
   );
 }

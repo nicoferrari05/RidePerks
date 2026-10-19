@@ -1,10 +1,10 @@
 "use client";
 
-// Platform theme (light / dark only), separate from the landing's three
-// themes. Stored per browser; the attribute on <html> is set before paint by
+// Platform theme (light / dark), separate from the landing's three themes.
+// Light (white) unless the person picks dark in Cuenta → Apariencia. Stored
+// per browser; the attribute on <html> is set before paint by
 // PlatformThemeScript and read by the tokens in app/platform.css.
 import { useEffect, useSyncExternalStore } from "react";
-import { ThemeSwitcher, type Theme } from "@/components/ui/apple-liquid-glass-switcher";
 
 type AppTheme = "light" | "dark";
 const KEY = "rp_app_theme";
@@ -15,12 +15,11 @@ function current(): AppTheme {
 }
 function stored(): AppTheme {
   try {
-    const value = localStorage.getItem(KEY);
-    if (value === "light" || value === "dark") return value;
+    if (localStorage.getItem(KEY) === "dark") return "dark";
   } catch {
-    /* Storage blocked: fall back to the system preference. */
+    /* Storage blocked: stay light. */
   }
-  return matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  return "light";
 }
 function apply(theme: AppTheme | null) {
   if (theme) document.documentElement.dataset.rpTheme = theme;
@@ -41,22 +40,37 @@ export function PlatformThemeSync() {
   return null;
 }
 
-export function PlatformThemeToggle({ compact = true }: { compact?: boolean }) {
-  const theme = useSyncExternalStore(subscribe, current, () => "light" as const);
+/** Claro / Oscuro control for the settings screens. */
+export function ThemeSetting() {
+  const theme = useSyncExternalStore(
+    subscribe,
+    current,
+    () => "light" as const,
+  );
+  const choose = (value: AppTheme) => {
+    apply(value);
+    try {
+      localStorage.setItem(KEY, value);
+    } catch {
+      /* Applies for this visit only. */
+    }
+  };
   return (
-    <ThemeSwitcher
-      themes={["light", "dark"]}
-      value={theme}
-      className={compact ? "switcher--compact" : undefined}
-      onValueChange={(next: Theme) => {
-        const value: AppTheme = next === "dark" ? "dark" : "light";
-        apply(value);
-        try {
-          localStorage.setItem(KEY, value);
-        } catch {
-          /* Applies for this visit only. */
-        }
-      }}
-    />
+    <div className="rp-segmented" role="group" aria-label="Apariencia">
+      <button
+        type="button"
+        aria-pressed={theme === "light"}
+        onClick={() => choose("light")}
+      >
+        Claro
+      </button>
+      <button
+        type="button"
+        aria-pressed={theme === "dark"}
+        onClick={() => choose("dark")}
+      >
+        Oscuro
+      </button>
+    </div>
   );
 }

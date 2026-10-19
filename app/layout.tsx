@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Fraunces, JetBrains_Mono } from "next/font/google";
+import { Geist, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { SHARE_IMAGE } from "@/lib/share";
 
@@ -7,17 +7,6 @@ import { SHARE_IMAGE } from "@/lib/share";
 const geist = Geist({
   subsets: ["latin"],
   variable: "--font-geist",
-  display: "swap",
-});
-
-// Accent serif italic — used sparingly for the one emotional word per
-// section, per the RidePerks brand identity ("Fraunces Italic... Never
-// for body copy").
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  style: ["italic"],
-  weight: ["400", "500"],
-  variable: "--font-fraunces",
   display: "swap",
 });
 
@@ -82,7 +71,7 @@ export default function RootLayout({
       lang="es"
       // The theme scripts set data-lp-theme / data-rp-theme before hydration.
       suppressHydrationWarning
-      className={`${geist.variable} ${fraunces.variable} ${jetbrainsMono.variable}`}
+      className={`${geist.variable} ${jetbrainsMono.variable}`}
     >
       <body>{children}</body>
     </html>

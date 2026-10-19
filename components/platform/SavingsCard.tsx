@@ -1,11 +1,11 @@
 "use client";
 import { useState } from "react";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { money, MEMBERSHIP_PRICE_USD } from "@/lib/platform/types";
 
 type Savings = { total: number; count: number };
 
+// Inicio's one dark card: what the driver has saved, this month or in total,
+// measured against the membership price.
 export default function SavingsCard({
   monthly,
   total,
@@ -16,11 +16,10 @@ export default function SavingsCard({
   const [tab, setTab] = useState<"monthly" | "total">("monthly");
   const active = tab === "monthly" ? monthly : total;
   const ratio = active.total / MEMBERSHIP_PRICE_USD;
-  const paidForItself = ratio >= 1;
   const progressPct = Math.max(0, Math.min(ratio, 1)) * 100;
   return (
-    <section className="rp-balance" aria-label="Ahorro registrado">
-      <div className="rp-savings-switch" role="tablist" aria-label="Periodo de ahorro">
+    <section className="rp-hero" aria-label="Ahorro registrado">
+      <div className="rp-segmented" role="tablist" aria-label="Periodo">
         <button
           type="button"
           role="tab"
@@ -35,38 +34,38 @@ export default function SavingsCard({
           aria-selected={tab === "total"}
           onClick={() => setTab("total")}
         >
-          Ahorro total
+          Total
         </button>
       </div>
-      <p>{tab === "monthly" ? "Tu ahorro registrado este mes" : "Tu ahorro registrado en total"}</p>
-      <strong>{money(active.total)}</strong>
-      <p>
+      <p className="rp-hero-label">Ahorraste</p>
+      <p className="rp-hero-value">{money(active.total)}</p>
+      <p className="rp-hero-label">
         {active.count}{" "}
-        {active.count === 1 ? "beneficio utilizado" : "beneficios utilizados"}
+        {active.count === 1 ? "beneficio usado" : "beneficios usados"}
       </p>
-      <div className="rp-progress" role="progressbar" aria-valuenow={Math.round(progressPct)} aria-valuemin={0} aria-valuemax={100}>
+      <div
+        className="rp-progress"
+        role="progressbar"
+        aria-label="Avance hacia el precio de la membresía"
+        aria-valuenow={Math.round(progressPct)}
+        aria-valuemin={0}
+        aria-valuemax={100}
+      >
         <div className="rp-progress-bar" style={{ width: progressPct + "%" }} />
       </div>
       <p className="rp-progress-label">
-        {paidForItself ? (
+        {ratio >= 1 ? (
           <>
-            Has recuperado <strong>{ratio.toFixed(1)}x</strong> el precio de tu
-            membresía. Tu membresía se pagó sola.
+            Tu membresía se pagó sola <strong>{ratio.toFixed(1)}x</strong>.
           </>
         ) : (
           <>
-            Llevas {money(active.total)} de {money(MEMBERSHIP_PRICE_USD)} en tu
-            membresía. Te faltan {money(MEMBERSHIP_PRICE_USD - active.total)} para
-            que se pague sola.
+            Te faltan{" "}
+            <strong>{money(MEMBERSHIP_PRICE_USD - active.total)}</strong> para
+            que tu membresía se pague sola.
           </>
         )}
       </p>
-      <div className="rp-balance-foot">
-        <span>Solo usos confirmados por comercios</span>
-        <Link className="rp-text-link" href="/driver/history">
-          Ver historial <ArrowRight size={16} />
-        </Link>
-      </div>
     </section>
   );
 }

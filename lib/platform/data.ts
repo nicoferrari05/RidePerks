@@ -14,21 +14,24 @@ import type {
   Redemption,
   Verification,
 } from "./types";
+// The session JWT is verified locally (asymmetric signing keys), which saves
+// a round trip to Supabase Auth on every page and action. A closed account
+// counts as signed out right away even while its token is still unexpired;
+// its login is also banned, so the token can't be refreshed.
 export const currentProfile = cache(async (): Promise<Profile | null> => {
   if (!authConfigured()) return null;
   const auth = await createAuthClient();
-  const {
-    data: { user },
-    error,
-  } = await auth.auth.getUser();
-  if (error || !user) return null;
+  const { data, error } = await auth.auth.getClaims();
+  const id = data?.claims?.sub;
+  if (error || !id) return null;
   const result = await getSupabaseAdmin()
     .from("rp_profiles")
     .select("*")
-    .eq("id", user.id)
+    .eq("id", id)
     .maybeSingle();
   if (result.error) throw new Error("No pudimos consultar tu cuenta.");
-  return result.data as Profile | null;
+  const profile = result.data as Profile | null;
+  return profile && !profile.closed_at ? profile : null;
 });
 export async function requireDriver() {
   const profile = await currentProfile();
@@ -36,7 +39,8 @@ export async function requireDriver() {
   if (profile.role === "business") redirect("/business");
   return profile;
 }
-export async function requireBusiness() {
+// Cached per request: the portal layout and each page both need it.
+export const requireBusiness = cache(async () => {
   const profile = await currentProfile();
   if (!profile) redirect("/business/login");
   if (profile.role !== "business") redirect("/driver/dashboard");
@@ -63,7 +67,7 @@ export async function requireBusiness() {
     role: current?.role || null,
     businesses,
   };
-}
+});
 export async function requireAdmin() {
   const token = (await cookies()).get(ADMIN_COOKIE_NAME)?.value;
   if (!(await verifySessionToken(token)))

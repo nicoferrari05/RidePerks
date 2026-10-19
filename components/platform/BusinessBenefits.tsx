@@ -1,11 +1,18 @@
 import { getSupabaseAdmin } from "@/lib/supabase-server";
 import { MerchantBenefitForm, MerchantToggle } from "./MerchantForms";
 import type { Benefit } from "@/lib/platform/types";
-export default async function BusinessBenefits({
-  businessId,
-}: {
-  businessId: string;
-}) {
+
+type Revision = {
+  id: string;
+  benefit_id: string | null;
+  status: "draft" | "pending" | "returned";
+  review_notes: string | null;
+  payload: NonNullable<
+    React.ComponentProps<typeof MerchantBenefitForm>["payload"]
+  > & { title: string };
+};
+
+export async function loadBusinessBenefits(businessId: string) {
   const db = getSupabaseAdmin();
   const [benefits, revisions] = await Promise.all([
     db
@@ -22,32 +29,60 @@ export default async function BusinessBenefits({
   ]);
   if (benefits.error || revisions.error)
     throw new Error("No pudimos consultar tus beneficios.");
+  return {
+    benefits: benefits.data as Benefit[],
+    revisions: revisions.data as Revision[],
+  };
+}
+
+function statusLabel(b: Benefit, today: string) {
+  if (b.valid_until && b.valid_until < today) return ["Expirado", ""];
+  if (b.admin_paused) return ["Pausado por RidePerks", "pending"];
+  if (!b.is_active) return ["Pausado", "pending"];
+  if (b.valid_from && b.valid_from > today) return ["Próximamente", ""];
+  return ["Activo", "good"];
+}
+
+export default function BusinessBenefits({
+  benefits,
+  revisions,
+}: {
+  benefits: Benefit[];
+  revisions: Revision[];
+}) {
   const today = new Date().toLocaleDateString("en-CA", {
     timeZone: "America/Panama",
   });
   return (
-    <section id="beneficios" className="rp-stack">
-      <h2>Beneficios de tu comercio</h2>
-      <p className="rp-muted">
-        RidePerks revisa los nuevos beneficios y las ediciones antes de
-        publicarlos. La versión aprobada sigue disponible mientras revisamos tus
-        cambios, salvo que la pauses.
-      </p>
-      <details>
-        <summary>Crear un beneficio</summary>
-        <MerchantBenefitForm />
-      </details>
-      {revisions.data.map((r) => (
-        <article className="rp-panel rp-stack" key={r.id}>
-          <h3>{r.payload.title}</h3>
-          <span className="rp-badge">
+    <div className="rp-stack">
+      <div className="rp-heading">
+        <div>
+          <h1>Beneficios</h1>
+          <p className="rp-muted">
+            RidePerks revisa cada beneficio nuevo y cada cambio antes de
+            publicarlo.
+          </p>
+        </div>
+      </div>
+      <section className="rp-menu">
+        <details>
+          <summary>Crear un beneficio</summary>
+          <MerchantBenefitForm />
+        </details>
+      </section>
+      {revisions.map((r) => (
+        <article className="rp-panel rp-stack tight" key={r.id}>
+          <span
+            className={"rp-badge " + (r.status === "returned" ? "pending" : "")}
+          >
             {r.status === "pending"
-              ? "Pendiente de aprobación"
+              ? "En revisión"
               : r.status === "returned"
                 ? "Requiere corrección"
                 : "Borrador"}
           </span>
-          {r.review_notes && <p>{r.review_notes}</p>}
+          <h2>{r.payload.title}</h2>
+          {r.review_notes && <p className="rp-muted">{r.review_notes}</p>}
           {r.status !== "pending" && (
             <details>
               <summary>Editar propuesta</summary>
@@ -60,30 +95,17 @@ export default async function BusinessBenefits({
           )}
         </article>
       ))}
-      {benefits.data.map((b: Benefit) => {
-        const expired = Boolean(b.valid_until && b.valid_until < today),
-          future = Boolean(b.valid_from && b.valid_from > today);
-        const revision = revisions.data.some((r) => r.benefit_id === b.id);
+      {benefits.map((b) => {
+        const [label, tone] = statusLabel(b, today);
+        const revision = revisions.some((r) => r.benefit_id === b.id);
         return (
-          <article className="rp-panel rp-stack" key={b.id}>
-            <h3>{b.title}</h3>
-            <span className="rp-badge">
-              {expired
-                ? "Expirado"
-                : b.admin_paused
-                  ? "Pausado por RidePerks"
-                  : !b.is_active
-                  ? "Pausado"
-                  : future
-                    ? "Aprobado, próximamente"
-                    : "Activo"}
-            </span>
-            <p>{b.discount_label}</p>
-            <p className="rp-muted whitespace-pre-line">{b.terms}</p>
+          <article className="rp-panel rp-stack tight" key={b.id}>
+            <span className={"rp-badge " + tone}>{label}</span>
+            <h2>{b.discount_label}</h2>
+            <p className="rp-muted">{b.title}</p>
             {b.admin_paused ? (
               <p className="rp-muted">
-                RidePerks pausó este beneficio. Contáctanos desde Ayuda para
-                reactivarlo.
+                Para reactivarlo, escríbenos desde Cuenta → Ayuda.
               </p>
             ) : (
               <MerchantToggle id={b.id} active={b.is_active} />
@@ -97,6 +119,11 @@ export default async function BusinessBenefits({
           </article>
         );
       })}
-    </section>
+      {!benefits.length && !revisions.length && (
+        <p className="rp-muted">
+          Todavía no tienes beneficios. Crea el primero arriba.
+        </p>
+      )}
+    </div>
   );
 }

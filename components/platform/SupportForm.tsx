@@ -6,6 +6,7 @@ import {
   resolveSupport,
 } from "@/lib/platform/support-actions";
 import { Feedback } from "./Forms";
+import { Button } from "@/components/ui/button";
 export default function SupportForm({
   audience = "driver",
 }: {
@@ -41,12 +42,13 @@ export default function SupportForm({
         WhatsApp de tu perfil.
       </p>
       <Feedback state={state} />
-      <button
-        className="rp-button"
+      <Button
+        type="submit"
+        size="lg"
         disabled={pending || Boolean(state.success)}
       >
         {pending ? "Enviando…" : "Enviar solicitud"}
-      </button>
+      </Button>
     </form>
   );
 }
@@ -55,9 +57,9 @@ export function ResolveSupport({ id }: { id: string }) {
   return (
     <form action={action}>
       <input name="id" type="hidden" value={id} />
-      <button className="rp-button secondary" disabled={pending}>
+      <Button type="submit" variant="secondary" size="md" disabled={pending}>
         Marcar como atendida
-      </button>
+      </Button>
       <Feedback state={state} />
     </form>
   );

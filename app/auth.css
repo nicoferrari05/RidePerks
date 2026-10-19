@@ -1,0 +1,300 @@
+/* Legacy look of the auth screens (sign-in, register, recover, business and
+   admin sign-in, the PIN entry): the mint palette and the original controls.
+   The platform itself (app/platform.css) moved to its own system; these rules
+   are scoped to .rp-auth so the two never reach each other's markup, even
+   though CSS stays loaded across client-side navigation. */
+.rp-auth {
+  --rp-bg: #efffc8;
+  --rp-surface: #f7ffe0;
+  --rp-surface-2: #e2f3b3;
+  --rp-surface-3: #d6ec9c;
+  --rp-text: #100b00;
+  --rp-muted: #4a4430;
+  --rp-border: rgba(16, 11, 0, 0.13);
+  --rp-border-strong: rgba(16, 11, 0, 0.24);
+  --rp-accent: #85cb33;
+  --rp-accent-hover: #77b82c;
+  --rp-accent-fg: #100b00;
+  --rp-accent-text: #3d6b10;
+  --rp-band: #100b00;
+  --rp-band-fg: #efffc8;
+  --rp-band-muted: rgba(239, 255, 200, 0.68);
+  --rp-band-line: rgba(239, 255, 200, 0.14);
+  --rp-glass: rgba(239, 255, 200, 0.8);
+  --rp-glass-line: rgba(255, 255, 255, 0.6);
+  --rp-glass-hi: rgba(255, 255, 255, 0.85);
+  --rp-input: #f7ffe0;
+  --rp-input-focus: #fbffef;
+  --rp-danger-bg: #ffe2d6;
+  --rp-danger-fg: #8a2810;
+  --rp-success-bg: #dff3c4;
+  --rp-success-fg: #2f5a0c;
+  --rp-shadow: 0 18px 40px -26px rgba(16, 11, 0, 0.45);
+  --rp-ease: cubic-bezier(0.23, 1, 0.32, 1);
+  --rp-ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --sw-tint: #efffc8;
+  --sw-ink: var(--rp-text);
+}
+
+.rp-auth .rp-muted {
+  color: var(--rp-muted);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.rp-auth .rp-text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 44px;
+  color: var(--rp-text);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--rp-border-strong);
+  text-underline-offset: 4px;
+  transition:
+    text-decoration-color 200ms ease,
+    scale 160ms var(--rp-ease);
+}
+.rp-auth .rp-text-link:active {
+  scale: 0.97;
+}
+@media (hover: hover) and (pointer: fine) {
+  .rp-auth .rp-text-link:hover {
+    text-decoration-color: currentColor;
+  }
+}
+.rp-auth .rp-button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  min-height: 50px;
+  padding: 12px 24px;
+  border-radius: 999px;
+  background: var(--rp-accent);
+  color: var(--rp-accent-fg);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 0;
+  text-align: center;
+  box-shadow: 0 10px 24px -14px rgba(16, 11, 0, 0.5);
+  transition:
+    background-color 200ms ease,
+    box-shadow 200ms ease,
+    scale 160ms var(--rp-ease);
+}
+.rp-auth .rp-button:active {
+  scale: 0.97;
+}
+@media (hover: hover) and (pointer: fine) {
+  .rp-auth .rp-button:hover {
+    background: var(--rp-accent-hover);
+  }
+}
+.rp-auth .rp-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  scale: 1;
+}
+.rp-auth .rp-button.secondary {
+  background: transparent;
+  color: var(--rp-text);
+  border: 1px solid var(--rp-border-strong);
+  box-shadow: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .rp-auth .rp-button.secondary:hover {
+    background: var(--rp-surface-2);
+  }
+}
+.rp-auth .rp-button.dark {
+  background: var(--rp-text);
+  color: var(--rp-bg);
+}
+@media (hover: hover) and (pointer: fine) {
+  .rp-auth .rp-button.dark:hover {
+    background: var(--rp-text);
+    opacity: 0.9;
+  }
+}
+
+.rp-auth .rp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.rp-auth .rp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.rp-auth .rp-field label {
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+.rp-auth .rp-field :is(input, select, textarea) {
+  min-height: 52px;
+  padding: 13px 18px;
+  width: 100%;
+  border: 1px solid var(--rp-border-strong);
+  border-radius: 18px;
+  background: var(--rp-input);
+  font: inherit;
+  font-size: 16px;
+  color: var(--rp-text);
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    box-shadow 180ms ease;
+}
+.rp-auth .rp-field :is(input, select, textarea):focus {
+  outline: none;
+  border-color: var(--rp-text);
+  background: var(--rp-input-focus);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--rp-accent) 35%, transparent);
+}
+.rp-auth .rp-field select {
+  color-scheme: light;
+}
+html[data-rp-theme="dark"] .rp-auth .rp-field select {
+  color-scheme: dark;
+}
+.rp-auth .rp-field textarea {
+  min-height: 116px;
+  resize: vertical;
+}
+.rp-auth .rp-field input::placeholder,
+.rp-auth .rp-field textarea::placeholder {
+  color: var(--rp-muted);
+  opacity: 0.8;
+}
+.rp-auth .rp-field input[type="file"] {
+  padding: 10px;
+  font-size: 0.88rem;
+}
+.rp-auth .rp-field input::file-selector-button {
+  padding: 8px 14px;
+  margin-right: 12px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--rp-surface-3);
+  color: var(--rp-text);
+  font: inherit;
+  font-weight: 600;
+}
+.rp-auth .rp-error,
+.rp-auth .rp-success {
+  padding: 14px 18px;
+  border-radius: 18px;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 200ms ease-out,
+    transform 200ms ease-out;
+}
+@starting-style {
+  .rp-auth .rp-error,
+  .rp-auth .rp-success {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+.rp-auth .rp-error {
+  color: var(--rp-danger-fg);
+  background: var(--rp-danger-bg);
+}
+.rp-auth .rp-success {
+  color: var(--rp-success-fg);
+  background: var(--rp-success-bg);
+}
+.rp-auth .rp-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+.rp-auth .rp-check input {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  accent-color: var(--rp-accent);
+  flex-shrink: 0;
+}
+.rp-auth .rp-check a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.rp-auth .rp-password {
+  position: relative;
+}
+.rp-auth .rp-password input {
+  padding-right: 54px;
+}
+.rp-auth .rp-password button {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  cursor: pointer;
+  color: var(--rp-muted);
+}
+
+.rp-auth .rp-access-switch {
+  display: flex;
+  gap: 4px;
+  border: 1px solid var(--rp-border);
+  border-radius: 999px;
+  padding: 4px;
+}
+.rp-auth .rp-access-switch a {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--rp-text);
+  transition:
+    background-color 200ms ease,
+    scale 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.rp-auth .rp-access-switch a:active {
+  scale: 0.97;
+}
+.rp-auth .rp-access-switch a[aria-current] {
+  background: #100b00;
+  color: #efffc8;
+}
+.rp-auth .rp-access-switch a:not([aria-current]):hover {
+  background: #e2f3b3;
+}
+/* Sign-in has three tabs (Conductor, Comercio, PIN): on narrow phones they
+   size to their labels, and below 360px the icons give way to the text. */
+@media (max-width: 420px) {
+  .rp-auth .rp-access-switch a {
+    flex: 1 1 auto;
+    gap: 6px;
+    padding: 0 6px;
+    font-size: 0.85rem;
+  }
+}
+@media (max-width: 360px) {
+  .rp-auth .rp-access-switch a svg {
+    display: none;
+  }
+}

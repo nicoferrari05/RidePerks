@@ -6,6 +6,7 @@ import {
   removeStaff,
 } from "@/lib/platform/business-actions";
 import { Feedback } from "./Forms";
+import { Button } from "@/components/ui/button";
 export function StaffInvite() {
   const [state, action, pending] = useActionState(createStaffInvite, {});
   return (
@@ -15,9 +16,9 @@ export function StaffInvite() {
         comercio y aceptar la invitación. Vence en 48 horas y solo puede usarse
         una vez.
       </p>
-      <button className="rp-button" disabled={pending}>
+      <Button type="submit" size="lg" disabled={pending}>
         {pending ? "Creando…" : "Crear invitación para personal"}
-      </button>
+      </Button>
       {state.error && (
         <p role="alert" className="rp-error">
           {state.error}
@@ -47,9 +48,9 @@ export function AcceptInvite({ token }: { token: string }) {
     <form action={action} className="rp-form">
       <input type="hidden" name="invite" value={token} />
       <Feedback state={state} />
-      <button className="rp-button" disabled={pending}>
+      <Button type="submit" size="lg" disabled={pending}>
         {pending ? "Vinculando…" : "Aceptar acceso como personal"}
-      </button>
+      </Button>
     </form>
   );
 }
@@ -58,9 +59,9 @@ export function RemoveStaff({ id }: { id: string }) {
   return (
     <form action={action}>
       <input type="hidden" name="user_id" value={id} />
-      <button className="rp-button secondary" disabled={pending}>
+      <Button type="submit" variant="secondary" size="md" disabled={pending}>
         Retirar acceso
-      </button>
+      </Button>
       <Feedback state={state} />
     </form>
   );

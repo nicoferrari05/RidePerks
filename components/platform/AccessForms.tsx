@@ -8,6 +8,7 @@ import {
   creditPayment,
 } from "@/lib/platform/access-actions";
 import { Feedback } from "./Forms";
+import { Button } from "@/components/ui/button";
 export function AdminIdentity() {
   const [state, action, pending] = useActionState(enrollAdmin, {});
   return (
@@ -18,9 +19,9 @@ export function AdminIdentity() {
         cambios quedarán atribuidos a esa cuenta.
       </p>
       <Feedback state={state} />
-      <button className="rp-button secondary" disabled={pending}>
+      <Button type="submit" variant="secondary" size="md" disabled={pending}>
         Vincular mi identidad administrativa
-      </button>
+      </Button>
     </form>
   );
 }
@@ -90,9 +91,9 @@ export function AccessForm({ driverId }: { driverId: string }) {
         del tiempo existente. Otorgar una cortesía no retira un bloqueo.
       </p>
       <Feedback state={state} />
-      <button className="rp-button" disabled={pending}>
+      <Button type="submit" size="lg" disabled={pending}>
         {pending ? "Guardando…" : "Aplicar cambio de acceso"}
-      </button>
+      </Button>
     </form>
   );
 }
@@ -107,22 +108,27 @@ export function BenefitReview({ id }: { id: string }) {
       </label>
       <Feedback state={state} />
       <div className="rp-actions">
-        <button
+        <Button
+          type="submit"
+          size="lg"
           name="decision"
           value="approve"
-          className="rp-button"
+
           disabled={pending}
         >
           Aprobar propuesta
-        </button>
-        <button
+        </Button>
+        <Button
+          type="submit"
+          variant="secondary"
+          size="md"
           name="decision"
           value="return"
-          className="rp-button secondary"
+
           disabled={pending}
         >
           Devolver para corregir
-        </button>
+        </Button>
       </div>
     </form>
   );
@@ -138,22 +144,27 @@ export function BusinessChangeReview({ id }: { id: string }) {
       </label>
       <Feedback state={state} />
       <div className="rp-actions">
-        <button
+        <Button
+          type="submit"
+          size="lg"
           name="decision"
           value="approve"
-          className="rp-button"
+
           disabled={pending}
         >
           Aprobar cambio
-        </button>
-        <button
+        </Button>
+        <Button
+          type="submit"
+          variant="secondary"
+          size="md"
           name="decision"
           value="return"
-          className="rp-button secondary"
+
           disabled={pending}
         >
           Devolver
-        </button>
+        </Button>
       </div>
     </form>
   );
@@ -170,9 +181,9 @@ export function CreditPayment({ order }: { order: string }) {
           <textarea name="reason" required minLength={3} maxLength={1000} />
         </label>
         <Feedback state={state} />
-        <button className="rp-button secondary" disabled={pending}>
+        <Button type="submit" variant="secondary" size="md" disabled={pending}>
           {pending ? "Acreditando…" : "Confirmar acreditación"}
-        </button>
+        </Button>
       </form>
     </details>
   );
