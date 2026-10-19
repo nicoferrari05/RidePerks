@@ -44,7 +44,7 @@ one page with long-form text.
 | Role | Color |
 | --- | --- |
 | Pitch black (text, dark bands) | `#100B00` |
-| Yellow green (primary buttons, active states) | `#85CB33` |
+| Yellow green (landing only: buttons, active states) | `#85CB33` |
 | Frosted mint (light background) | `#EFFFC8` |
 | Dark khaki (dark-mode bands, secondary surfaces) | `#3B341F` |
 | Ash grey `#A5CBC3` | Part of the palette but **intentionally unused**; the user asked to avoid it |
@@ -88,15 +88,17 @@ Curves are Tailwind tokens in `app/globals.css` (`ease-snappy`, `ease-move`,
 2. **Auth screens** (`/login`, `/register`, `/recover`, business login/register,
    `/admin/login`, the `/pin` entry) — `components/ui/sign-in.tsx` `AuthShell`
    with class `.rp-auth`, which re-points the shadcn-style Tailwind tokens to
-   the mint palette (light only). Their legacy controls (`.rp-field`,
+   the mint palette (light only), with black buttons (no green). Their legacy controls (`.rp-field`,
    `.rp-button`, `.rp-access-switch`…) live in `app/auth.css`, every rule
    scoped to `.rp-auth`. The user asked to leave these screens as they are.
 3. **Platform** (`/driver/*`, `/business/*`, `/pin` scanner,
    `/account/password`, all signed-in `/admin/*`, `/privacidad`, `/terminos`)
    — redesigned October 2026 in the spirit of Uber/Airbnb (the user supplied
    reference screenshots): **white background, soft gray cards with no
-   borders, one big number or title per screen, few icons, green
-   (`#85CB33`) only on actions**, black hero card for the key number. Plain
+   borders, one big number or title per screen, few icons, monochrome**
+   (the user removed every green accent outside the landing in October
+   2026: actions are black in light mode, white in dark mode; success
+   states are neutral gray), black hero card for the key number. Plain
    CSS in `app/platform.css`, every rule scoped to `.rp-app` (CSS stays
    loaded across client navigation, so unscoped rules would leak into the
    auth screens). **Class names are the platform's API** — restyle there,

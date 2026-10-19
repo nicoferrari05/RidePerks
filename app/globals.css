@@ -281,9 +281,9 @@ body {
 .rp-auth {
   --color-background: #efffc8;
   --color-foreground: #100b00;
-  --color-primary: #85cb33;
-  --color-primary-foreground: #100b00;
-  --color-secondary: #e2f3b3;
+  --color-primary: #100b00;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: rgba(16, 11, 0, 0.07);
   --color-secondary-foreground: #100b00;
   --color-border: rgba(16, 11, 0, 0.16);
   --color-muted-foreground: #3b341f;
@@ -308,24 +308,24 @@ body {
   color: #6b6650;
 }
 .rp-auth .rp-button {
-  background: #85cb33;
-  color: #100b00;
+  background: #100b00;
+  color: #ffffff;
 }
 .rp-auth .rp-button:hover {
-  background: #77b82c;
+  background: #2a2516;
 }
 .rp-auth .rp-text-link {
   color: #3b341f;
 }
 .rp-auth .rp-check input {
-  accent-color: #85cb33;
+  accent-color: #100b00;
 }
 .rp-auth .rp-access-switch a[aria-current] {
   background: #100b00;
   color: #efffc8;
 }
 .rp-auth .rp-access-switch a:not([aria-current]):hover {
-  background: #e2f3b3;
+  background: rgba(16, 11, 0, 0.07);
 }
 .rp-auth .rp-password button {
   color: #3b341f;

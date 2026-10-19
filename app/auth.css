@@ -6,16 +6,16 @@
 .rp-auth {
   --rp-bg: #efffc8;
   --rp-surface: #f7ffe0;
-  --rp-surface-2: #e2f3b3;
-  --rp-surface-3: #d6ec9c;
+  --rp-surface-2: rgba(16, 11, 0, 0.07);
+  --rp-surface-3: rgba(16, 11, 0, 0.12);
   --rp-text: #100b00;
   --rp-muted: #4a4430;
   --rp-border: rgba(16, 11, 0, 0.13);
   --rp-border-strong: rgba(16, 11, 0, 0.24);
-  --rp-accent: #85cb33;
-  --rp-accent-hover: #77b82c;
-  --rp-accent-fg: #100b00;
-  --rp-accent-text: #3d6b10;
+  --rp-accent: #100b00;
+  --rp-accent-hover: #2a2516;
+  --rp-accent-fg: #ffffff;
+  --rp-accent-text: #100b00;
   --rp-band: #100b00;
   --rp-band-fg: #efffc8;
   --rp-band-muted: rgba(239, 255, 200, 0.68);
@@ -27,8 +27,8 @@
   --rp-input-focus: #fbffef;
   --rp-danger-bg: #ffe2d6;
   --rp-danger-fg: #8a2810;
-  --rp-success-bg: #dff3c4;
-  --rp-success-fg: #2f5a0c;
+  --rp-success-bg: rgba(16, 11, 0, 0.07);
+  --rp-success-fg: #100b00;
   --rp-shadow: 0 18px 40px -26px rgba(16, 11, 0, 0.45);
   --rp-ease: cubic-bezier(0.23, 1, 0.32, 1);
   --rp-ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
@@ -281,7 +281,7 @@ html[data-rp-theme="dark"] .rp-auth .rp-field select {
   color: #efffc8;
 }
 .rp-auth .rp-access-switch a:not([aria-current]):hover {
-  background: #e2f3b3;
+  background: rgba(16, 11, 0, 0.07);
 }
 /* Sign-in has three tabs (Conductor, Comercio, PIN): on narrow phones they
    size to their labels, and below 360px the icons give way to the text. */
