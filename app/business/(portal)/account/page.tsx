@@ -1,4 +1,8 @@
-import { requireBusiness } from "@/lib/platform/data";
+import {
+  mediaUrl,
+  requireBusiness,
+  unreadNotifications,
+} from "@/lib/platform/data";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
 import { BusinessAccountView } from "@/components/platform/business/views";
 export const metadata = { title: "Cuenta · RidePerks" };
@@ -24,6 +28,18 @@ export default async function Page() {
         ])
       : [null, null];
   if (staff?.error) throw new Error("No pudimos consultar el personal.");
+  const unread = await unreadNotifications(profile.id);
+  const media = business
+    ? {
+        logo: business.logo_path
+          ? { path: business.logo_path, url: mediaUrl(business.logo_path)! }
+          : null,
+        photos: (business.photo_paths || []).map((path) => ({
+          path,
+          url: mediaUrl(path)!,
+        })),
+      }
+    : undefined;
   return (
     <BusinessAccountView
       profile={profile}
@@ -40,6 +56,8 @@ export default async function Page() {
             ?.full_name || "",
       }))}
       pendingChange={Boolean(pendingChange?.data)}
+      media={media}
+      unread={unread}
     />
   );
 }

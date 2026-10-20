@@ -14,7 +14,7 @@ const items: DockItem[] = [
     href: "/admin/more",
     label: "Más",
     icon: Ellipsis,
-    match: ["/admin/access"],
+    match: ["/admin/access", "/admin/metrics", "/admin/announcements"],
     // "/admin" is the waitlist itself, not a prefix of the other pages.
     exactMatch: ["/admin"],
   },

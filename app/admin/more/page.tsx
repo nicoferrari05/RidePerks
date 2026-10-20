@@ -13,6 +13,8 @@ export default async function Page() {
     <AdminShell>
       <h1>Más</h1>
       <section className="rp-menu">
+        <MenuLink href="/admin/metrics" label="Métricas" />
+        <MenuLink href="/admin/announcements" label="Anuncios" />
         <MenuLink href="/admin/access" label="Acceso de conductores" />
         <MenuLink href="/admin" label="Lista de espera" />
       </section>

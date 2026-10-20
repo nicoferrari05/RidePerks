@@ -4,6 +4,7 @@ import { getSupabaseAdmin } from "@/lib/supabase-server";
 import { requireDriver, rateLimit } from "./data";
 import { profileSchema, firstError } from "./validation";
 import type { ActionState } from "./types";
+import { readImage } from "./images";
 export async function saveProfile(
   _: ActionState,
   form: FormData,
@@ -32,20 +33,10 @@ export async function uploadVerification(
   const profile = await requireDriver();
   if (profile.status === "suspended" || profile.status === "verified")
     return { error: "Tu cuenta no admite una nueva verificación." };
-  const file = form.get("photo");
-  if (!(file instanceof File) || file.size === 0 || file.size > 5 * 1024 * 1024)
+  const image = await readImage(form.get("photo"), 5 * 1024 * 1024);
+  if (!image)
     return { error: "Selecciona una imagen JPG, PNG o WebP de hasta 5 MB." };
-  const bytes = Buffer.from(await file.arrayBuffer());
-  const jpg = bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
-  const png = bytes
-    .subarray(0, 8)
-    .equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]));
-  const webp =
-    bytes.toString("ascii", 0, 4) === "RIFF" &&
-    bytes.toString("ascii", 8, 12) === "WEBP";
-  const ext = jpg ? "jpg" : png ? "png" : webp ? "webp" : null;
-  if (!ext)
-    return { error: "El archivo no es una imagen JPG, PNG o WebP válida." };
+  const { bytes, ext, contentType } = image;
   try {
     await rateLimit("verification:" + profile.id, 5, 3600);
     const db = getSupabaseAdmin();
@@ -62,7 +53,7 @@ export async function uploadVerification(
     const uploaded = await db.storage
       .from("rp-verifications")
       .upload(path, bytes, {
-        contentType: jpg ? "image/jpeg" : png ? "image/png" : "image/webp",
+        contentType,
         upsert: false,
       });
     if (uploaded.error)

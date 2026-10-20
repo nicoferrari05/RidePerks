@@ -8,16 +8,19 @@ const scan: DockItem = {
   icon: ScanLine,
   exact: true,
 };
+const account: DockItem = {
+  href: "/business/account",
+  label: "Cuenta",
+  icon: UserRound,
+  match: ["/business/notifications"],
+};
 const owner: DockItem[] = [
   scan,
   { href: "/business/activity", label: "Actividad", icon: ChartColumn },
   { href: "/business/benefits", label: "Beneficios", icon: Ticket },
-  { href: "/business/account", label: "Cuenta", icon: UserRound },
+  account,
 ];
-const staff: DockItem[] = [
-  scan,
-  { href: "/business/account", label: "Cuenta", icon: UserRound },
-];
+const staff: DockItem[] = [scan, account];
 export default function BusinessNav({ isOwner }: { isOwner: boolean }) {
   return (
     <SpotlightDock

@@ -1,6 +1,7 @@
 "use client";
 import { createElement, useEffect, useRef, useState } from "react";
 import Script from "next/script";
+import Link from "next/link";
 type ButtonElement = HTMLElement & {
   eventPayment: (data: {
     transactionId: string;
@@ -286,6 +287,14 @@ export default function YappyCheckout({
                     {o.id}
                   </p>
                 </div>
+                {o.status === "paid" && (
+                  <Link
+                    className="rp-text-link"
+                    href={"/driver/membership/receipt/" + o.id}
+                  >
+                    Recibo
+                  </Link>
+                )}
               </div>
             ))}
           </div>

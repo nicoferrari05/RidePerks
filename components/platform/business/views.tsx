@@ -1,12 +1,18 @@
 import BusinessScanner from "@/components/platform/BusinessScanner";
 import BusinessMetrics, {
   type BusinessStats,
+  type FeedbackSummary,
 } from "@/components/platform/BusinessMetrics";
 import { MerchantInfo } from "@/components/platform/MerchantForms";
 import { StaffInvite, RemoveStaff } from "@/components/platform/StaffForms";
 import SupportForm from "@/components/platform/SupportForm";
 import { ThemeSetting } from "@/components/platform/theme";
+import Link from "next/link";
+import { Trash2 } from "lucide-react";
 import { Empty, MenuLink } from "@/components/platform/ui";
+import { HoursForm, MediaForms } from "@/components/platform/AppForms";
+import { NotificationBell } from "@/components/platform/notifications";
+import { readHours } from "@/lib/platform/hours";
 import { Button } from "@/components/ui/button";
 import { logout } from "@/lib/platform/auth-actions";
 import { selectBusiness } from "@/lib/platform/business-actions";
@@ -22,9 +28,11 @@ import {
 export function ScanView({
   business,
   profile,
+  unread = 0,
 }: {
   business: Pick<Business, "name" | "address"> | null;
   profile: Pick<Profile, "full_name" | "phone" | "status">;
+  unread?: number;
 }) {
   if (!business)
     return (
@@ -55,6 +63,7 @@ export function ScanView({
           <h1>{business.name}</h1>
           <p className="rp-muted">{business.address}</p>
         </div>
+        <NotificationBell href="/business/notifications" unread={unread} />
       </div>
       <BusinessScanner />
     </div>
@@ -65,9 +74,11 @@ export function ActivityView({
   stats,
   period,
   recent,
+  feedback,
 }: {
   stats: BusinessStats;
   period: string;
+  feedback?: FeedbackSummary;
   recent: {
     id: string;
     benefit_title: string;
@@ -78,7 +89,7 @@ export function ActivityView({
   return (
     <div className="rp-stack">
       <h1>Actividad</h1>
-      <BusinessMetrics data={stats} period={period} />
+      <BusinessMetrics data={stats} period={period} feedback={feedback} />
       <section>
         <div className="rp-section-head">
           <h2>Últimos usos</h2>
@@ -114,6 +125,8 @@ export function BusinessAccountView({
   businesses,
   staff,
   pendingChange,
+  media,
+  unread = 0,
 }: {
   profile: Pick<Profile, "full_name">;
   business: Business | null;
@@ -121,6 +134,9 @@ export function BusinessAccountView({
   businesses: { id: string; name: string }[];
   staff: { user_id: string; full_name: string }[];
   pendingChange: boolean;
+  /** Public URLs of the logo and photos, for the owner's editor. */
+  media?: React.ComponentProps<typeof MediaForms>;
+  unread?: number;
 }) {
   return (
     <div className="rp-stack">
@@ -167,6 +183,17 @@ export function BusinessAccountView({
             <MerchantInfo business={business} pendingChange={pendingChange} />
           </details>
           <details>
+            <summary>Horario</summary>
+            <HoursForm hours={readHours(business.hours)} />
+          </details>
+          <details>
+            <summary>Logo y fotos</summary>
+            <MediaForms
+              logo={media?.logo || null}
+              photos={media?.photos || []}
+            />
+          </details>
+          <details>
             <summary>Personal autorizado</summary>
             <div className="rp-stack tight">
               <StaffInvite />
@@ -192,6 +219,15 @@ export function BusinessAccountView({
             <ThemeSetting />
           </div>
           <MenuLink href="/account/password" label="Contraseña" />
+          <MenuLink
+            href="/business/notifications"
+            label="Notificaciones"
+            value={
+              unread
+                ? unread + (unread === 1 ? " nueva" : " nuevas")
+                : undefined
+            }
+          />
         </div>
       </section>
       <section>
@@ -211,6 +247,9 @@ export function BusinessAccountView({
           Cerrar sesión
         </Button>
       </form>
+      <Link href="/account/delete" className="rp-text-link rp-danger-link">
+        <Trash2 size={16} aria-hidden="true" /> Eliminar mi cuenta
+      </Link>
     </div>
   );
 }

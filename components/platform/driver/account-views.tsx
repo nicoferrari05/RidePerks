@@ -1,5 +1,5 @@
-import { Empty, SubHeader } from "@/components/platform/ui";
-import type { Profile } from "@/lib/platform/types";
+import { Empty, MenuLink, SubHeader } from "@/components/platform/ui";
+import { dateLabel, type Profile } from "@/lib/platform/types";
 
 // Sub-screens of Cuenta (membership, verification, help). Presentational:
 // the pages fetch and pass the interactive pieces in.
@@ -9,14 +9,19 @@ export function MembershipView({
   free,
   verified,
   checkout,
+  receipts = [],
 }: {
   state: { status: string; lifetime: boolean };
   free: boolean;
   verified: boolean;
   /** The Yappy checkout, or null when payments are switched off. */
   checkout: React.ReactNode;
+  /** Paid orders; listed here when the checkout (which lists them) is hidden. */
+  receipts?: { id: string; paid_at: string | null }[];
 }) {
   const blocked = state.status !== "enabled";
+  const showsCheckout =
+    !blocked && !state.lifetime && !free && verified && Boolean(checkout);
   return (
     <div className="rp-stack">
       <SubHeader
@@ -67,6 +72,21 @@ export function MembershipView({
             Ayuda.
           </p>
         )
+      )}
+      {!showsCheckout && receipts.length > 0 && (
+        <section>
+          <h2 className="rp-menu-title">Recibos</h2>
+          <div className="rp-menu">
+            {receipts.map((r) => (
+              <MenuLink
+                key={r.id}
+                href={"/driver/membership/receipt/" + r.id}
+                label={"Pago de $15.00"}
+                value={r.paid_at ? dateLabel(r.paid_at) : r.id}
+              />
+            ))}
+          </div>
+        </section>
       )}
       <p className="rp-muted">
         Si renuevas antes del vencimiento, el mes nuevo se suma al tiempo que te

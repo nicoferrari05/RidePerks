@@ -13,6 +13,7 @@ const migrationFiles = [
   "202609110003_close_profile.sql",
   "202609120001_hardening_and_ops.sql",
   "202610130001_business_pins.sql",
+  "202610200001_app_features.sql",
 ];
 const migrations = migrationFiles.map((name) =>
   readFileSync(
@@ -965,6 +966,246 @@ test("business PIN functions are inaccessible to browser database roles", async 
     );
     await assert.rejects(
       db.query("select rp_redeem_token_pin($1,0,$2)", [randomUUID(), randomUUID()]),
+      /permission denied/,
+    );
+    await db.exec("reset role");
+  }
+});
+async function notifications(userId) {
+  return (
+    await db.query(
+      "select kind,title,body,href,read_at from rp_notifications where user_id=$1 order by created_at",
+      [userId],
+    )
+  ).rows;
+}
+test("new accounts start without onboarding", async () => {
+  const id = await user({ full_name: "Nuevo" });
+  assert.equal(
+    (await db.query("select onboarded_at from rp_profiles where id=$1", [id]))
+      .rows[0].onboarded_at,
+    null,
+  );
+});
+test("redemptions, verifications and reviews notify the right person", async () => {
+  const f = await fixture();
+  await redeem(f, (await issue(f)).token);
+  const [used] = await notifications(f.driver);
+  assert.equal(used.kind, "redemption");
+  assert.equal(used.title, "Usaste Beneficio de prueba");
+  assert.match(used.body, /Aliado de prueba · Ahorraste \$2\.00/);
+  assert.equal(used.href, "/driver/history");
+  assert.equal((await notifications(f.owner)).length, 0);
+
+  const driver = await user();
+  const v = (
+    await db.query(
+      "insert into rp_verifications(driver_id,photo_path) values($1,'x.jpg') returning id",
+      [driver],
+    )
+  ).rows[0].id;
+  await db.query("select rp_review_verification($1,false,'Falta tu nombre')", [v]);
+  const [rejected] = await notifications(driver);
+  assert.equal(rejected.kind, "verification");
+  assert.equal(rejected.body, "Falta tu nombre");
+
+  const admin = await adminActor();
+  const revision = (
+    await db.query(
+      "insert into rp_benefit_revisions(business_id,payload,status,created_by) values($1,$2,'pending',$3) returning id",
+      [
+        f.shop,
+        JSON.stringify({
+          title: "Café gratis",
+          description: "Solo pruebas",
+          discount_label: "Café",
+          terms: "Solo pruebas",
+          category: "comida",
+          savings_amount: "",
+          monthly_limit: "",
+          valid_from: "",
+          valid_until: "",
+        }),
+        f.owner,
+      ],
+    )
+  ).rows[0].id;
+  await db.query("select rp_review_benefit($1,$2,true,'')", [admin, revision]);
+  const owner = await notifications(f.owner);
+  assert.equal(owner.length, 1);
+  assert.equal(owner[0].title, "Beneficio aprobado: Café gratis");
+});
+test("a confirmed payment notifies once", async () => {
+  const f = await fixture();
+  const id = "ntf" + randomUUID().replaceAll("-", "").slice(0, 12);
+  await db.exec("update rp_settings set value='false' where key='free_access'");
+  try {
+    await db.query(
+      "select rp_create_payment($1,$2,'https://www.rideperks.app')",
+      [f.driver, id],
+    );
+    await db.query("select rp_apply_payment($1,'E','https://www.rideperks.app')", [id]);
+    await db.query("select rp_apply_payment($1,'E','https://www.rideperks.app')", [id]);
+    const paid = (await notifications(f.driver)).filter(
+      (n) => n.kind === "payment",
+    );
+    assert.equal(paid.length, 1);
+    assert.match(paid[0].body, /activa hasta el \d{2}\/\d{2}\/\d{4}/);
+  } finally {
+    await db.exec("update rp_settings set value='true' where key='free_access'");
+  }
+});
+test("announcements need a named admin and reach only their audience", async () => {
+  const f = await fixture();
+  const closed = await user();
+  await db.query("update rp_profiles set role='business' where id=$1", [closed]);
+  await db.query("select rp_close_profile($1,'Prueba de cierre')", [closed]);
+  await assert.rejects(
+    db.query(
+      "select rp_send_announcement($1,'Hola','Mensaje','/driver/benefits','drivers')",
+      [f.driver],
+    ),
+    /administrador/,
+  );
+  const admin = await adminActor();
+  await assert.rejects(
+    db.query(
+      "select rp_send_announcement($1,'Hola','Mensaje','https://evil.example','drivers')",
+      [admin],
+    ),
+    /ruta de RidePerks/,
+  );
+  const sent = (
+    await db.query(
+      "select rp_send_announcement($1,'Nuevos aliados','Ya hay más comercios.','/business','businesses') as n",
+      [admin],
+    )
+  ).rows[0].n;
+  const businesses = (
+    await db.query(
+      "select count(*)::int as n from rp_profiles where role='business' and closed_at is null",
+    )
+  ).rows[0].n;
+  assert.equal(sent, businesses);
+  const kinds = async (id) =>
+    (await notifications(id)).filter((n) => n.kind === "announcement").length;
+  assert.equal(await kinds(f.driver), 0);
+  assert.equal(await kinds(f.owner), 1);
+  assert.equal(await kinds(closed), 0);
+});
+test("feedback is once per own redemption and within 30 days", async () => {
+  const f = await fixture();
+  await redeem(f, (await issue(f)).token);
+  const r = (
+    await db.query("select id from rp_redemptions where driver_id=$1", [f.driver])
+  ).rows[0].id;
+  const other = await user();
+  await assert.rejects(
+    db.query("select rp_leave_feedback($1,$2,5,true,'')", [other, r]),
+    /inexistente/,
+  );
+  await assert.rejects(
+    db.query("select rp_leave_feedback($1,$2,6,true,'')", [f.driver, r]),
+    /estrellas/,
+  );
+  await db.query(
+    "select rp_leave_feedback($1,$2,2,false,'No me lo aplicaron')",
+    [f.driver, r],
+  );
+  await assert.rejects(
+    db.query("select rp_leave_feedback($1,$2,5,true,'')", [f.driver, r]),
+    /Ya calificaste/,
+  );
+  const saved = (
+    await db.query(
+      "select business_id,rating,applied from rp_redemption_feedback where redemption_id=$1",
+      [r],
+    )
+  ).rows[0];
+  assert.deepEqual(saved, { business_id: f.shop, rating: 2, applied: false });
+  await redeem(f, (await issue(f)).token);
+  const old = (
+    await db.query(
+      "update rp_redemptions set redeemed_at=now()-interval '31 days' where driver_id=$1 and id<>$2 returning id",
+      [f.driver, r],
+    )
+  ).rows[0].id;
+  await assert.rejects(
+    db.query("select rp_leave_feedback($1,$2,4,true,'')", [f.driver, old]),
+    /plazo/,
+  );
+  const metrics = (await db.query("select rp_admin_metrics() as m")).rows[0].m;
+  assert.ok(metrics.not_applied >= 1);
+  assert.equal(metrics.uses_daily.length, 30);
+  assert.equal(metrics.signups_daily.length, 30);
+});
+test("closing an account removes favorites, notifications and feedback comments", async () => {
+  const f = await fixture();
+  await redeem(f, (await issue(f)).token);
+  const r = (
+    await db.query("select id from rp_redemptions where driver_id=$1", [f.driver])
+  ).rows[0].id;
+  await db.query("select rp_leave_feedback($1,$2,4,true,'Muy bien')", [f.driver, r]);
+  await db.query(
+    "insert into rp_favorite_benefits(driver_id,benefit_id) values($1,$2)",
+    [f.driver, f.benefit],
+  );
+  await db.query(
+    "insert into rp_favorite_businesses(driver_id,business_id) values($1,$2)",
+    [f.driver, f.shop],
+  );
+  await db.query("select rp_close_profile($1,'Solicitud del usuario')", [f.driver]);
+  for (const table of ["rp_favorite_benefits", "rp_favorite_businesses"])
+    assert.equal(
+      (
+        await db.query(
+          `select count(*)::int as n from ${table} where driver_id=$1`,
+          [f.driver],
+        )
+      ).rows[0].n,
+      0,
+    );
+  assert.equal((await notifications(f.driver)).length, 0);
+  const kept = (
+    await db.query(
+      "select rating,comment from rp_redemption_feedback where redemption_id=$1",
+      [r],
+    )
+  ).rows[0];
+  assert.deepEqual(kept, { rating: 4, comment: "" });
+});
+test("hours must be seven days and photos are capped", async () => {
+  const f = await fixture();
+  await assert.rejects(
+    db.query("update rp_businesses set hours='[null]' where id=$1", [f.shop]),
+    /hours_shape/,
+  );
+  await db.query("update rp_businesses set hours=$2 where id=$1", [
+    f.shop,
+    JSON.stringify([null, ["08:00", "17:00"], null, null, null, null, ["00:00", "24:00"]]),
+  ]);
+  await assert.rejects(
+    db.query(
+      "update rp_businesses set photo_paths=array['1','2','3','4','5','6','7'] where id=$1",
+      [f.shop],
+    ),
+    /photo_count/,
+  );
+});
+test("new feature tables and functions are closed to browser roles", async () => {
+  for (const role of ["anon", "authenticated"]) {
+    await db.exec("set role " + role);
+    for (const table of [
+      "rp_notifications",
+      "rp_announcements",
+      "rp_favorite_benefits",
+      "rp_favorite_businesses",
+      "rp_redemption_feedback",
+    ])
+      await assert.rejects(db.query(`select * from ${table}`), /permission denied/);
+    await assert.rejects(db.query("select rp_admin_metrics()"), /permission denied/);
+    await assert.rejects(
+      db.query("select rp_leave_feedback($1,$2,5,true,'')", [randomUUID(), randomUUID()]),
       /permission denied/,
     );
     await db.exec("reset role");

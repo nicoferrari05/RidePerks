@@ -183,6 +183,54 @@ Manifesto, HowItWorks, Pricing, JoinCTA (`#unete`), Footer, MobileCTA.
   dashboard with month/total savings, verification by photo upload
   (admin-reviewed; the photo is deleted after review), membership (Yappy),
   history, directory, profile, help.
+- **App features (October 20, 2026; migration `202610200001_app_features.sql`)**.
+  Everything here is a web app (PWA) for now; it will become a store app
+  later, so prefer server-side logic and web APIs that a native wrapper keeps.
+  - *Welcome*: new drivers (`rp_profiles.onboarded_at` null) are sent from
+    Inicio to `/driver/welcome` (3 steps, dock hidden). Accounts that existed
+    when the column was added were marked onboarded.
+  - *Notifications*: `rp_notifications`, written by **database triggers**
+    (redemption → driver, payment paid → driver, verification reviewed →
+    driver, benefit revision / business change reviewed → the merchant who
+    proposed it) and by announcements. Bell with unread count on Inicio and
+    on the business Escanear screen; `/driver/notifications`,
+    `/business/notifications` (opening them marks all read). No push or email
+    for these yet.
+  - *Announcements*: `/admin/announcements` (under Más) → `rp_send_announcement`
+    fans out one notification per non-closed account of the audience;
+    requires the admin identity, like reviews.
+  - *Favorites*: `rp_favorite_benefits` / `rp_favorite_businesses`, heart on
+    the benefit detail and on each business card; "Favoritos" filter chip.
+  - *Search and filters*: Beneficios and Comercios take `?q=`, `category`,
+    `open=1`, `saved=1` (GET form + links, filtered on the server,
+    accent-insensitive; `lib/platform/catalog.ts`). No distance filter: that
+    needs the real map with location.
+  - *Hours, logo, photos*: `rp_businesses.hours` (7 days from domingo, each
+    null or ["HH:MM","HH:MM"]; `lib/platform/hours.ts` does open-now in Panama
+    time, overnight and 24h), `logo_path`, `photo_paths` (≤6) in the **public**
+    bucket `rp-business-media` (2 MB). Owners edit them in Cuenta → Horario /
+    Logo y fotos; they publish without review.
+  - *Feedback*: after a use, Actividad offers "Calificar este uso" (stars, was
+    it applied, comment) for 30 days, once (`rp_leave_feedback`). Owners see
+    average and "no se aplicó" count in Actividad; admins see reports in
+    `/admin/metrics`.
+  - *Receipts*: `/driver/membership/receipt/[id]` for paid orders, printable
+    ("Guardar como PDF"). Not a fiscal invoice (says so).
+  - *Delete account*: `/account/delete` (drivers and businesses) asks for the
+    password, then runs the same closure as the admin
+    (`lib/platform/account-closure.ts`): login banned, personal data,
+    favorites, notifications and feedback comments erased, history kept.
+  - *Business charts and CSV*: Actividad shows a column chart (daily for 7
+    days, weekly otherwise; `components/platform/BarChart.tsx`, plain CSS,
+    tooltip + table view, bar green validated per theme as `--rp-chart-bar`)
+    and downloads `/business/activity/export?period=` (CSV with BOM, formula
+    cells neutralized, no driver names).
+  - *Admin metrics*: `/admin/metrics` (under Más) from `rp_admin_metrics()`:
+    revenue, uses, savings, drivers with access, signups, pending work,
+    30-day charts, recent bad reviews.
+  - Hardening done on the way: driver/business queries select explicit
+    business columns (`BUSINESS_PUBLIC` in `data.ts`), so `pin_hash` no longer
+    reaches the merchant's browser.
 - **Map of businesses (coming soon)**: Beneficios → Comercios shows
   `components/platform/MapPreview.tsx`, a hand-drawn SVG outline of streets
   and pins, blurred, with a "Próximamente" note. There is no real map yet.
@@ -241,6 +289,9 @@ Manifesto, HowItWorks, Pricing, JoinCTA (`#unete`), Footer, MobileCTA.
 Migrations in `supabase/migrations/`, applied manually in order via the SQL
 Editor (`node scripts/prepare-supabase.mjs` bundles them into
 `artifacts/ACTIVAR_RIDEPERKS.sql`, idempotent). Latest:
+`202610200001_app_features.sql` (notifications, announcements, favorites,
+hours/media, feedback, onboarding, admin metrics). **Apply it in production
+before deploying the code that uses it.** Before it
 `202610130001_business_pins.sql` (business PINs, `redeemed_via`); before it
 `202609120001_hardening_and_ops.sql` (admin_paused, catalog_live,
 business-owner role check, `rp_business_changes`, payment expiry/credit).
@@ -280,9 +331,14 @@ the share image until a follow-up commit.
 ## Last session (October 20, 2026)
 
 Blurred "map coming soon" placeholder in Comercios and soft green accents
-across the platform (see "Platform" above). Before that, in October: business
-PIN (`256a195`), mobile redesign with the dock (`1d17262`), green removed
-(`54ca745`). `npm test` runs 41 tests.
+across the platform (`e5a78d6`, pushed). Then the "App features" batch
+(see "Platform state"): welcome, notifications, announcements, favorites,
+search/filters, hours/logo/photos, feedback, receipts, account deletion,
+business chart + CSV, admin metrics. Committed; it needs migration
+`202610200001_app_features.sql` applied in Supabase **before** it is pushed
+(`artifacts/ACTUALIZAR_APP_OCTUBRE.sql` is a copy to paste). `npm test` runs
+49 tests. Earlier in October: business PIN (`256a195`), mobile redesign with
+the dock (`1d17262`), green removed (`54ca745`).
 
 ## Session of September 23, 2026
 
@@ -307,6 +363,12 @@ things that look off; expect more of that.
   install.
 - `PRODUCT.md` and `README.md` still describe the old navy/ember identity and
   waitlist-first funnel; update them if they matter to the next task.
-- Ideas raised but not implemented: per-person admin accounts with 2FA
-  replacing the shared password, Google sign-in, Sentry, funnel analytics,
-  a staging Supabase project + PR-based workflow.
+- **Pending by the user's choice (October 20, 2026)**, in this order of
+  interest: real map of businesses with the driver's location ("cerca de ti",
+  distance filter; needs lat/lng per business); verifying email or WhatsApp
+  with a one-time code; monthly savings summary (email/push); sound or
+  notification for merchants when a use is registered; per-person admin
+  accounts with 2FA replacing the shared password; Sentry; usage analytics
+  (PostHog/Plausible).
+- Dropped for now (user decision): push notifications, Google/Apple sign-in,
+  referrals, staging environment, offline mode, store publishing.

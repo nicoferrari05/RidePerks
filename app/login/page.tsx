@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string; error?: string }>;
+  searchParams: Promise<{ next?: string; error?: string; deleted?: string }>;
 }) {
   const p = await searchParams;
   return (
@@ -16,6 +16,7 @@ export default async function Page({
       mode="login"
       next={safeNext(p.next)}
       error={p.error === "expired"}
+      deleted={p.deleted === "1"}
     />
   );
 }

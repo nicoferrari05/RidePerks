@@ -52,7 +52,7 @@ export function SpotlightDock({
   const count = items.length;
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center px-4 pb-[calc(12px+env(safe-area-inset-bottom,0px))]">
+    <div className="rp-dock-frame pointer-events-none fixed inset-x-0 bottom-0 z-40 flex justify-center px-4 pb-[calc(12px+env(safe-area-inset-bottom,0px))]">
       <nav
         aria-label={label}
         className="rp-dock pointer-events-auto relative flex w-full max-w-[420px] overflow-hidden rounded-[24px] px-1.5 py-1.5"

@@ -34,19 +34,52 @@ export function CategoryIcon({ category }: { category: string }) {
     </div>
   );
 }
+/** The business's logo when it has one, else its category icon. */
+export function BusinessMark({
+  category,
+  logo,
+}: {
+  category: string;
+  logo?: string | null;
+}) {
+  if (!logo) return <CategoryIcon category={category} />;
+  return (
+    <div className="rp-category-icon rp-logo-mark">
+      {/* Public logo from Supabase Storage. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={logo} alt="" loading="lazy" decoding="async" />
+    </div>
+  );
+}
 export type CatalogBenefit = Pick<
   Benefit,
   "id" | "title" | "category" | "discount_label"
-> & { rp_businesses: Pick<Benefit["rp_businesses"], "name" | "address"> };
+> & {
+  rp_businesses: Pick<Benefit["rp_businesses"], "name" | "address">;
+  /** Public logo URL of the business, when it uploaded one. */
+  logo?: string | null;
+  /** "Abierto · hasta 17:00" / "Cerrado ahora", when it published hours. */
+  status?: string | null;
+};
 // The discount leads (it's what a driver scans for); title and business follow.
 export function BenefitCard({ benefit: b }: { benefit: CatalogBenefit }) {
   return (
     <Link className="rp-benefit" href={"/driver/benefits/" + b.id}>
-      <CategoryIcon category={b.category} />
+      <BusinessMark category={b.category} logo={b.logo} />
       <div>
         <strong>{b.discount_label}</strong>
         <span>{b.title}</span>
         <span>{b.rp_businesses.name}</span>
+        {b.status && (
+          <span
+            className={
+              "rp-benefit-status" +
+              (b.status.startsWith("Abierto") ? " on" : "")
+            }
+          >
+            {b.status}
+          </span>
+        )}
       </div>
       <ChevronRight size={20} aria-hidden="true" />
     </Link>
@@ -99,10 +132,13 @@ export function SubHeader({
   back,
   backLabel,
   title,
+  action,
 }: {
   back: string;
   backLabel: string;
   title: string;
+  /** Optional control on the right (e.g. the favorite heart). */
+  action?: React.ReactNode;
 }) {
   return (
     <div className="rp-subhead">
@@ -110,6 +146,7 @@ export function SubHeader({
         <ArrowLeft size={20} aria-hidden="true" />
       </Link>
       <h1>{title}</h1>
+      {action}
     </div>
   );
 }

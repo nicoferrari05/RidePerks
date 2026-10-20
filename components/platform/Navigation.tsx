@@ -4,7 +4,12 @@ import { SpotlightDock, type DockItem } from "@/components/ui/spotlight-dock";
 // Four destinations. Comercios lives inside Beneficios; membership,
 // verification, help and settings live inside Cuenta.
 const items: DockItem[] = [
-  { href: "/driver/dashboard", label: "Inicio", icon: House },
+  {
+    href: "/driver/dashboard",
+    label: "Inicio",
+    icon: House,
+    match: ["/driver/notifications"],
+  },
   {
     href: "/driver/benefits",
     label: "Beneficios",

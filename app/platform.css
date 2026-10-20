@@ -39,6 +39,8 @@
   --rp-green-fill: #a6d872;
   --rp-success-bg: var(--rp-green-soft);
   --rp-success-fg: var(--rp-green-text);
+  /* Chart columns: green validated for contrast on each surface. */
+  --rp-chart-bar: #5a962f;
   --rp-warn-bg: #fdf3dc;
   --rp-warn-fg: #7d5300;
   /* Dock: light, but still reads as a floating bar (hairline + shadow). */
@@ -101,6 +103,7 @@ html[data-rp-theme="dark"] .rp-app {
   --rp-green-soft: rgba(166, 216, 114, 0.13);
   --rp-green-text: #b8e290;
   --rp-green-line: #a6d872;
+  --rp-chart-bar: #6e9e40;
   --rp-map-land: #1d1a13;
   --rp-map-road: #38332a;
   --rp-map-water: #1a2220;
@@ -885,6 +888,8 @@ html[data-rp-theme="dark"] body:has(.rp-app) {
     box-shadow 180ms ease;
 }
 .rp-app .rp-panel .rp-field :is(input, select, textarea),
+.rp-app .rp-list .rp-field :is(input, select, textarea),
+.rp-app .rp-panel .rp-hours-edit input[type="time"],
 .rp-app .rp-callout .rp-field :is(input, select, textarea) {
   background: var(--rp-raised);
 }
@@ -1352,6 +1357,640 @@ btn-yappy dialog {
   margin: auto;
 }
 
+/* ---------- Header extras: bell, favorite ---------- */
+.rp-app .rp-hello > .rp-bell,
+.rp-app .rp-hello > form:last-child {
+  margin-left: auto;
+}
+.rp-app .rp-bell,
+.rp-app .rp-fav {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: var(--rp-surface);
+  color: var(--rp-text);
+  cursor: pointer;
+  transition: scale 160ms var(--rp-ease);
+}
+.rp-app .rp-panel .rp-fav {
+  background: var(--rp-raised);
+}
+.rp-app :is(.rp-bell, .rp-fav):active {
+  scale: 0.94;
+}
+.rp-app :is(.rp-bell, .rp-fav) svg {
+  width: 20px;
+  height: 20px;
+}
+.rp-app .rp-fav[aria-pressed="true"] {
+  color: var(--rp-green-text);
+}
+.rp-app .rp-fav[aria-pressed="true"] svg {
+  fill: currentColor;
+}
+.rp-app .rp-bell-count {
+  position: absolute;
+  top: 4px;
+  right: 2px;
+  display: grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border: 2px solid var(--rp-bg);
+  border-radius: 999px;
+  background: var(--rp-green-line);
+  color: #100b00;
+  font-size: 0.66rem;
+  font-weight: 700;
+  line-height: 1;
+}
+/* The third column of a sub-header holds an optional action. */
+.rp-app .rp-subhead > form {
+  justify-self: end;
+}
+
+/* ---------- Notifications ---------- */
+.rp-app .rp-note {
+  justify-content: flex-start;
+  align-items: flex-start;
+  color: var(--rp-text);
+}
+.rp-app .rp-note > div {
+  flex: 1;
+}
+.rp-app .rp-note-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: var(--rp-raised);
+  color: var(--rp-green-text);
+}
+.rp-app .rp-note-icon svg {
+  width: 18px;
+  height: 18px;
+}
+.rp-app .rp-note-time {
+  margin-top: 2px;
+  color: var(--rp-faint) !important;
+  font-size: 0.8rem !important;
+}
+.rp-app .rp-note-dot {
+  flex-shrink: 0;
+  width: 9px;
+  height: 9px;
+  margin-top: 6px;
+  border-radius: 999px;
+  background: var(--rp-green-line);
+}
+
+/* ---------- Welcome (first run) ---------- */
+.rp-app:has(.rp-welcome) .rp-dock-frame {
+  display: none;
+}
+.rp-app .rp-welcome {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100dvh - 160px);
+  gap: 24px;
+}
+.rp-app .rp-welcome-skip {
+  align-self: flex-end;
+}
+.rp-app .rp-welcome-hello {
+  color: var(--rp-muted);
+  font-weight: 500;
+}
+.rp-app .rp-welcome-step {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  animation: rp-step-in 260ms var(--rp-ease) both;
+}
+@keyframes rp-step-in {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+}
+.rp-app .rp-welcome-icon {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  margin-bottom: 12px;
+  border-radius: 24px;
+  background: var(--rp-green-soft);
+  color: var(--rp-green-text);
+}
+.rp-app .rp-welcome-icon svg {
+  width: 34px;
+  height: 34px;
+  stroke-width: 1.75;
+}
+.rp-app .rp-welcome-count {
+  color: var(--rp-green-text);
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+.rp-app .rp-welcome-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+.rp-app .rp-welcome-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--rp-surface-2);
+  transition:
+    width 240ms var(--rp-ease),
+    background-color 240ms ease;
+}
+.rp-app .rp-welcome-dots span.on {
+  width: 24px;
+  background: var(--rp-green-line);
+}
+
+/* ---------- Catalog: search, open status, photos, hours ---------- */
+.rp-app .rp-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.rp-app .rp-search > svg {
+  position: absolute;
+  left: 16px;
+  width: 18px;
+  height: 18px;
+  color: var(--rp-faint);
+  pointer-events: none;
+}
+.rp-app .rp-search input {
+  width: 100%;
+  min-height: 50px;
+  padding: 12px 16px 12px 44px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--rp-surface);
+  color: var(--rp-text);
+  font: inherit;
+  font-size: 16px;
+}
+.rp-app .rp-search input:focus {
+  outline: none;
+  border-color: var(--rp-text);
+  background: var(--rp-raised);
+}
+.rp-app .rp-search input::placeholder {
+  color: var(--rp-faint);
+}
+.rp-app .rp-open {
+  display: inline-block;
+  margin-top: 2px;
+  color: var(--rp-muted);
+  font-size: 0.84rem;
+  font-weight: 500;
+}
+.rp-app .rp-open.on,
+.rp-app .rp-benefit .rp-benefit-status.on {
+  color: var(--rp-green-text);
+}
+.rp-app .rp-benefit .rp-benefit-status {
+  margin-top: 2px;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+.rp-app .rp-logo-mark {
+  overflow: hidden;
+  padding: 0;
+}
+.rp-app .rp-logo-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.rp-app .rp-photos {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.rp-app .rp-photos::-webkit-scrollbar {
+  display: none;
+}
+.rp-app .rp-photos img {
+  flex: 0 0 auto;
+  width: min(72%, 260px);
+  aspect-ratio: 4 / 3;
+  border-radius: 18px;
+  object-fit: cover;
+  background: var(--rp-surface-2);
+  scroll-snap-align: start;
+}
+.rp-app .rp-week {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.rp-app .rp-week > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--rp-muted);
+  font-size: 0.94rem;
+}
+.rp-app .rp-week > div.today {
+  color: var(--rp-text);
+  font-weight: 600;
+}
+.rp-app details > summary .rp-menu-value {
+  margin-left: auto;
+}
+
+/* ---------- Uses: rating after a use ---------- */
+.rp-app .rp-use {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+}
+.rp-app .rp-use-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+}
+.rp-app .rp-rate {
+  border-bottom: 0;
+}
+.rp-app .rp-rate > summary {
+  min-height: 36px;
+  padding: 0;
+  font-size: 0.88rem;
+  color: var(--rp-green-text);
+}
+.rp-app .rp-rate > summary::after {
+  display: none;
+}
+.rp-app .rp-rate > :not(summary) {
+  margin: 8px 0 6px;
+}
+.rp-app .rp-feedback fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.rp-app .rp-feedback legend {
+  width: 100%;
+  margin-bottom: 8px;
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+.rp-app .rp-stars label {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: var(--rp-raised);
+  color: var(--rp-faint);
+  cursor: pointer;
+}
+.rp-app .rp-stars input,
+.rp-app .rp-choice input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.rp-app .rp-stars svg {
+  width: 22px;
+  height: 22px;
+}
+.rp-app .rp-stars svg.on {
+  color: var(--rp-green-line);
+  fill: currentColor;
+}
+.rp-app .rp-stars label:has(input:focus-visible),
+.rp-app .rp-choice label:has(input:focus-visible) {
+  outline: 2px solid var(--rp-text);
+  outline-offset: 2px;
+}
+.rp-app .rp-choice label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: var(--rp-raised);
+  font-size: 0.92rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+.rp-app .rp-choice label:has(input:checked) {
+  background: var(--rp-text);
+  color: var(--rp-bg);
+}
+
+/* ---------- Receipt ---------- */
+.rp-app .rp-receipt {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 24px;
+  border-radius: 24px;
+  background: var(--rp-surface);
+}
+.rp-app .rp-receipt header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.rp-app .rp-receipt-total {
+  font-size: 2.75rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+.rp-app .rp-receipt dl {
+  display: flex;
+  flex-direction: column;
+  margin-top: 12px;
+}
+.rp-app .rp-receipt dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--rp-line);
+  font-size: 0.94rem;
+}
+.rp-app .rp-receipt dt {
+  color: var(--rp-muted);
+}
+.rp-app .rp-receipt dd {
+  text-align: right;
+  overflow-wrap: anywhere;
+  font-weight: 500;
+}
+.rp-app .rp-receipt-note {
+  margin-top: 8px;
+  font-size: 0.84rem;
+}
+@media print {
+  .rp-app .rp-dock-frame,
+  .rp-app .rp-no-print,
+  .rp-app .rp-skip {
+    display: none !important;
+  }
+  .rp-app .rp-main {
+    padding: 0;
+  }
+  .rp-app .rp-receipt {
+    background: #ffffff;
+    color: #100b00;
+  }
+}
+
+/* ---------- Account deletion ---------- */
+.rp-app .rp-bullets {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-left: 18px;
+  list-style: disc;
+  color: var(--rp-muted);
+  font-size: 0.94rem;
+  line-height: 1.55;
+}
+.rp-app .rp-danger-link {
+  align-self: center;
+  color: var(--rp-danger-fg);
+  font-weight: 500;
+}
+
+/* ---------- Business: hours and media editors ---------- */
+.rp-app .rp-hours-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+/* Day on its own line, opening and closing side by side below it (a time
+   input with AM/PM needs the width). */
+.rp-app .rp-hours-edit fieldset {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--rp-line);
+}
+.rp-app .rp-hours-edit fieldset > .rp-check {
+  grid-column: 1 / -1;
+  font-weight: 500;
+}
+.rp-app .rp-hours-edit fieldset:has(input[type="checkbox"]:not(:checked)) {
+  grid-template-columns: 1fr;
+}
+.rp-app
+  .rp-hours-edit
+  fieldset:has(input[type="checkbox"]:not(:checked))
+  input[type="time"] {
+  display: none;
+}
+.rp-app .rp-hours-edit input[type="time"] {
+  min-height: 44px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: var(--rp-surface);
+  color: var(--rp-text);
+  font: inherit;
+  font-size: 16px;
+}
+.rp-app .rp-media-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.rp-app .rp-media-grid figure {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--rp-surface-2);
+}
+.rp-app .rp-media-grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.rp-app .rp-media-grid form {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+}
+.rp-app .rp-media-remove {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: rgba(16, 11, 0, 0.72);
+  color: #ffffff;
+  cursor: pointer;
+}
+.rp-app .rp-media-remove svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ---------- Bar chart (components/platform/BarChart.tsx) ---------- */
+.rp-app .rp-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 18px 8px;
+  border-radius: 22px;
+  background: var(--rp-surface);
+}
+.rp-app .rp-chart figcaption {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  color: var(--rp-muted);
+  font-size: 0.88rem;
+}
+.rp-app .rp-chart figcaption strong {
+  color: var(--rp-text);
+  font-size: 0.95rem;
+}
+.rp-app .rp-chart-plot {
+  display: grid;
+  grid-template-columns: repeat(var(--bars), minmax(0, 1fr));
+  align-items: end;
+  height: 140px;
+  padding-top: 20px;
+  border-bottom: 1px solid var(--rp-line-strong);
+}
+.rp-app .rp-chart-col {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  height: 100%;
+  outline: none;
+}
+.rp-app .rp-chart-bar {
+  width: calc(100% - 2px);
+  max-width: 24px;
+  min-height: 0;
+  border-radius: 4px 4px 0 0;
+  background: var(--rp-chart-bar);
+}
+.rp-app .rp-chart-peak {
+  position: absolute;
+  top: -18px;
+  color: var(--rp-text);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.rp-app .rp-chart-tip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  z-index: 2;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: var(--rp-text);
+  color: var(--rp-bg);
+  font-size: 0.78rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 4px);
+  transition:
+    opacity 120ms ease,
+    transform 120ms var(--rp-ease);
+}
+.rp-app .rp-chart-col:first-child .rp-chart-tip {
+  left: 0;
+  transform: translate(0, 4px);
+}
+.rp-app .rp-chart-col:last-child .rp-chart-tip {
+  left: auto;
+  right: 0;
+  transform: translate(0, 4px);
+}
+.rp-app .rp-chart-col:is(:hover, :focus-visible) .rp-chart-tip {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+.rp-app .rp-chart-col:first-child:is(:hover, :focus-visible) .rp-chart-tip,
+.rp-app .rp-chart-col:last-child:is(:hover, :focus-visible) .rp-chart-tip {
+  transform: translate(0, 0);
+}
+.rp-app .rp-chart-col:focus-visible .rp-chart-bar {
+  outline: 2px solid var(--rp-text);
+  outline-offset: 2px;
+}
+/* First, middle and last labels, spread under the baseline. */
+.rp-app .rp-chart-axis {
+  display: flex;
+  justify-content: space-between;
+  height: 18px;
+  color: var(--rp-muted);
+  font-size: 0.74rem;
+}
+.rp-app .rp-chart-axis span:empty {
+  display: none;
+}
+.rp-app .rp-chart-table {
+  border-bottom: 0;
+}
+.rp-app .rp-chart-table > summary {
+  min-height: 40px;
+  padding: 0;
+  color: var(--rp-muted);
+  font-size: 0.86rem;
+}
+.rp-app .rp-chart-table table {
+  width: 100%;
+  font-size: 0.88rem;
+  border-collapse: collapse;
+}
+.rp-app .rp-chart-table :is(th, td) {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--rp-line);
+  text-align: left;
+}
+.rp-app .rp-chart-table :is(th, td):last-child {
+  text-align: right;
+}
+.rp-app .rp-chart-grid {
+  display: grid;
+  gap: 12px;
+}
+.rp-app .rp-count {
+  color: var(--rp-text);
+  font-weight: 600;
+}
+.rp-app .rp-kpis dd.rp-muted {
+  font-size: 0.82rem;
+}
+
 /* ---------- Larger screens ---------- */
 @media (min-width: 760px) {
   .rp-app .rp-main {
@@ -1384,6 +2023,9 @@ btn-yappy dialog {
   }
   .rp-app .rp-main.wide .rp-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .rp-app .rp-chart-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 @media (max-width: 360px) {

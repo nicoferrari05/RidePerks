@@ -109,3 +109,12 @@ Aplicar antes del código: `supabase/migrations/202609120001_hardening_and_ops.s
 ### Recuperación de contraseña (pendiente de configuración externa)
 
 En Supabase → Authentication → SMTP Settings, activar SMTP propio (por ejemplo Resend: host `smtp.resend.com`, puerto 465, usuario `resend`, contraseña = API key) con un remitente de un dominio verificado. El SMTP por defecto de Supabase solo permite unos pocos correos por hora. Después probar `/recover` con una cuenta real.
+
+## Cambios de octubre 2026 (funciones de app)
+
+Aplicar antes del código: `supabase/migrations/202610200001_app_features.sql` (copia lista para pegar en `artifacts/ACTUALIZAR_APP_OCTUBRE.sql`, o todo junto con `node scripts/prepare-supabase.mjs`). Es aditiva e idempotente; crea el bucket público `rp-business-media` para logos y fotos de comercios.
+
+- Conductores: bienvenida de 3 pasos para cuentas nuevas, notificaciones dentro de la app, favoritos, búsqueda y filtros (abierto ahora, favoritos, categoría), horarios y fotos de comercios, calificación después de cada uso, recibos imprimibles y eliminar la cuenta desde Cuenta.
+- Comercios: horario, logo y hasta 6 fotos en Cuenta; gráfica de usos y descarga CSV en Actividad; notificaciones de sus revisiones.
+- Administración: Más → Métricas y Más → Anuncios (los anuncios requieren la identidad administrativa vinculada).
+- No requiere variables de entorno nuevas.

@@ -13,6 +13,7 @@ import type {
   Business,
   Redemption,
   Verification,
+  AppNotification,
 } from "./types";
 // The session JWT is verified locally (asymmetric signing keys), which saves
 // a round trip to Supabase Auth on every page and action. A closed account
@@ -49,14 +50,20 @@ export const requireBusiness = cache(async () => {
   const db = getSupabaseAdmin();
   const { data, error } = await db
     .from("rp_business_members")
-    .select("business_id,role,rp_businesses!inner(*)")
+    .select(
+      "business_id,role,rp_businesses!inner(" + BUSINESS_PUBLIC + ",pin_set_at)",
+    )
     .eq("user_id", profile.id)
     .eq("is_active", true)
     .eq("rp_businesses.is_active", true);
   if (error) throw new Error("No pudimos consultar tus comercios.");
-  const businesses = (data || []).map((row) => ({
-    business: row.rp_businesses as unknown as Business,
-    role: row.role as "owner" | "staff",
+  const rows = (data || []) as unknown as {
+    role: "owner" | "staff";
+    rp_businesses: Business;
+  }[];
+  const businesses = rows.map((row) => ({
+    business: row.rp_businesses,
+    role: row.role,
   }));
   const selected = (await cookies()).get("rp_business_id")?.value;
   const current =
@@ -111,6 +118,22 @@ export async function resolveQrToken(value: unknown) {
     .maybeSingle();
   return resolved.data ? (resolved.data.token as string) : null;
 }
+// Business columns safe to show drivers (never the PIN hash).
+export const BUSINESS_PUBLIC =
+  "id,name,category,address,phone,description,is_active,owner_user_id,hours,logo_path,photo_paths";
+export const MEDIA_BUCKET = "rp-business-media";
+/** Public URL of a business logo or photo stored in the media bucket. */
+export function mediaUrl(path: string | null | undefined) {
+  const base = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!path || !base) return null;
+  return (
+    base.replace(/\/$/, "") +
+    "/storage/v1/object/public/" +
+    MEDIA_BUCKET +
+    "/" +
+    path.split("/").map(encodeURIComponent).join("/")
+  );
+}
 export const getBenefits = cache(async (): Promise<Benefit[]> => {
   await requireDriver();
   const today = new Date().toLocaleDateString("en-CA", {
@@ -118,7 +141,7 @@ export const getBenefits = cache(async (): Promise<Benefit[]> => {
   });
   const { data, error } = await getSupabaseAdmin()
     .from("rp_benefits")
-    .select("*, rp_businesses!inner(*)")
+    .select("*, rp_businesses!inner(" + BUSINESS_PUBLIC + ")")
     .eq("is_active", true)
     .eq("rp_businesses.is_active", true)
     .or(`valid_from.is.null,valid_from.lte.${today}`)
@@ -126,8 +149,46 @@ export const getBenefits = cache(async (): Promise<Benefit[]> => {
     .order("created_at", { ascending: false });
   if (error)
     throw new Error("No pudimos cargar los beneficios. Intenta nuevamente.");
-  return data as Benefit[];
+  return data as unknown as Benefit[];
 });
+/** Ids of the benefits and businesses this driver saved. */
+export const getFavorites = cache(async (driverId: string) => {
+  const db = getSupabaseAdmin();
+  const [benefits, businesses] = await Promise.all([
+    db.from("rp_favorite_benefits").select("benefit_id").eq("driver_id", driverId),
+    db
+      .from("rp_favorite_businesses")
+      .select("business_id")
+      .eq("driver_id", driverId),
+  ]);
+  if (benefits.error || businesses.error)
+    throw new Error("No pudimos cargar tus favoritos.");
+  return {
+    benefits: new Set(benefits.data.map((r) => r.benefit_id as string)),
+    businesses: new Set(businesses.data.map((r) => r.business_id as string)),
+  };
+});
+export const unreadNotifications = cache(async (userId: string) => {
+  const { count, error } = await getSupabaseAdmin()
+    .from("rp_notifications")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", userId)
+    .is("read_at", null);
+  // The bell is secondary: never break a screen because it failed.
+  return error ? 0 : count || 0;
+});
+export async function getNotifications(
+  userId: string,
+): Promise<AppNotification[]> {
+  const { data, error } = await getSupabaseAdmin()
+    .from("rp_notifications")
+    .select("id,kind,title,body,href,read_at,created_at")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(60);
+  if (error) throw new Error("No pudimos cargar tus notificaciones.");
+  return data;
+}
 export const catalogLive = cache(async (): Promise<boolean> => {
   const { data, error } = await getSupabaseAdmin()
     .from("rp_settings")
@@ -148,6 +209,18 @@ export async function getRedemptions(driverId: string): Promise<Redemption[]> {
     .limit(500);
   if (error) throw new Error("No pudimos cargar tu historial.");
   return data as Redemption[];
+}
+/** History plus whether each recent use was already rated. */
+export async function getRatedRedemptions(driverId: string) {
+  const rows = await getRedemptions(driverId);
+  const { data, error } = await getSupabaseAdmin()
+    .from("rp_redemption_feedback")
+    .select("redemption_id")
+    .eq("driver_id", driverId)
+    .gte("created_at", new Date(Date.now() - 60 * 86400000).toISOString());
+  if (error) throw new Error("No pudimos cargar tu historial.");
+  const rated = new Set(data.map((r) => r.redemption_id as string));
+  return rows.map((r) => ({ ...r, rated: rated.has(r.id) }));
 }
 export async function getVerification(
   driverId: string,

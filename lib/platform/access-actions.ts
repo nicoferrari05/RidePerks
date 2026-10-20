@@ -214,3 +214,50 @@ export async function creditPayment(
     };
   }
 }
+// Announcement to every driver and/or business, shown in their notifications.
+export async function sendAnnouncement(
+  _: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  try {
+    const id = await actor();
+    const parsed = z
+      .object({
+        title: z.string().trim().min(3).max(140),
+        body: z.string().trim().min(3).max(1000),
+        href: z.string().trim().max(200),
+        audience: z.enum(["drivers", "businesses", "all"]),
+      })
+      .safeParse(Object.fromEntries(form));
+    if (!parsed.success)
+      return { error: "Escribe un título y un mensaje, y elige a quién enviarlo." };
+    const { error, data } = await getSupabaseAdmin().rpc(
+      "rp_send_announcement",
+      {
+        p_admin: id,
+        p_title: parsed.data.title,
+        p_body: parsed.data.body,
+        p_href: parsed.data.href || null,
+        p_audience: parsed.data.audience,
+      },
+    );
+    if (error)
+      return {
+        error:
+          error.code === "P0001" ? error.message : "No pudimos enviar el anuncio.",
+      };
+    revalidatePath("/admin/announcements");
+    revalidatePath("/driver", "layout");
+    revalidatePath("/business", "layout");
+    return {
+      success:
+        "Anuncio enviado a " +
+        data +
+        (data === 1 ? " persona." : " personas."),
+    };
+  } catch (e) {
+    return {
+      error: e instanceof Error ? e.message : "No pudimos enviar el anuncio.",
+    };
+  }
+}

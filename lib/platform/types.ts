@@ -7,7 +7,10 @@ export type Profile = {
   role: "driver" | "business";
   created_at: string;
   closed_at: string | null;
+  onboarded_at?: string | null;
 };
+/** Seven days from domingo (0); each null (closed) or [open, close]. */
+export type WeekHours = ([string, string] | null)[];
 export type Business = {
   id: string;
   name: string;
@@ -18,6 +21,18 @@ export type Business = {
   is_active: boolean;
   owner_user_id: string | null;
   pin_set_at?: string | null;
+  hours?: WeekHours | null;
+  logo_path?: string | null;
+  photo_paths?: string[];
+};
+export type AppNotification = {
+  id: string;
+  kind: string;
+  title: string;
+  body: string;
+  href: string | null;
+  read_at: string | null;
+  created_at: string;
 };
 export type Benefit = {
   id: string;
@@ -41,6 +56,8 @@ export type Redemption = {
   business_name: string;
   savings_amount: number | null;
   redeemed_at: string;
+  /** Set on Actividad: whether the driver already rated this use. */
+  rated?: boolean;
 };
 export type Verification = {
   id: string;

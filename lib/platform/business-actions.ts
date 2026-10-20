@@ -4,9 +4,16 @@ import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
-import { currentProfile, requireBusiness, rateLimit } from "./data";
+import {
+  currentProfile,
+  requireBusiness,
+  rateLimit,
+  MEDIA_BUCKET,
+} from "./data";
 import { uuidSchema } from "./validation";
-import type { ActionState } from "./types";
+import { validTime } from "./hours";
+import { readImage } from "./images";
+import type { ActionState, WeekHours } from "./types";
 async function owner() {
   const context = await requireBusiness();
   if (!context.business || context.role !== "owner")
@@ -235,4 +242,105 @@ export async function toggleMerchantBenefit(
   revalidatePath("/business");
   revalidatePath("/driver", "layout");
   return { success: "Estado actualizado." };
+}
+
+// Opening hours, logo and photos are the business's own presentation: they
+// publish right away (RidePerks can still pause the business).
+export async function saveHours(
+  _: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  const { business } = await owner();
+  const hours: WeekHours = [];
+  for (let day = 0; day < 7; day++) {
+    if (form.get("open_" + day) !== "on") {
+      hours.push(null);
+      continue;
+    }
+    const from = String(form.get("from_" + day) || "");
+    let to = String(form.get("to_" + day) || "");
+    if (!validTime(from) || !validTime(to))
+      return { error: "Revisa las horas: usa el formato 08:00." };
+    // 00:00 to 00:00 means open all day.
+    if (from === to) {
+      if (from !== "00:00")
+        return { error: "La hora de cierre debe ser distinta a la de apertura." };
+      to = "24:00";
+    }
+    hours.push([from, to]);
+  }
+  const { error } = await getSupabaseAdmin()
+    .from("rp_businesses")
+    .update({ hours: hours.some(Boolean) ? hours : null })
+    .eq("id", business.id);
+  if (error) return { error: "No pudimos guardar el horario." };
+  revalidatePath("/business", "layout");
+  revalidatePath("/driver", "layout");
+  return { success: "Horario guardado." };
+}
+
+export async function uploadBusinessMedia(
+  _: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  const { business, profile } = await owner();
+  const kind = form.get("kind") === "logo" ? "logo" : "photo";
+  const image = await readImage(form.get("file"), 2 * 1024 * 1024);
+  if (!image)
+    return { error: "Selecciona una imagen JPG, PNG o WebP de hasta 2 MB." };
+  const photos = business.photo_paths || [];
+  if (kind === "photo" && photos.length >= 6)
+    return { error: "Puedes tener hasta 6 fotos. Quita una para subir otra." };
+  try {
+    await rateLimit("media:" + profile.id, 30, 3600);
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Intenta más tarde." };
+  }
+  const db = getSupabaseAdmin();
+  const path = business.id + "/" + crypto.randomUUID() + "." + image.ext;
+  const uploaded = await db.storage
+    .from(MEDIA_BUCKET)
+    .upload(path, image.bytes, { contentType: image.contentType, upsert: false });
+  if (uploaded.error)
+    return { error: "No pudimos subir la imagen. Intenta nuevamente." };
+  const saved = await db
+    .from("rp_businesses")
+    .update(
+      kind === "logo" ? { logo_path: path } : { photo_paths: [...photos, path] },
+    )
+    .eq("id", business.id);
+  if (saved.error) {
+    await db.storage.from(MEDIA_BUCKET).remove([path]);
+    return { error: "No pudimos guardar la imagen." };
+  }
+  if (kind === "logo" && business.logo_path)
+    await db.storage.from(MEDIA_BUCKET).remove([business.logo_path]);
+  revalidatePath("/business", "layout");
+  revalidatePath("/driver", "layout");
+  return { success: kind === "logo" ? "Logo actualizado." : "Foto agregada." };
+}
+
+export async function removeBusinessMedia(
+  _: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  const { business } = await owner();
+  const path = String(form.get("path") || "");
+  const isLogo = path !== "" && path === business.logo_path;
+  const photos = business.photo_paths || [];
+  if (!isLogo && !photos.includes(path)) return { error: "Imagen inválida." };
+  const db = getSupabaseAdmin();
+  const { error } = await db
+    .from("rp_businesses")
+    .update(
+      isLogo
+        ? { logo_path: null }
+        : { photo_paths: photos.filter((p) => p !== path) },
+    )
+    .eq("id", business.id);
+  if (error) return { error: "No pudimos quitar la imagen." };
+  await db.storage.from(MEDIA_BUCKET).remove([path]);
+  revalidatePath("/business", "layout");
+  revalidatePath("/driver", "layout");
+  return { success: "Imagen quitada." };
 }

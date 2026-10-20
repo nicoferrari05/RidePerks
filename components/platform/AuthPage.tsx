@@ -44,11 +44,13 @@ export default function AuthPage({
   mode,
   next,
   error,
+  deleted,
   audience = "driver",
 }: {
   mode: "login" | "register" | "recover";
   next?: string;
   error?: boolean;
+  deleted?: boolean;
   audience?: "driver" | "business";
 }) {
   const business = audience === "business";
@@ -65,9 +67,11 @@ export default function AuthPage({
         audience={audience}
         next={next || (business ? "/business" : "/driver/dashboard")}
         notice={
-          error
-            ? "El enlace venció o ya fue utilizado. Inicia sesión o solicita uno nuevo."
-            : undefined
+          deleted
+            ? "Tu cuenta fue eliminada. Gracias por haber sido parte de RidePerks."
+            : error
+              ? "El enlace venció o ya fue utilizado. Inicia sesión o solicita uno nuevo."
+              : undefined
         }
         audienceSwitch={
           <AudienceSwitch mode="login" active={business ? "business" : "driver"} />
