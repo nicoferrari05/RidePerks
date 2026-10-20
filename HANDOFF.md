@@ -27,7 +27,7 @@ RidePerks runs a paid membership ($15/month, Yappy, manual renewal) on top.
 - The local Vercel CLI is logged in as `giancoferrari`, which does **not** have
   access to that team, so env vars are set by the user in the dashboard.
 - Before every commit: `npx tsc --noEmit`, `npm run lint`, `npm test`
-  (37 PGlite tests), `npm run build`. With a server on :3100,
+  (41 tests, most of them on PGlite), `npm run build`. With a server on :3100,
   `npx playwright test` (11 public e2e tests).
 - The user writes in Spanish (Latin American, tuteo, never voseo). All UI copy
   is Spanish with tuteo.
@@ -95,10 +95,14 @@ Curves are Tailwind tokens in `app/globals.css` (`ease-snappy`, `ease-move`,
    `/account/password`, all signed-in `/admin/*`, `/privacidad`, `/terminos`)
    — redesigned October 2026 in the spirit of Uber/Airbnb (the user supplied
    reference screenshots): **white background, soft gray cards with no
-   borders, one big number or title per screen, few icons, monochrome**
-   (the user removed every green accent outside the landing in October
-   2026: actions are black in light mode, white in dark mode; success
-   states are neutral gray), black hero card for the key number. Plain
+   borders, one big number or title per screen, few icons, monochrome
+   base**, black hero card for the key number. Actions (buttons) are black
+   in light mode, white in dark mode. **Soft green accents** (the user asked
+   for them on October 20, after removing a brighter green earlier): tokens
+   `--rp-green-soft/-text/-line/-fill` in `platform.css`, used only for what
+   is positive: savings amounts, success badges/messages, progress bars,
+   confirmation checks, avatar, category icons, numbered steps and the
+   dock's active-tab bar. Never on buttons. Plain
    CSS in `app/platform.css`, every rule scoped to `.rp-app` (CSS stays
    loaded across client navigation, so unscoped rules would leak into the
    auth screens). **Class names are the platform's API** — restyle there,
@@ -179,6 +183,9 @@ Manifesto, HowItWorks, Pricing, JoinCTA (`#unete`), Footer, MobileCTA.
   dashboard with month/total savings, verification by photo upload
   (admin-reviewed; the photo is deleted after review), membership (Yappy),
   history, directory, profile, help.
+- **Map of businesses (coming soon)**: Beneficios → Comercios shows
+  `components/platform/MapPreview.tsx`, a hand-drawn SVG outline of streets
+  and pins, blurred, with a "Próximamente" note. There is no real map yet.
 - **Catalog is hidden**: `rp_settings.catalog_live = false`. Drivers see
   "Próximamente" in Benefits/Comercios and benefit detail 404s. Toggle it in
   `/admin/platform` when approved benefits exist. Live e2e tests
@@ -270,7 +277,14 @@ pushing. A pathspec for an already-deleted file makes `git add` abort
 entirely; that once pushed a commit containing only a deletion, which broke
 the share image until a follow-up commit.
 
-## Last session (September 23, 2026)
+## Last session (October 20, 2026)
+
+Blurred "map coming soon" placeholder in Comercios and soft green accents
+across the platform (see "Platform" above). Before that, in October: business
+PIN (`256a195`), mobile redesign with the dock (`1d17262`), green removed
+(`54ca745`). `npm test` runs 41 tests.
+
+## Session of September 23, 2026
 
 Mobile polish from the user's iPhone screenshots, all pushed to `main`:
 landing InfoCard clipping, bottom nav active pill, mobile header inset

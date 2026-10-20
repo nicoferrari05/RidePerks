@@ -110,7 +110,7 @@ export default function BenefitCode({
         <>
           <CheckCircle2
             size={48}
-            className="text-[var(--rp-accent-text)]"
+            className="text-[var(--rp-green-text)]"
             aria-hidden="true"
           />
           <h2>Beneficio confirmado</h2>

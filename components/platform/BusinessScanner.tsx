@@ -118,7 +118,7 @@ export default function BusinessScanner({ pin = false }: { pin?: boolean }) {
   }
   const done = result && (
     <div className="rp-panel rp-stack" role="status">
-      <CheckCircle2 size={32} className="text-[var(--rp-accent-text)]" />
+      <CheckCircle2 size={32} className="text-[var(--rp-green-text)]" />
       <h2>{pin ? "Canje registrado" : "Beneficio confirmado"}</h2>
       <p>
         <strong>{result.driver_name}</strong>

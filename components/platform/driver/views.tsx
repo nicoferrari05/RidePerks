@@ -4,6 +4,7 @@ import { buttonVariants } from "@/components/ui/button-variants";
 import { Button } from "@/components/ui/button";
 import SavingsCard from "@/components/platform/SavingsCard";
 import BenefitCode from "@/components/platform/BenefitCode";
+import MapPreview from "@/components/platform/MapPreview";
 import { ThemeSetting } from "@/components/platform/theme";
 import {
   BenefitCard,
@@ -50,7 +51,9 @@ function UseRow({ r }: { r: Redemption }) {
           {r.business_name} · {dateLabel(r.redeemed_at)}
         </p>
       </div>
-      <span className="rp-amount">
+      <span
+        className={"rp-amount" + (r.savings_amount === null ? " plain" : "")}
+      >
         {r.savings_amount === null ? "Usado" : money(Number(r.savings_amount))}
       </span>
     </div>
@@ -276,6 +279,7 @@ export function DirectoryView({
     <div className="rp-stack">
       <h1>Beneficios</h1>
       <CatalogTabs current="directory" />
+      <MapPreview />
       {live && businesses.length ? (
         <div className="rp-grid">
           {businesses.map((b) => (

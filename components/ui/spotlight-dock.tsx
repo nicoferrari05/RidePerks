@@ -67,7 +67,7 @@ export function SpotlightDock({
             opacity: active < 0 ? 0 : 1,
           }}
         >
-          <span className="h-[2px] w-8 rounded-full bg-[var(--rp-dock-fg)]" />
+          <span className="h-[3px] w-8 rounded-full bg-[var(--rp-green-line)]" />
         </span>
         {items.map((item, index) => {
           const isActive = index === active;

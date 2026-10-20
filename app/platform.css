@@ -1,9 +1,11 @@
 /* RidePerks platform (driver, business, admin). Mobile first, in the spirit
    of Uber / Airbnb: white background, soft gray cards without borders, one
-   big number or title per screen, few icons, one green action color and a
-   black floating dock (components/ui/spotlight-dock.tsx). Dark mode (black
-   with white text) is chosen in Cuenta → Apariencia and lives on
-   html[data-rp-theme="dark"].
+   big number or title per screen, few icons, black (light mode) or white
+   (dark mode) actions and a floating dock (components/ui/spotlight-dock.tsx).
+   A soft green (--rp-green-*) marks only what is positive: savings, success,
+   confirmations, progress and the active tab. Buttons stay monochrome.
+   Dark mode (black with white text) is chosen in Cuenta → Apariencia and
+   lives on html[data-rp-theme="dark"].
    Class names are the platform's API: pages and forms depend on them, so
    restyle here rather than renaming. Every rule is scoped to .rp-app so it
    never reaches the auth screens (app/auth.css), and vice versa. */
@@ -30,8 +32,13 @@
   --rp-danger: #d93a14;
   --rp-danger-bg: #fdece7;
   --rp-danger-fg: #a12a0b;
-  --rp-success-bg: #e9e9e4;
-  --rp-success-fg: #100b00;
+  /* Soft green, derived from the brand's yellow green (#85CB33). */
+  --rp-green-soft: #eef6e3;
+  --rp-green-text: #3d6a1c;
+  --rp-green-line: #6aa83a;
+  --rp-green-fill: #a6d872;
+  --rp-success-bg: var(--rp-green-soft);
+  --rp-success-fg: var(--rp-green-text);
   --rp-warn-bg: #fdf3dc;
   --rp-warn-fg: #7d5300;
   /* Dock: light, but still reads as a floating bar (hairline + shadow). */
@@ -44,6 +51,11 @@
     0 1px 2px rgba(16, 11, 0, 0.06), 0 14px 32px -12px rgba(16, 11, 0, 0.28);
   --rp-shadow:
     0 1px 2px rgba(16, 11, 0, 0.06), 0 6px 16px -8px rgba(16, 11, 0, 0.18);
+  /* Placeholder map (MapPreview). */
+  --rp-map-land: #ebece4;
+  --rp-map-road: #ffffff;
+  --rp-map-water: #dde7e3;
+  --rp-map-park: #e2efd2;
   --rp-ease: cubic-bezier(0.23, 1, 0.32, 1);
   --rp-ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 
@@ -86,8 +98,13 @@ html[data-rp-theme="dark"] .rp-app {
   --rp-hero: #1d1a13;
   --rp-danger-bg: rgba(217, 58, 20, 0.18);
   --rp-danger-fg: #ffb49e;
-  --rp-success-bg: #2a261d;
-  --rp-success-fg: #ffffff;
+  --rp-green-soft: rgba(166, 216, 114, 0.13);
+  --rp-green-text: #b8e290;
+  --rp-green-line: #a6d872;
+  --rp-map-land: #1d1a13;
+  --rp-map-road: #38332a;
+  --rp-map-water: #1a2220;
+  --rp-map-park: #232c19;
   --rp-warn-bg: rgba(231, 177, 64, 0.16);
   --rp-warn-fg: #f3cf7d;
   --rp-dock: #1d1a13;
@@ -276,8 +293,8 @@ html[data-rp-theme="dark"] body:has(.rp-app) {
   width: 48px;
   height: 48px;
   border-radius: 999px;
-  background: var(--rp-surface-2);
-  color: var(--rp-text);
+  background: var(--rp-green-soft);
+  color: var(--rp-green-text);
   font-size: 0.95rem;
   font-weight: 600;
   letter-spacing: 0.02em;
@@ -364,7 +381,7 @@ html[data-rp-theme="dark"] body:has(.rp-app) {
 .rp-app .rp-progress-bar {
   height: 100%;
   border-radius: inherit;
-  background: var(--rp-hero-fg);
+  background: var(--rp-green-fill);
   transition: width 400ms var(--rp-ease);
 }
 .rp-app .rp-progress-label {
@@ -572,7 +589,7 @@ html[data-rp-theme="dark"] body:has(.rp-app) {
   height: 52px;
   border-radius: 16px;
   background: var(--rp-raised);
-  color: var(--rp-text);
+  color: var(--rp-green-text);
 }
 .rp-app .rp-category-icon svg {
   width: 24px;
@@ -636,8 +653,13 @@ html[data-rp-theme="dark"] body:has(.rp-app) {
 }
 .rp-app .rp-amount {
   flex-shrink: 0;
+  color: var(--rp-green-text);
   font-weight: 600;
   white-space: nowrap;
+}
+/* A use without a fixed saving: no money to celebrate. */
+.rp-app .rp-amount.plain {
+  color: var(--rp-muted);
 }
 /* Settings-style rows: label, optional value, chevron. */
 .rp-app .rp-menu {
@@ -820,8 +842,8 @@ html[data-rp-theme="dark"] body:has(.rp-app) {
   width: 26px;
   height: 26px;
   border-radius: 999px;
-  background: var(--rp-surface-2);
-  color: var(--rp-text);
+  background: var(--rp-green-soft);
+  color: var(--rp-green-text);
   font-size: 0.8rem;
   font-weight: 600;
 }
@@ -992,6 +1014,74 @@ html[data-rp-theme="dark"] .rp-app .rp-field select {
   text-overflow: ellipsis;
 }
 
+/* ---------- Map placeholder (components/platform/MapPreview.tsx) ---------- */
+/* A drawn outline blurred behind a "Próximamente" note: there is no real map
+   yet. The blur is a static filter on a static image, painted once. */
+.rp-app .rp-map-soon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 220px;
+  aspect-ratio: 16 / 10;
+  max-height: 300px;
+  border-radius: 24px;
+  background: var(--rp-map-land);
+  overflow: hidden;
+  isolation: isolate;
+}
+.rp-app .rp-map-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  filter: blur(3px);
+  transform: scale(1.08);
+  z-index: -2;
+}
+/* Fades the map toward the note so its text always reads. */
+.rp-app .rp-map-soon::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    60% 70% at 50% 50%,
+    color-mix(in srgb, var(--rp-map-land) 80%, transparent),
+    color-mix(in srgb, var(--rp-map-land) 15%, transparent)
+  );
+}
+.rp-app .rp-map-note {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  max-width: 280px;
+  padding: 24px 20px;
+  text-align: center;
+}
+.rp-app .rp-map-note h2 {
+  margin-top: 2px;
+}
+.rp-app .rp-map-note p {
+  color: var(--rp-muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+.rp-app .rp-map-icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  background: var(--rp-raised);
+  color: var(--rp-green-text);
+  box-shadow: var(--rp-shadow);
+}
+.rp-app .rp-map-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
 /* ---------- Benefit detail and codes ---------- */
 .rp-app .rp-detail {
   display: grid;
@@ -1005,7 +1095,7 @@ html[data-rp-theme="dark"] .rp-app .rp-field select {
   gap: 14px;
 }
 .rp-app .rp-detail-hero .rp-category-icon {
-  background: var(--rp-surface);
+  background: var(--rp-green-soft);
 }
 .rp-app .rp-qr {
   display: flex;
