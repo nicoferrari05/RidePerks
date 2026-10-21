@@ -290,12 +290,13 @@ Migrations in `supabase/migrations/`, applied manually in order via the SQL
 Editor (`node scripts/prepare-supabase.mjs` bundles them into
 `artifacts/ACTIVAR_RIDEPERKS.sql`, idempotent). Latest:
 `202610200001_app_features.sql` (notifications, announcements, favorites,
-hours/media, feedback, onboarding, admin metrics). **Apply it in production
-before deploying the code that uses it.** Before it
+hours/media, feedback, onboarding, admin metrics). Before it
 `202610130001_business_pins.sql` (business PINs, `redeemed_via`); before it
 `202609120001_hardening_and_ops.sql` (admin_paused, catalog_live,
 business-owner role check, `rp_business_changes`, payment expiry/credit).
-Confirm with the user that it's applied in production before relying on it.
+**All of these are applied in production** (the user confirmed on October 21,
+2026). Any new migration must be applied in production before the code that
+uses it is pushed; confirm with the user that it was.
 RLS is on everywhere with no anon/authenticated policies; all access goes
 through server code with the service-role key.
 
@@ -334,9 +335,8 @@ Blurred "map coming soon" placeholder in Comercios and soft green accents
 across the platform (`e5a78d6`, pushed). Then the "App features" batch
 (see "Platform state"): welcome, notifications, announcements, favorites,
 search/filters, hours/logo/photos, feedback, receipts, account deletion,
-business chart + CSV, admin metrics. Committed; it needs migration
-`202610200001_app_features.sql` applied in Supabase **before** it is pushed
-(`artifacts/ACTUALIZAR_APP_OCTUBRE.sql` is a copy to paste). `npm test` runs
+business chart + CSV, admin metrics (`7e4cf19`, pushed; its migration
+`202610200001_app_features.sql` is applied in production). `npm test` runs
 49 tests. Earlier in October: business PIN (`256a195`), mobile redesign with
 the dock (`1d17262`), green removed (`54ca745`).
 
