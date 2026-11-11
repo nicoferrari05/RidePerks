@@ -3,6 +3,7 @@ import { randomBytes } from "node:crypto";
 import { currentProfile, rateLimit } from "@/lib/platform/data";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
 import { createYappyPayment, yappyConfig } from "@/lib/payments/yappy";
+import { parsePlan, type PlanId } from "@/lib/payments/yappy-protocol";
 export const runtime = "nodejs";
 export async function POST(request: NextRequest) {
   if (request.headers.get("origin") !== request.nextUrl.origin)
@@ -28,8 +29,14 @@ export async function POST(request: NextRequest) {
       { status: 503 },
     );
   let phone: string;
+  let plan: PlanId;
   try {
     const body = await request.json();
+    // A client that sends no plan only ever offered the monthly one.
+    const parsed = body.plan === undefined ? "monthly" : parsePlan(body.plan);
+    if (!parsed)
+      return NextResponse.json({ error: "Elige un plan." }, { status: 400 });
+    plan = parsed;
     if (body.accepted !== true)
       return NextResponse.json(
         { error: "Acepta el precio y las condiciones del pago." },
@@ -53,6 +60,7 @@ export async function POST(request: NextRequest) {
       p_driver: profile.id,
       p_order: orderId,
       p_domain: config.domain,
+      p_plan: plan,
     });
     if (order.error)
       return NextResponse.json(
@@ -65,7 +73,7 @@ export async function POST(request: NextRequest) {
         { status: 409 },
       );
     // Never retry this external request automatically: a timeout may still create a payable order.
-    const payment = await createYappyPayment(orderId, phone);
+    const payment = await createYappyPayment(orderId, phone, plan);
     const saved = await db
       .from("rp_payment_orders")
       .update({ transaction_id: payment.transactionId })
@@ -101,7 +109,7 @@ export async function GET() {
       .maybeSingle(),
     db
       .from("rp_payment_orders")
-      .select("id,status,created_at,paid_at,amount_cents")
+      .select("id,status,created_at,paid_at,amount_cents,plan")
       .eq("driver_id", profile.id)
       .order("created_at", { ascending: false })
       .limit(12),

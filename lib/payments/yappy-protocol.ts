@@ -1,6 +1,15 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 export const MEMBERSHIP_AMOUNT = "15.00";
 export const MEMBERSHIP_CENTS = 1500;
+// Amounts are fixed again by the database (rp_payment_orders_amount_plan_check).
+export const PLANS = {
+  monthly: { amount: "15.00", cents: 1500, label: "Mensual" },
+  annual: { amount: "150.00", cents: 15000, label: "Anual" },
+} as const;
+export type PlanId = keyof typeof PLANS;
+export function parsePlan(value: unknown): PlanId | null {
+  return value === "monthly" || value === "annual" ? value : null;
+}
 export const YAPPY_API = "https://apipagosbg.bgeneral.cloud";
 export const YAPPY_SCRIPT =
   "https://bt-cdn.yappy.cloud/v1/cdn/web-component-btn-yappy.js";

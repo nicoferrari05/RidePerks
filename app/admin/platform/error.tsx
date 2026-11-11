@@ -20,9 +20,9 @@ export default function ErrorPage({ reset }: { reset: () => void }) {
             </Button>
             <Link
               className={buttonVariants({ variant: "secondary", size: "md" })}
-              href="/admin"
+              href="/admin/more"
             >
-              Ir a la lista de espera
+              Ir a Más
             </Link>
           </div>
         </div>

@@ -2050,3 +2050,389 @@ btn-yappy dialog {
     transition: none !important;
   }
 }
+
+/* Membership plan picker (YappyCheckout): two radio cards side by side. */
+.rp-app .rp-plan-picker {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.rp-app .rp-plan-option {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: var(--rp-raised);
+  box-shadow: inset 0 0 0 1px var(--rp-line);
+  cursor: pointer;
+  transition: box-shadow 160ms var(--rp-ease), transform 160ms var(--rp-ease);
+}
+.rp-app .rp-plan-option:active {
+  transform: scale(0.98);
+}
+.rp-app .rp-plan-option[data-selected] {
+  box-shadow: inset 0 0 0 2px var(--rp-text);
+}
+.rp-app .rp-plan-option:has(input:focus-visible) {
+  outline: 2px solid var(--rp-text);
+  outline-offset: 2px;
+}
+.rp-app .rp-plan-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.rp-app .rp-plan-name {
+  font-size: 0.875rem;
+  color: var(--rp-muted);
+}
+.rp-app .rp-plan-price {
+  font-size: 1.375rem;
+  letter-spacing: -0.02em;
+}
+.rp-app .rp-plan-note {
+  font-size: 0.8125rem;
+  color: var(--rp-green-text);
+}
+
+/* Account setup checklist (components/ui/setup-progress). */
+.rp-app .rp-setup {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+  border-radius: 24px;
+  background: var(--rp-surface);
+}
+.rp-app .rp-setup-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.rp-app .rp-setup-head h2 {
+  font-size: 1.125rem;
+}
+.rp-app .rp-setup-head span {
+  flex-shrink: 0;
+  font-size: 0.8125rem;
+  color: var(--rp-muted);
+  font-variant-numeric: tabular-nums;
+}
+.rp-app .rp-setup-track {
+  background: var(--rp-surface-2);
+}
+.rp-app .rp-setup-bar {
+  background: var(--rp-green-line);
+}
+.rp-app .rp-setup-steps {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rp-app .rp-setup-steps :is(a, div) {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 6px 0;
+  color: var(--rp-muted);
+  text-decoration: none;
+}
+.rp-app .rp-setup-steps a {
+  transition: transform 160ms var(--rp-ease);
+}
+.rp-app .rp-setup-steps a:active {
+  transform: scale(0.98);
+}
+.rp-app .rp-setup-steps svg {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+.rp-app .rp-setup-steps .rp-setup-done {
+  color: var(--rp-green-text);
+}
+.rp-app .rp-setup-steps [data-state="done"] .rp-setup-label {
+  color: var(--rp-text);
+}
+.rp-app .rp-setup-steps [data-state="current"] .rp-setup-label {
+  color: var(--rp-text);
+  font-weight: 600;
+}
+.rp-app .rp-setup-label {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+.rp-app .rp-setup-label small {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--rp-muted);
+}
+.rp-app .rp-setup-go {
+  color: var(--rp-faint);
+}
+
+/* ---------- Admin → Plataforma ---------- */
+.rp-app .rp-admin-head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.rp-app .rp-admin-tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.rp-app .rp-admin-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 16px;
+  border-radius: 20px;
+  background: var(--rp-surface);
+  color: var(--rp-text);
+  text-decoration: none;
+  transition:
+    transform 160ms var(--rp-ease),
+    background-color 160ms var(--rp-ease);
+}
+/* Verificaciones is the default tab and the most frequent job: full width
+   on phones. */
+.rp-app .rp-admin-tile:first-child {
+  grid-column: 1 / -1;
+}
+.rp-app .rp-admin-tile:active {
+  transform: scale(0.97);
+}
+@media (hover: hover) and (pointer: fine) {
+  .rp-app .rp-admin-tile:hover {
+    background: var(--rp-surface-2);
+  }
+}
+.rp-app .rp-admin-tile[aria-current="page"] {
+  background: var(--rp-hero);
+  color: var(--rp-hero-fg);
+}
+.rp-app .rp-admin-tile strong {
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.rp-app .rp-admin-tile-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.rp-app .rp-admin-tile-label i {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--rp-danger);
+}
+.rp-app .rp-admin-tile-hint {
+  font-size: 0.8125rem;
+  color: var(--rp-muted);
+}
+.rp-app .rp-admin-tile[aria-current="page"] .rp-admin-tile-hint {
+  color: var(--rp-hero-muted);
+}
+.rp-app .rp-admin-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 40px;
+}
+.rp-app .rp-admin-section-head h2 {
+  font-size: 1.25rem;
+}
+.rp-app .rp-admin-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 6px 6px 16px;
+  border-radius: 999px;
+  background: var(--rp-surface);
+  color: var(--rp-muted);
+}
+.rp-app .rp-admin-search input:not([type="hidden"]) {
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  border: 0;
+  background: transparent;
+  color: var(--rp-text);
+  font: inherit;
+  outline: none;
+}
+.rp-app .rp-admin-search:focus-within {
+  box-shadow: inset 0 0 0 2px var(--rp-text);
+}
+/* Gray admin surfaces: fields and secondary buttons go white, like .rp-panel. */
+.rp-app :is(.rp-admin-card, .rp-admin-rows, .rp-admin-help) {
+  --muted: var(--rp-raised);
+  --border: var(--rp-raised);
+}
+.rp-app :is(.rp-admin-card, .rp-admin-rows) .rp-field :is(input, select, textarea) {
+  background: var(--rp-raised);
+}
+.rp-app :is(.rp-admin-help, .rp-admin-more) {
+  border-bottom: 0;
+}
+.rp-app :is(.rp-admin-help, .rp-admin-more) > summary {
+  min-height: 44px;
+  font-weight: 600;
+}
+.rp-app .rp-admin-help {
+  padding: 4px 18px;
+  border-radius: 20px;
+  background: var(--rp-surface);
+}
+.rp-app .rp-admin-help[open] {
+  padding-bottom: 18px;
+}
+.rp-app .rp-admin-help .rp-steps {
+  margin-bottom: 10px;
+}
+.rp-app .rp-admin-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 18px;
+  border-radius: 24px;
+  background: var(--rp-surface);
+}
+.rp-app .rp-admin-card > form,
+.rp-app .rp-admin-card > .rp-form {
+  align-self: stretch;
+}
+.rp-app .rp-admin-card-head,
+.rp-app .rp-admin-row-main {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+.rp-app :is(.rp-admin-card-head, .rp-admin-row-main) h3 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+.rp-app :is(.rp-admin-card-head, .rp-admin-row-main) p {
+  margin-top: 2px;
+  color: var(--rp-muted);
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+.rp-app :is(.rp-admin-card-head, .rp-admin-row-main) .rp-badge {
+  flex-shrink: 0;
+}
+.rp-app .rp-admin-message {
+  white-space: pre-line;
+  line-height: 1.5;
+}
+.rp-app .rp-verification-link {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-decoration: none;
+}
+.rp-app .rp-verification-link .rp-verification-preview {
+  margin: 0 0 6px;
+}
+.rp-app .rp-admin-rows {
+  display: flex;
+  flex-direction: column;
+  border-radius: 22px;
+  background: var(--rp-surface);
+  padding: 4px 18px;
+}
+.rp-app .rp-admin-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--rp-line);
+}
+.rp-app .rp-admin-row:last-child {
+  border-bottom: 0;
+}
+.rp-app .rp-admin-row[data-editing] h3::before {
+  content: "Editando · ";
+  color: var(--rp-muted);
+  font-weight: 400;
+}
+.rp-app .rp-admin-row .rp-actions {
+  gap: 4px 16px;
+}
+.rp-app .rp-admin-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8125rem;
+}
+.rp-app .rp-admin-facts li {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--rp-warn-bg);
+  color: var(--rp-warn-fg);
+}
+.rp-app .rp-admin-facts li[data-ok] {
+  background: var(--rp-raised);
+  color: var(--rp-muted);
+}
+.rp-app .rp-admin-more > summary {
+  min-height: 36px;
+  justify-content: flex-start;
+  gap: 10px;
+  font-size: 0.875rem;
+  color: var(--rp-muted);
+}
+.rp-app .rp-admin-id {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  word-break: break-all;
+}
+.rp-app .rp-admin-editor {
+  scroll-margin-top: 16px;
+}
+.rp-app .rp-admin-editor .rp-admin-section-head {
+  margin-bottom: 16px;
+}
+/* Editing on a phone: the form comes first instead of after the list. */
+.rp-app .rp-admin-grid:has(.rp-admin-editor[data-editing]) .rp-admin-editor {
+  order: -1;
+}
+@media (min-width: 640px) {
+  .rp-app .rp-admin-tiles {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .rp-app .rp-admin-tile:first-child {
+    grid-column: auto;
+  }
+}
+@media (min-width: 1000px) {
+  .rp-app .rp-admin-grid:has(.rp-admin-editor[data-editing]) .rp-admin-editor {
+    order: 0;
+  }
+  .rp-app .rp-admin-editor {
+    position: sticky;
+    top: 24px;
+    max-height: calc(100dvh - 48px);
+    overflow-y: auto;
+  }
+}

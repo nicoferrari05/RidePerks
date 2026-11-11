@@ -119,7 +119,7 @@ test("legal pages and offline fallback render", async ({ page, request }) => {
   expect((await manifest.json()).start_url).toBe("/driver/dashboard");
 });
 
-test("landing hero, theme switcher and merchant entry are visible", async ({ page }) => {
+test("landing hero, app screens, pricing and merchant entry are visible", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/");
   await expect(page.getByText("Carlos Rodriguez", { exact: true })).toHaveCount(
@@ -128,8 +128,19 @@ test("landing hero, theme switcher and merchant entry are visible", async ({ pag
   await expect(
     page.getByRole("heading", { level: 1, name: /Tu trabajo rinde/ }),
   ).toBeVisible();
-  for (const label of ["Tema claro", "Tema noche", "Tema atardecer"])
-    await expect(page.getByRole("radio", { name: label }).first()).toBeAttached();
+  // Single light theme: no theme switcher.
+  await expect(page.getByRole("radio", { name: "Tema noche" })).toHaveCount(0);
+  await expect(
+    page.getByRole("img", { name: /Pantalla de inicio de la app/ }),
+  ).toBeVisible();
+  await page.locator("#planes").scrollIntoViewIfNeeded();
+  const pricing = page.locator("#planes");
+  await expect(pricing.getByText("al mes", { exact: true })).toBeVisible();
+  await pricing.getByRole("radio", { name: /Anual/ }).click();
+  await expect(pricing.getByText("al año", { exact: true })).toBeVisible();
+  await expect(
+    pricing.getByRole("link", { name: "Empezar con el plan anual" }),
+  ).toBeVisible();
   await page.screenshot({ path: "artifacts/landing-hero-new.png" });
   await page.locator("#beneficios").scrollIntoViewIfNeeded();
   await page.screenshot({ path: "artifacts/landing-benefits-new.png" });

@@ -89,7 +89,7 @@ Incluye landing con entrada al login, registro sin confirmación por correo, rec
 
 Aplicar antes del código: `supabase/migrations/202609120001_hardening_and_ops.sql` (o regenerar `artifacts/ACTIVAR_RIDEPERKS.sql` con `node scripts/prepare-supabase.mjs`).
 
-- **Catálogo del conductor**: `rp_settings.catalog_live` (por defecto `false`). Se activa desde el interruptor en `/admin/platform`. Oculto, Beneficios y Comercios muestran «Próximamente» y el detalle de beneficio devuelve 404. Los tests live de conductor requieren `catalog_live = true`.
+- **Catálogo del conductor**: `rp_settings.catalog_live` (por defecto `false`). Se activa desde el interruptor en Más → Catálogo (`/admin/more`). Oculto, Beneficios y Comercios muestran «Próximamente» y el detalle de beneficio devuelve 404. Los tests live de conductor requieren `catalog_live = true`.
 - **Pausa de beneficios**: pausar un beneficio desde el admin lo marca `admin_paused`; el comercio no puede reactivarlo.
 - **Cambios de comercio**: nombre, dirección y categoría pasan por revisión en `/admin/reviews`; descripción y teléfono se guardan directo.
 - **Responsable de comercio**: solo cuentas con rol comercio (`rp_save_business` ya no promueve conductores).
@@ -117,4 +117,14 @@ Aplicar antes del código: `supabase/migrations/202610200001_app_features.sql` (
 - Conductores: bienvenida de 3 pasos para cuentas nuevas, notificaciones dentro de la app, favoritos, búsqueda y filtros (abierto ahora, favoritos, categoría), horarios y fotos de comercios, calificación después de cada uso, recibos imprimibles y eliminar la cuenta desde Cuenta.
 - Comercios: horario, logo y hasta 6 fotos en Cuenta; gráfica de usos y descarga CSV en Actividad; notificaciones de sus revisiones.
 - Administración: Más → Métricas y Más → Anuncios (los anuncios requieren la identidad administrativa vinculada).
+- No requiere variables de entorno nuevas.
+
+## Cambios de noviembre 2026 (plan anual, landing y admin)
+
+Aplicar antes del código: `supabase/migrations/202611110001_annual_plan.sql` (copia lista para pegar en `artifacts/ACTUALIZAR_PLAN_ANUAL.sql`, o todo junto con `node scripts/prepare-supabase.mjs`). Es aditiva e idempotente: agrega `plan` a `rp_payment_orders` (las órdenes existentes quedan como `monthly`), fija el monto por plan y reemplaza `rp_create_payment` por una versión con `p_plan` que por defecto es mensual, así que el código anterior sigue funcionando mientras se despliega.
+
+- Plan anual: $150.00 en un solo pago por 12 meses (2 meses gratis frente a $15 × 12). Sin cuotas ni renovación automática. Se elige en Membresía; la regla de renovar solo en los últimos 7 días aplica a ambos planes.
+- Landing solo en tema claro, con capturas de la app y la nueva sección de precios (mensual/anual).
+- Conductores: lista «Configura tu cuenta» en Inicio hasta completar los pasos.
+- Administración: `/admin` abre Plataforma; se quitó la lista de espera del panel. El interruptor del catálogo está en Más.
 - No requiere variables de entorno nuevas.

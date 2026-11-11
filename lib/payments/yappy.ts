@@ -1,5 +1,5 @@
 import "server-only";
-import { YAPPY_API, MEMBERSHIP_AMOUNT } from "./yappy-protocol";
+import { YAPPY_API, PLANS, type PlanId } from "./yappy-protocol";
 export function yappyConfig() {
   const merchantId = process.env.YAPPY_MERCHANT_ID;
   const secret = process.env.YAPPY_SECRET_KEY;
@@ -29,7 +29,11 @@ async function call(path: string, body: object, token?: string) {
     );
   return data.body;
 }
-export async function createYappyPayment(orderId: string, phone: string) {
+export async function createYappyPayment(
+  orderId: string,
+  phone: string,
+  plan: PlanId,
+) {
   const config = yappyConfig();
   if (!config) throw new Error("El pago con Yappy aún no está habilitado.");
   const session = await call("/payments/validate/merchant", {
@@ -52,8 +56,8 @@ export async function createYappyPayment(orderId: string, phone: string) {
       ipnUrl: config.domain + "/api/payments/yappy/ipn",
       discount: "0.00",
       taxes: "0.00",
-      subtotal: MEMBERSHIP_AMOUNT,
-      total: MEMBERSHIP_AMOUNT,
+      subtotal: PLANS[plan].amount,
+      total: PLANS[plan].amount,
     },
     session.token,
   );

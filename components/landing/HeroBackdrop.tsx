@@ -1,23 +1,15 @@
 "use client";
 import GradientWaves from "@/components/GradientWaves";
-import { useLandingTheme } from "./theme";
 
-// Same near-static wave field as before, recolored per theme: bone horizon
-// by day, pitch black at night, dark khaki for "atardecer".
-const PALETTE = {
-  light: { horizon: "#CCE39A", wave: "#3B341F", crest: "#85CB33" },
-  dark: { horizon: "#3B341F", wave: "#100B00", crest: "#85CB33" },
-  dim: { horizon: "#5A5236", wave: "#100B00", crest: "#85CB33" },
-} as const;
-
+// Near-static wave field in the light palette: mint horizon, khaki waves,
+// yellow-green crests.
 export default function HeroBackdrop() {
-  const colors = PALETTE[useLandingTheme()];
   return (
     <div className="pointer-events-none absolute inset-0" aria-hidden="true">
       <GradientWaves
-        horizonColor={colors.horizon}
-        waveColor={colors.wave}
-        crestColor={colors.crest}
+        horizonColor="#CCE39A"
+        waveColor="#3B341F"
+        crestColor="#85CB33"
         speed={0.05}
         amplitude={2.0}
         waveScale={0.5}

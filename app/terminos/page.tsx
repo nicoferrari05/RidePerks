@@ -33,10 +33,12 @@ export default function Page() {
           <div>
             <h2>Membresía y pagos</h2>
             <p className="rp-muted">
-              El registro es gratuito. La membresía cuesta $15.00 por mes, con
-              renovación manual mediante Yappy y sin cargos automáticos. El mes
-              comienza cuando se confirma el pago; una renovación anticipada
-              añade un mes al vencimiento actual. Mientras el acceso gratuito
+              El registro es gratuito. La membresía cuesta $15.00 por mes, o
+              $150.00 por 12 meses en un solo pago (plan anual), con
+              renovación manual mediante Yappy y sin cargos automáticos. El
+              período comienza cuando se confirma el pago; una renovación
+              anticipada se suma al vencimiento actual. El plan anual no se
+              cobra en cuotas ni se renueva solo. Mientras el acceso gratuito
               promocional siga activo, la plataforma no solicita pagos. Consulta
               tu vigencia y las condiciones antes de pagar en Mi membresía. Si
               necesitas ayuda con un cobro, utiliza Ayuda y soporte.

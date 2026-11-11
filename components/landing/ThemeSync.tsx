@@ -1,14 +1,15 @@
 "use client";
 import { useEffect } from "react";
-import { applyTheme, clearTheme, storedTheme } from "./theme";
 
-// Re-applies the stored theme on client-side navigation between landing
-// pages (the inline script only runs on a full load) and removes it when
-// leaving, so the platform and sign-in pages are never tinted.
+// The landing has a single light theme. The attribute on <html> paints the
+// page background mint (globals.css) and is removed when leaving, so the
+// platform and sign-in pages are never tinted.
 export default function ThemeSync() {
   useEffect(() => {
-    applyTheme(storedTheme());
-    return () => clearTheme();
+    document.documentElement.dataset.lpTheme = "light";
+    return () => {
+      delete document.documentElement.dataset.lpTheme;
+    };
   }, []);
   return null;
 }

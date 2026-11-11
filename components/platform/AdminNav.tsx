@@ -5,7 +5,8 @@ import { LayoutGrid, ClipboardCheck, CreditCard, Ellipsis } from "lucide-react";
 import { SpotlightDock, type DockItem } from "@/components/ui/spotlight-dock";
 import { Button } from "@/components/ui/button";
 
-// Four tabs; access management, the waitlist and settings live under Más.
+// Four tabs; metrics, announcements, access, the catalog switch and settings
+// live under Más.
 const items: DockItem[] = [
   { href: "/admin/platform", label: "Plataforma", icon: LayoutGrid },
   { href: "/admin/reviews", label: "Revisiones", icon: ClipboardCheck },
@@ -15,8 +16,6 @@ const items: DockItem[] = [
     label: "Más",
     icon: Ellipsis,
     match: ["/admin/access", "/admin/metrics", "/admin/announcements"],
-    // "/admin" is the waitlist itself, not a prefix of the other pages.
-    exactMatch: ["/admin"],
   },
 ];
 

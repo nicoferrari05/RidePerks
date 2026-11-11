@@ -14,6 +14,7 @@ const migrationFiles = [
   "202609120001_hardening_and_ops.sql",
   "202610130001_business_pins.sql",
   "202610200001_app_features.sql",
+  "202611110001_annual_plan.sql",
 ];
 const migrations = migrationFiles.map((name) =>
   readFileSync(
@@ -1209,5 +1210,56 @@ test("new feature tables and functions are closed to browser roles", async () =>
       /permission denied/,
     );
     await db.exec("reset role");
+  }
+});
+test("the annual plan charges $150 once and grants twelve months; the old call stays monthly", async () => {
+  const f = await fixture();
+  const annual = "ann" + randomUUID().replaceAll("-", "").slice(0, 12);
+  const legacy = "leg" + randomUUID().replaceAll("-", "").slice(0, 12);
+  const domain = "https://www.rideperks.app";
+  await db.exec("update rp_settings set value='false' where key='free_access'");
+  try {
+    await assert.rejects(
+      db.query("select rp_create_payment($1,$2,$3,'weekly')", [f.driver, annual, domain]),
+      /Plan inválido/,
+    );
+    await db.query("select rp_create_payment($1,$2,$3,'annual')", [f.driver, annual, domain]);
+    const order = (
+      await db.query("select plan,amount_cents from rp_payment_orders where id=$1", [annual])
+    ).rows[0];
+    assert.deepEqual(order, { plan: "annual", amount_cents: 15000 });
+    await assert.rejects(
+      db.query("update rp_payment_orders set amount_cents=1500 where id=$1", [annual]),
+      /amount_plan_check/,
+    );
+    await db.query("select rp_apply_payment($1,'E',$2)", [annual, domain]);
+    const paid = (
+      await db.query(
+        "select period_start,period_end from rp_payment_orders where id=$1",
+        [annual],
+      )
+    ).rows[0];
+    const months =
+      (paid.period_end.getUTCFullYear() - paid.period_start.getUTCFullYear()) * 12 +
+      paid.period_end.getUTCMonth() -
+      paid.period_start.getUTCMonth();
+    assert.equal(months, 12);
+    // A year of access cannot be renewed until its last seven days.
+    await assert.rejects(
+      db.query("select rp_create_payment($1,$2,$3)", [f.driver, legacy, domain]),
+      /últimos 7 días/,
+    );
+    await db.query(
+      "update rp_memberships set valid_until=now()+interval '2 days' where driver_id=$1",
+      [f.driver],
+    );
+    await db.query("select rp_create_payment($1,$2,$3)", [f.driver, legacy, domain]);
+    assert.deepEqual(
+      (await db.query("select plan,amount_cents from rp_payment_orders where id=$1", [legacy]))
+        .rows[0],
+      { plan: "monthly", amount_cents: 1500 },
+    );
+  } finally {
+    await db.exec("update rp_settings set value='true' where key='free_access'");
   }
 });

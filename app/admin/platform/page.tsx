@@ -1,33 +1,29 @@
-import { ResolveSupport } from "@/components/platform/SupportForm";
-import Link from "next/link";
-import { requireAdmin, catalogLive } from "@/lib/platform/data";
+import { requireAdmin } from "@/lib/platform/data";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
-import { Heading, Empty } from "@/components/platform/ui";
 import AdminShell from "@/components/platform/AdminShell";
 import {
-  BusinessForm,
-  BenefitForm,
-  ToggleForm,
-  ReviewForm,
-  DriverStatusForm,
-  CloseProfileForm,
-  CatalogToggle,
-  BusinessPinForm,
-} from "@/components/platform/AdminForms";
+  AdminPlatformView,
+  PLATFORM_TABS,
+  type PlatformTab,
+  type SupportRow,
+} from "@/components/platform/admin/PlatformView";
 import {
   type Business,
   type Benefit,
   type Profile,
   type Verification,
-  statuses,
-  dateLabel,
   platforms,
 } from "@/lib/platform/types";
-import { Button } from "@/components/ui/button";
-import { buttonVariants } from "@/components/ui/button-variants";
 export const metadata = {
-  title: "Administrar plataforma · RidePerks",
+  title: "Plataforma · RidePerks Admin",
   robots: { index: false, follow: false },
+};
+const TABLES: Record<PlatformTab, string> = {
+  verifications: "rp_verifications",
+  support: "rp_support_requests",
+  drivers: "rp_profiles",
+  businesses: "rp_businesses",
+  benefits: "rp_benefits",
 };
 export default async function Page({
   searchParams,
@@ -41,30 +37,17 @@ export default async function Page({
 }) {
   await requireAdmin();
   const params = await searchParams;
-  const tab = [
-    "benefits",
-    "businesses",
-    "drivers",
-    "verifications",
-    "support",
-  ].includes(params.tab || "")
-    ? params.tab!
+  const tab: PlatformTab = (PLATFORM_TABS as readonly string[]).includes(
+    params.tab || "",
+  )
+    ? (params.tab as PlatformTab)
     : "verifications";
   const page = Math.max(
     0,
     Math.min(10000, Number.parseInt(params.page || "0") || 0),
   );
   const db = getSupabaseAdmin();
-  const table =
-    tab === "benefits"
-      ? "rp_benefits"
-      : tab === "businesses"
-        ? "rp_businesses"
-        : tab === "drivers"
-          ? "rp_profiles"
-          : tab === "support"
-            ? "rp_support_requests"
-            : "rp_verifications";
+  const table = TABLES[tab];
   let query = db
     .from(table)
     .select("*", { count: "exact" })
@@ -77,17 +60,25 @@ export default async function Page({
     query = /^[0-9a-f-]{36}$/i.test(search)
       ? query.eq("id", search)
       : query.ilike("full_name", "%" + search + "%");
-  const result = await query;
+  const head = { count: "exact" as const, head: true };
+  const [result, shops, ...countResults] = await Promise.all([
+    query,
+    db.from("rp_businesses").select("id,name").order("name").limit(500),
+    db.from("rp_verifications").select("id", head).eq("status", "pending"),
+    db.from("rp_support_requests").select("id", head).eq("status", "open"),
+    db.from("rp_profiles").select("id", head),
+    db.from("rp_businesses").select("id", head),
+    db.from("rp_benefits").select("id", head),
+  ]);
   if (result.error)
     throw new Error(
       "No pudimos cargar la plataforma. Comprueba la migración de Supabase.",
     );
-  const shops = await db
-    .from("rp_businesses")
-    .select("id,name")
-    .order("name")
-    .limit(500);
   if (shops.error) throw new Error("No pudimos cargar los comercios.");
+  const [verifications, support, drivers, businesses, benefits] =
+    countResults.map((r) => r.count || 0);
+  const counts = { verifications, support, drivers, businesses, benefits };
+
   let edit: Business | Benefit | undefined;
   if (
     params.edit &&
@@ -105,37 +96,36 @@ export default async function Page({
     void pin_hash;
     edit = row.data ? (rest as Business | Benefit) : undefined;
   }
-  let accountOptions: {
+
+  let accounts: {
     id: string;
     full_name: string;
     phone: string;
     role: string;
   }[] = [];
   if (tab === "businesses") {
-    const accounts = await db
+    const list = await db
       .from("rp_profiles")
       .select("id,full_name,phone,role")
       .eq("role", "business")
       .order("full_name")
       .limit(500);
-    if (accounts.error)
+    if (list.error)
       throw new Error("No pudimos cargar las cuentas responsables.");
-    accountOptions = accounts.data || [];
+    accounts = list.data || [];
     const owner = (edit as Business | undefined)?.owner_user_id;
-    if (owner && !accountOptions.some((account) => account.id === owner)) {
+    if (owner && !accounts.some((account) => account.id === owner)) {
       const current = await db
         .from("rp_profiles")
         .select("id,full_name,phone,role")
         .eq("id", owner)
         .maybeSingle();
-      if (current.data) accountOptions.push(current.data);
+      if (current.data) accounts.push(current.data);
     }
   }
+
   const rows = result.data || [];
-  const contacts = new Map<
-    string,
-    { full_name: string; phone: string | null }
-  >();
+  let supportRows: SupportRow[] = [];
   if (tab === "support" && rows.length) {
     const people = await db
       .from("rp_profiles")
@@ -144,16 +134,12 @@ export default async function Page({
         "id",
         rows.map((r) => r.driver_id),
       );
-    for (const person of people.data || []) contacts.set(person.id, person);
+    const contacts = new Map(
+      (people.data || []).map((person) => [person.id, person]),
+    );
+    supportRows = rows.map((r) => ({ ...r, contact: contacts.get(r.driver_id) }));
   }
-  const whatsapp = (phone: string | null | undefined, text: string) =>
-    phone
-      ? "https://wa.me/" +
-        phone.replace(/\D/g, "") +
-        "?text=" +
-        encodeURIComponent(text)
-      : null;
-  const catalog = await catalogLive();
+
   const verificationRows =
     tab === "verifications"
       ? await Promise.all(
@@ -169,7 +155,8 @@ export default async function Page({
                 .single(),
             ]);
             return {
-              ...v,
+              id: v.id,
+              created_at: v.created_at,
               name: p.data?.full_name || "Conductor",
               phone: (p.data?.phone as string | null) ?? null,
               platform: p.data?.platform
@@ -180,347 +167,24 @@ export default async function Page({
           }),
         )
       : [];
+
   return (
     <AdminShell>
-      <Heading title="Tu plataforma, al día">
-        Gestiona los aliados, beneficios y verificaciones de RidePerks.
-      </Heading>
-      <CatalogToggle live={catalog} />
-      {tab === "drivers" && (
-        <form className="rp-filters">
-          <input type="hidden" name="tab" value="drivers" />
-          <div className="rp-field">
-            <label htmlFor="q">Buscar por nombre o ID de cuenta</label>
-            <input name="q" id="q" defaultValue={search} maxLength={100} />
-          </div>
-          <Button type="submit" size="lg">
-            Buscar cuenta
-          </Button>
-        </form>
-      )}
-      <nav className="rp-subnav" aria-label="Administración">
-        {[
-          ["verifications", "Verificaciones"],
-          ["drivers", "Cuentas"],
-          ["businesses", "Comercios"],
-          ["benefits", "Beneficios"],
-          ["support", "Ayuda"],
-        ].map(([v, l]) => (
-          <Link
-            key={v}
-            href={"/admin/platform?tab=" + v}
-            aria-current={tab === v ? "page" : undefined}
-          >
-            {l}
-          </Link>
-        ))}
-      </nav>
-      {tab === "verifications" && (
-        <section className="rp-panel">
-          <h2>Verificación manual de conductores</h2>
-          <ol className="rp-steps">
-            <li>
-              Abre la captura y comprueba que corresponde al perfil de una app
-              de conductores.
-            </li>
-            <li>Compara el nombre y la plataforma con la cuenta registrada.</li>
-            <li>
-              Aprueba la solicitud o pide una corrección con un mensaje claro.
-            </li>
-          </ol>
-          <p className="rp-muted">
-            Subir una imagen no aprueba la cuenta automáticamente. Solo después
-            de tu aprobación podrá generar códigos de beneficio.
-          </p>
-        </section>
-      )}
-      <div
-        className={
-          tab === "benefits" || tab === "businesses"
-            ? "rp-admin-grid"
-            : "rp-stack"
-        }
-      >
-        <section className="rp-stack">
-          {!rows.length && (
-            <Empty
-              title={
-                tab === "verifications"
-                  ? "Sin verificaciones pendientes"
-                  : "Todavía no hay registros"
-              }
-            >
-              <p>
-                {tab === "verifications"
-                  ? "Las nuevas solicitudes de conductores aparecerán aquí."
-                  : "Agrega la información confirmada para publicarla en la plataforma."}
-              </p>
-            </Empty>
-          )}
-          {tab === "businesses" &&
-            (rows as Business[]).map((b) => (
-              <article className="rp-panel" key={b.id}>
-                <h2>{b.name}</h2>
-                <p className="rp-muted mt-2">{b.address}</p>
-                <p className="rp-muted">
-                  {b.owner_user_id
-                    ? "Cuenta del comercio vinculada"
-                    : "Falta vincular la cuenta del comercio"}
-                </p>
-                <p className="rp-muted">
-                  {b.pin_set_at
-                    ? "PIN de escaneo configurado"
-                    : "Sin PIN de escaneo"}
-                </p>
-                <div className="rp-actions mt-4">
-                  <Link
-                    className="rp-text-link"
-                    href={"/admin/platform?tab=businesses&edit=" + b.id}
-                  >
-                    Editar comercio
-                  </Link>
-                  <ToggleForm
-                    table="rp_businesses"
-                    id={b.id}
-                    active={b.is_active}
-                  />
-                </div>
-              </article>
-            ))}
-          {tab === "benefits" &&
-            (rows as Benefit[]).map((b) => (
-              <article className="rp-panel" key={b.id}>
-                <h2>{b.title}</h2>
-                <p className="rp-muted mt-2">{b.discount_label}</p>
-                <span
-                  className={"rp-badge " + (b.is_active ? "good" : "pending")}
-                >
-                  {b.is_active ? "Publicado" : "Pausado"}
-                </span>
-                <div className="rp-actions mt-4">
-                  <Link
-                    className="rp-text-link"
-                    href={"/admin/platform?tab=benefits&edit=" + b.id}
-                  >
-                    Editar beneficio
-                  </Link>
-                  <ToggleForm
-                    table="rp_benefits"
-                    id={b.id}
-                    active={b.is_active}
-                  />
-                </div>
-              </article>
-            ))}
-          {tab === "drivers" &&
-            (rows as Profile[]).map((p) => (
-              <article className="rp-panel" key={p.id}>
-                <div className="rp-heading">
-                  <h2>{p.full_name || "Cuenta sin nombre"}</h2>
-                  <span className="rp-badge">
-                    {p.closed_at
-                      ? "Cuenta cerrada"
-                      : p.role === "business"
-                        ? "Comercio"
-                        : statuses[p.status]}
-                  </span>
-                </div>
-                <p className="rp-muted mt-2">
-                  {p.phone} · {p.platform}
-                </p>
-                <p className="rp-muted break-all my-3">ID de cuenta: {p.id}</p>
-                {p.role === "driver" && !p.closed_at && (
-                  <>
-                    <Link
-                      className="rp-text-link"
-                      href={"/admin/access?driver=" + p.id}
-                    >
-                      Administrar membresía y acceso →
-                    </Link>
-                    <DriverStatusForm
-                      id={p.id}
-                      suspended={p.status === "suspended"}
-                    />
-                  </>
-                )}
-                {!p.closed_at && <CloseProfileForm id={p.id} />}
-              </article>
-            ))}
-          {tab === "support" &&
-            rows.map((r) => (
-              <article className="rp-panel" key={r.id}>
-                <h2>
-                  {
-                    (
-                      {
-                        benefit: "Beneficio",
-                        account: "Cuenta",
-                        privacy: "Datos personales",
-                        delete: "Solicitud de eliminación",
-                      } as Record<string, string>
-                    )[r.topic]
-                  }
-                </h2>
-                {(() => {
-                  const person = contacts.get(r.driver_id);
-                  const link = whatsapp(
-                    person?.phone,
-                    "Hola " +
-                      (person?.full_name.split(" ")[0] || "") +
-                      ", te escribimos de RidePerks sobre tu solicitud de ayuda.",
-                  );
-                  return (
-                    <p className="rp-muted mt-2">
-                      {person?.full_name || "Cuenta sin nombre"}
-                      {person?.phone ? " · " + person.phone : ""}{" "}
-                      {link && (
-                        <a
-                          className="rp-text-link"
-                          href={link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          Escribir por WhatsApp ↗
-                        </a>
-                      )}
-                    </p>
-                  );
-                })()}
-                <p className="rp-muted break-all mt-2">
-                  Cuenta:{" "}
-                  <Link
-                    className="rp-text-link"
-                    href={"/admin/platform?tab=drivers&q=" + r.driver_id}
-                  >
-                    {r.driver_id}
-                  </Link>
-                </p>
-                <p className="my-4 whitespace-pre-line">{r.message}</p>
-                <p className="rp-muted mb-4">
-                  Busca el ID en Cuentas para contactar por WhatsApp. Resolver
-                  esta solicitud no elimina datos automáticamente.
-                </p>
-                <ResolveSupport id={r.id} />
-              </article>
-            ))}
-          {verificationRows.map((v) => (
-            <article className="rp-panel" key={v.id}>
-              <h2>{v.name}</h2>
-              <p className="rp-muted mb-3">
-                {v.platform} · Enviada el {dateLabel(v.created_at)}
-              </p>
-              {v.url && (
-                // The private signed URL must not be cached by the public image optimizer.
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={v.url}
-                  alt={"Captura del perfil de " + v.name}
-                  className="rp-verification-preview"
-                />
-              )}
-              {v.url ? (
-                <a
-                  className="rp-text-link"
-                  href={v.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Abrir imagen privada (enlace válido 5 min) ↗
-                </a>
-              ) : (
-                <p className="rp-error">
-                  No pudimos abrir la imagen. Recarga la página antes de
-                  revisar.
-                </p>
-              )}
-              {whatsapp(
-                v.phone,
-                "Hola " +
-                  v.name.split(" ")[0] +
-                  ", te escribimos de RidePerks sobre la verificación de tu cuenta.",
-              ) && (
-                <a
-                  className="rp-text-link"
-                  href={whatsapp(
-                    v.phone,
-                    "Hola " +
-                      v.name.split(" ")[0] +
-                      ", te escribimos de RidePerks sobre la verificación de tu cuenta.",
-                  )!}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Contactar por WhatsApp ↗
-                </a>
-              )}
-              {v.url && <ReviewForm id={v.id} />}
-            </article>
-          ))}
-          <div className="rp-actions">
-            {page > 0 && (
-              <Link
-                className={buttonVariants({ variant: "secondary", size: "md" })}
-                href={"/admin/platform?tab=" + tab + "&page=" + (page - 1)}
-              >
-                Anterior
-              </Link>
-            )}
-            {(result.count || 0) > (page + 1) * 50 && (
-              <Link
-                className={buttonVariants({ variant: "secondary", size: "md" })}
-                href={"/admin/platform?tab=" + tab + "&page=" + (page + 1)}
-              >
-                Siguiente
-              </Link>
-            )}
-          </div>
-        </section>
-        {(tab === "businesses" || tab === "benefits") && (
-          <aside className="rp-panel">
-            <h2 className="mb-5">
-              {edit ? "Editar" : "Agregar"}{" "}
-              {tab === "businesses" ? "comercio" : "beneficio"}
-            </h2>
-            {edit && (
-              <Link
-                className="rp-text-link mb-4"
-                href={"/admin/platform?tab=" + tab}
-              >
-                Agregar otro →
-              </Link>
-            )}
-            {tab === "businesses" ? (
-              <>
-                <BusinessForm
-                  key={edit?.id || "new"}
-                  business={edit as Business | undefined}
-                  accounts={accountOptions}
-                />
-                {edit ? (
-                  <div className="mt-8">
-                    <BusinessPinForm
-                      key={edit.id}
-                      id={edit.id}
-                      pinSetAt={(edit as Business).pin_set_at || null}
-                    />
-                  </div>
-                ) : (
-                  <p className="rp-muted mt-6">
-                    Guarda el comercio y ábrelo con «Editar comercio» para
-                    asignarle un PIN de escaneo.
-                  </p>
-                )}
-              </>
-            ) : (
-              <BenefitForm
-                key={edit?.id || "new"}
-                businesses={shops.data || []}
-                benefit={edit as Benefit | undefined}
-              />
-            )}
-          </aside>
-        )}
-      </div>
+      <AdminPlatformView
+        tab={tab}
+        counts={counts}
+        page={page}
+        total={result.count || 0}
+        search={search}
+        businesses={tab === "businesses" ? (rows as Business[]) : []}
+        benefits={tab === "benefits" ? (rows as Benefit[]) : []}
+        drivers={tab === "drivers" ? (rows as Profile[]) : []}
+        support={supportRows}
+        verifications={verificationRows}
+        edit={edit}
+        accounts={accounts}
+        shops={shops.data || []}
+      />
     </AdminShell>
   );
 }

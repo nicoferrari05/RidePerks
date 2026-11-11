@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { InstagramIcon } from "@/components/icons";
 import LogoMark from "@/components/LogoMark";
-import ThemeToggle from "@/components/landing/ThemeToggle";
 
 const COLUMNS = [
   {
@@ -9,6 +8,7 @@ const COLUMNS = [
     links: [
       { label: "Beneficios", href: "/#beneficios" },
       { label: "Cómo funciona", href: "/#como-funciona" },
+      { label: "La app", href: "/#app" },
       { label: "Planes", href: "/#planes" },
       { label: "Nosotros", href: "/about" },
     ],
@@ -69,13 +69,13 @@ export default function Footer() {
             ))}
           </div>
         </div>
-        <div className="mx-auto mt-10 flex sm:mt-14 max-w-7xl flex-col-reverse items-start justify-between gap-6 border-t border-lp-band-line pt-6 sm:flex-row sm:items-center">
+        <div className="mx-auto mt-10 flex max-w-7xl flex-col items-start justify-between gap-3 border-t border-lp-band-line pt-6 sm:mt-14 sm:flex-row sm:items-center">
           <p className="font-mono text-xs tracking-wide text-lp-band-muted">
             © 2026 RIDEPERKS · PANAMÁ
           </p>
-          <div className="lp-footer-switch">
-            <ThemeToggle />
-          </div>
+          <p className="font-mono text-xs tracking-wide text-lp-band-muted">
+            HECHO PARA QUIENES MANEJAN
+          </p>
         </div>
       </div>
     </footer>

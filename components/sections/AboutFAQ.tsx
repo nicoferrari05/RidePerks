@@ -3,7 +3,7 @@ import { Plus } from "lucide-react";
 const QUESTIONS = [
   {
     q: "¿Cuánto cuesta?",
-    a: "Crear la cuenta es gratis. La membresía cuesta $15 al mes y se paga con Yappy. Tú decides cuándo renovar; no hay cargos automáticos.",
+    a: "Crear la cuenta es gratis. La membresía cuesta $15 al mes, o $150 por un año en un solo pago, y se paga con Yappy. Tú decides cuándo renovar; no hay cargos automáticos.",
   },
   {
     q: "¿Qué necesito para usar los beneficios?",

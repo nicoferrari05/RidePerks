@@ -11,6 +11,7 @@ const migrations = [
   "202609120001_hardening_and_ops.sql",
   "202610130001_business_pins.sql",
   "202610200001_app_features.sql",
+  "202611110001_annual_plan.sql",
 ];
 const parts = await Promise.all(
   migrations.map(

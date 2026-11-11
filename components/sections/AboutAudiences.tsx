@@ -22,7 +22,7 @@ const GROUPS = [
       },
       {
         title: "Pagas cuando quieres",
-        copy: "$15 al mes con Yappy. La renovación es manual: no hay cargos automáticos.",
+        copy: "$15 al mes o $150 al año (2 meses gratis) con Yappy. La renovación es manual: no hay cargos automáticos.",
       },
       {
         title: "Un club verificado",

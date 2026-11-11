@@ -17,7 +17,11 @@ export function MembershipView({
   /** The Yappy checkout, or null when payments are switched off. */
   checkout: React.ReactNode;
   /** Paid orders; listed here when the checkout (which lists them) is hidden. */
-  receipts?: { id: string; paid_at: string | null }[];
+  receipts?: {
+    id: string;
+    paid_at: string | null;
+    amount_cents?: number;
+  }[];
 }) {
   const blocked = state.status !== "enabled";
   const showsCheckout =
@@ -33,8 +37,8 @@ export function MembershipView({
         <p className="rp-hero-label">Membresía RidePerks</p>
         <p className="rp-hero-value">$15</p>
         <p className="rp-hero-label">
-          al mes · un mes desde que confirmas el pago. Renovación manual con
-          Yappy, sin cargos automáticos.
+          al mes, o $150 por un año en un solo pago (2 meses gratis).
+          Renovación manual con Yappy, sin cargos automáticos.
         </p>
       </section>
       {blocked ? (
@@ -81,7 +85,9 @@ export function MembershipView({
               <MenuLink
                 key={r.id}
                 href={"/driver/membership/receipt/" + r.id}
-                label={"Pago de $15.00"}
+                label={
+                  "Pago de $" + ((r.amount_cents ?? 1500) / 100).toFixed(2)
+                }
                 value={r.paid_at ? dateLabel(r.paid_at) : r.id}
               />
             ))}
@@ -89,7 +95,7 @@ export function MembershipView({
         </section>
       )}
       <p className="rp-muted">
-        Si renuevas antes del vencimiento, el mes nuevo se suma al tiempo que te
+        Si renuevas antes del vencimiento, el tiempo nuevo se suma al que te
         queda. Cada beneficio mantiene sus condiciones y límites.
       </p>
     </div>
@@ -177,7 +183,7 @@ const faq = [
   ],
   [
     "¿Cuánto cuesta RidePerks?",
-    "El registro es gratis y la membresía cuesta $15 al mes. Cada renovación se confirma con Yappy, sin cargos automáticos.",
+    "El registro es gratis. La membresía cuesta $15 al mes, o $150 por un año en un solo pago. Cada pago se confirma con Yappy, sin cargos automáticos.",
   ],
   [
     "¿No aparece mi ahorro?",

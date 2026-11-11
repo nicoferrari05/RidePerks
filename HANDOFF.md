@@ -13,7 +13,8 @@ RidePerks is a benefits club for gig drivers (Uber, InDrive, PedidosYa) in
 Panama. It negotiates real discounts with local businesses (fuel, food,
 maintenance, health) so a driver's existing spending goes further. It's a
 three-sided platform: drivers redeem benefits, businesses honor them, and
-RidePerks runs a paid membership ($15/month, Yappy, manual renewal) on top.
+RidePerks runs a paid membership on top: $15/month, or $150 once for 12
+months (annual plan, "2 meses gratis"), both via Yappy with manual renewal.
 
 ## Before you touch anything
 
@@ -27,8 +28,8 @@ RidePerks runs a paid membership ($15/month, Yappy, manual renewal) on top.
 - The local Vercel CLI is logged in as `giancoferrari`, which does **not** have
   access to that team, so env vars are set by the user in the dashboard.
 - Before every commit: `npx tsc --noEmit`, `npm run lint`, `npm test`
-  (41 tests, most of them on PGlite), `npm run build`. With a server on :3100,
-  `npx playwright test` (11 public e2e tests).
+  (50 tests, most of them on PGlite), `npm run build`. With a server on :3100
+  (or `TEST_BASE_URL`), `npx playwright test` (12 public e2e tests).
 - The user writes in Spanish (Latin American, tuteo, never voseo). All UI copy
   is Spanish with tuteo.
 - `AGENTS.md`: this Next.js (16) has breaking changes vs. training data
@@ -78,13 +79,12 @@ Curves are Tailwind tokens in `app/globals.css` (`ease-snappy`, `ease-move`,
 ## Three styling systems (don't cross them by accident)
 
 1. **Landing** (`/`, `/about`) — Tailwind + CSS variables `--lp-*` scoped to
-   `.lp` (see `components/landing/LandingShell.tsx`). Three themes via
-   `html[data-lp-theme="light|dark|dim"]`, chosen with the liquid-glass
-   switcher (`components/ui/apple-liquid-glass-switcher.tsx`, CSS-only glass;
-   the original 21st.dev SVG filter was dropped). Theme is stored in
-   `localStorage` `rp_lp_theme`, applied pre-paint by an inline script, and
-   cleared when leaving the landing (`ThemeSync`). Tokens live in
-   `app/globals.css`; use `bg-lp-bg`, `text-lp-fg`, `bg-lp-accent`, etc.
+   `.lp` (see `components/landing/LandingShell.tsx`). **Light only** (the
+   user removed the theme switcher and the dark/dim themes on November 11,
+   2026). `ThemeSync` sets `html[data-lp-theme="light"]` (mint body
+   background for overscroll) and removes it when leaving the landing.
+   Tokens live in `app/globals.css`; use `bg-lp-bg`, `text-lp-fg`,
+   `bg-lp-accent`, etc.
 2. **Auth screens** (`/login`, `/register`, `/recover`, business login/register,
    `/admin/login`, the `/pin` entry) — `components/ui/sign-in.tsx` `AuthShell`
    with class `.rp-auth`, which re-points the shadcn-style Tailwind tokens to
@@ -157,8 +157,24 @@ Curves are Tailwind tokens in `app/globals.css` (`ease-snappy`, `ease-move`,
 ## Landing structure
 
 `app/page.tsx`: Splash (first visit per session; text logo on black; the hero
-entrance animation waits for it via `:has()`), Nav, Hero, Benefits,
-Manifesto, HowItWorks, Pricing, JoinCTA (`#unete`), Footer, MobileCTA.
+entrance animation waits for it via `:has()`), Nav, Hero (with the app's
+home screen in a phone and two floating cards), Marquee, Benefits,
+HowItWorks, AppShowcase (`#app`, four real screens), SavingsBand (dark band
+with the notification screen), Manifesto, Pricing, JoinCTA (`#unete`),
+Footer, MobileCTA.
+
+- **App screenshots**: `public/landing/app-*.png` (1170×2532, supplied by the
+  user in `artifacts/capturas-landing/pantallas`), shown with
+  `components/landing/PhoneFrame.tsx` (next/image in a black bezel). The
+  businesses and amounts in them are examples; AppShowcase says so in a
+  note under the screens. Keep that note if the screens change.
+- **Pricing** (`components/ui/pricing-section.tsx`, adapted from a 21st.dev
+  pricing-section-3 the user supplied): Mensual/Anual switch, NumberFlow
+  price, two plans (Gratis, Membresía). Helpers `ui/card`,
+  `ui/vertical-cut-reveal`, `ui/timeline-animation` use `framer-motion`
+  (no separate `motion` package) and render statically with reduced motion.
+  "¿Ya tienes cuenta?" links to `/driver/membership?plan=monthly|annual`,
+  which preselects the plan.
 
 - `components/Nav.tsx` (client): logo, pill nav whose shaded indicator slides
   to the clicked link (plus scroll-spy on `/`), "Comercios", theme switcher,
@@ -236,7 +252,7 @@ Manifesto, HowItWorks, Pricing, JoinCTA (`#unete`), Footer, MobileCTA.
   and pins, blurred, with a "Próximamente" note. There is no real map yet.
 - **Catalog is hidden**: `rp_settings.catalog_live = false`. Drivers see
   "Próximamente" in Benefits/Comercios and benefit detail 404s. Toggle it in
-  `/admin/platform` when approved benefits exist. Live e2e tests
+  `/admin/more` (Más → Catálogo) when approved benefits exist. Live e2e tests
   (`tests/live/*`) need it `true`.
 - **Business**: scanner (preview then confirm), staff invites, benefit
   proposals reviewed in `/admin/reviews`, name/address/category changes also
@@ -256,11 +272,31 @@ Manifesto, HowItWorks, Pricing, JoinCTA (`#unete`), Footer, MobileCTA.
   `app/api/pin/redeem`, `rp_redeem_token_pin` (migration
   `202610130001_business_pins.sql`). Rate limits: 10 PIN attempts per IP and
   200 overall per 10 min.
-- **Admin**: shared `ADMIN_PASSWORD` cookie for `/admin/*`, plus a personal
+- **Driver setup checklist**: Inicio shows `components/ui/setup-progress.tsx`
+  (adapted from the c-progress-7 component the user supplied, on Base UI's
+  Progress, not Radix) until every step is done: cuenta, perfil,
+  verificación (shows "En revisión" while pending), membresía, primer
+  beneficio. Steps come from `driverSetupSteps()` in `driver/views.tsx`.
+  It is a server component: never pass functions to `Progress` (client).
+- **Admin**: `/admin` redirects to `/admin/platform` (the waitlist screen and
+  its `/api/admin/entries|settings` routes were removed on November 11,
+  2026; `/api/waitlist` and the table remain). Plataforma is
+  `components/platform/admin/PlatformView.tsx` fed by the page: count tiles
+  that double as tabs (Verificaciones, Ayuda, Cuentas, Comercios,
+  Beneficios; red dot when something waits), compact rows, actions folded
+  into "Acciones", the add/edit form beside the list on wide screens and
+  first on phones while editing. The catalog switch moved to Más → Catálogo.
+  Shared `ADMIN_PASSWORD` cookie for `/admin/*`, plus a personal
   identity in `rp_admin_users` (self-enroll at `/admin/access`) required for
   access grants, benefit/business reviews and manual payment credit. As of
   the last session nobody had enrolled yet; remind the user.
-- **Payments**: `free_access = false` (billing live). Yappy's `<btn-yappy>` is
+- **Payments**: `free_access = false` (billing live). Two plans
+  (`rp_payment_orders.plan`, migration `202611110001_annual_plan.sql`):
+  `monthly` $15.00 → 1 month, `annual` $150.00 → 12 months, one payment, no
+  auto-renewal. Amounts are fixed per plan by a DB check and by `PLANS` in
+  `lib/payments/yappy-protocol.ts`; `rp_create_payment` takes `p_plan`
+  (defaults to monthly). The 7-day renewal window applies to both. The
+  checkout (`YappyCheckout`) has a plan picker. Yappy's `<btn-yappy>` is
   an Angular element **without shadow DOM**, so our global CSS (Tailwind
   preflight) reaches its markup. Its payment `<dialog>` relies on the
   browser's `margin: auto` to center; `platform.css` restores it with
@@ -289,6 +325,9 @@ Manifesto, HowItWorks, Pricing, JoinCTA (`#unete`), Footer, MobileCTA.
 Migrations in `supabase/migrations/`, applied manually in order via the SQL
 Editor (`node scripts/prepare-supabase.mjs` bundles them into
 `artifacts/ACTIVAR_RIDEPERKS.sql`, idempotent). Latest:
+`202611110001_annual_plan.sql` (annual plan; replaces the 3-argument
+`rp_create_payment` with a 4-argument one whose plan defaults to monthly,
+so code deployed before it keeps working). Before it
 `202610200001_app_features.sql` (notifications, announcements, favorites,
 hours/media, feedback, onboarding, admin metrics). Before it
 `202610130001_business_pins.sql` (business PINs, `redeemed_via`); before it
@@ -329,7 +368,16 @@ pushing. A pathspec for an already-deleted file makes `git add` abort
 entirely; that once pushed a commit containing only a deletion, which broke
 the share image until a follow-up commit.
 
-## Last session (October 20, 2026)
+## Last session (November 11, 2026)
+
+Landing: theme switcher removed (light only), app screenshots (hero phone,
+"Todo desde tu teléfono", dark savings band), marquee, new pricing with
+monthly/annual. Annual plan end to end (migration, Yappy order, checkout
+picker, receipts, admin payments, terms/FAQ copy). Driver setup checklist on
+Inicio. Admin: waitlist removed, opens on Plataforma, which was reorganized
+around count tiles. `npm test` runs 50 tests; `npx playwright test` 12.
+
+## Session of October 20, 2026
 
 Blurred "map coming soon" placeholder in Comercios and soft green accents
 across the platform (`e5a78d6`, pushed). Then the "App features" batch

@@ -19,7 +19,7 @@ export default async function Page({
   if (!/^[a-zA-Z0-9]{1,15}$/.test(id)) notFound();
   const { data: o, error } = await getSupabaseAdmin()
     .from("rp_payment_orders")
-    .select("id,amount_cents,paid_at,period_start,period_end,transaction_id")
+    .select("id,amount_cents,plan,paid_at,period_start,period_end,transaction_id")
     .eq("id", id)
     .eq("driver_id", p.id)
     .eq("status", "paid")
@@ -40,7 +40,9 @@ export default async function Page({
       "Período",
       o.period_start && o.period_end
         ? dateLabel(o.period_start) + " – " + dateLabel(o.period_end)
-        : "1 mes",
+        : o.plan === "annual"
+          ? "12 meses"
+          : "1 mes",
     ],
   ];
   return (
@@ -59,7 +61,10 @@ export default async function Page({
         </header>
         <h2>Recibo de pago</h2>
         <p className="rp-receipt-total">{money(o.amount_cents / 100)}</p>
-        <p className="rp-muted">Membresía RidePerks · 1 mes</p>
+        <p className="rp-muted">
+          Membresía RidePerks ·{" "}
+          {o.plan === "annual" ? "plan anual, 12 meses" : "1 mes"}
+        </p>
         <dl>
           {rows.map(([label, value]) => (
             <div key={label}>

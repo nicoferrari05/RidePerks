@@ -14,7 +14,7 @@ export default async function Page() {
   const { data, error } = await db
     .from("rp_payment_orders")
     .select(
-      "id,status,amount_cents,created_at,paid_at,period_end,rp_profiles(full_name)",
+      "id,status,amount_cents,plan,created_at,paid_at,period_end,rp_profiles(full_name)",
     )
     .order("created_at", { ascending: false })
     .limit(100);
@@ -28,32 +28,46 @@ export default async function Page() {
   };
   return (
     <AdminShell>
-      <Heading title="Pagos de membresías">
+      <Heading title="Pagos">
         Últimas 100 órdenes. Solo una confirmación válida de Yappy activa la
         membresía.
       </Heading>
       {data.length ? (
-        <div className="rp-list">
+        <div className="rp-admin-rows">
           {data.map((o) => (
-            <article className="rp-list-row" key={o.id}>
-              <div>
-                <h2>
-                  {(o.rp_profiles as unknown as { full_name: string })
-                    ?.full_name || "Conductor"}
-                </h2>
-                <p>
-                  {money(o.amount_cents / 100)} · {labels[o.status]}
-                </p>
-                <p className="rp-muted">
-                  Referencia: {o.id} · {dateLabel(o.created_at)}
-                </p>
-                {o.period_end && (
-                  <p className="rp-muted">
-                    Vigencia otorgada hasta {dateLabel(o.period_end)}
+            <article className="rp-admin-row" key={o.id}>
+              <div className="rp-admin-row-main">
+                <div>
+                  <h3>
+                    {(o.rp_profiles as unknown as { full_name: string })
+                      ?.full_name || "Conductor"}
+                  </h3>
+                  <p>
+                    {money(o.amount_cents / 100)} ·{" "}
+                    {o.plan === "annual" ? "Plan anual" : "Plan mensual"} ·{" "}
+                    {dateLabel(o.created_at)}
                   </p>
-                )}
-                {o.status !== "paid" && <CreditPayment order={o.id} />}
+                  <p>
+                    Ref. {o.id}
+                    {o.period_end
+                      ? " · Vigencia hasta " + dateLabel(o.period_end)
+                      : ""}
+                  </p>
+                </div>
+                <span
+                  className={
+                    "rp-badge " +
+                    (o.status === "paid"
+                      ? "good"
+                      : o.status === "pending"
+                        ? "pending"
+                        : "")
+                  }
+                >
+                  {labels[o.status]}
+                </span>
               </div>
+              {o.status !== "paid" && <CreditPayment order={o.id} />}
             </article>
           ))}
         </div>

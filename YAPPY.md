@@ -1,4 +1,4 @@
-# Membresía Yappy — $15.00 por mes
+# Membresía Yappy — $15.00 por mes o $150.00 por año
 
 Base de trabajo: d767fc3. Conserva los códigos cortos de seis caracteres, la migración QR, las pestañas de ahorro y las mejoras visuales y de seguridad aportadas por el usuario.
 
@@ -21,9 +21,9 @@ La ruta de aviso a configurar en la creación de cada orden es https://www.ridep
 ## Reglas
 
 - Registro gratuito. Pago permitido únicamente a conductores verificados.
-- Total final de la orden: USD 15.00, fijado en servidor y base de datos.
+- Total final de la orden según el plan, fijado en servidor y base de datos: mensual USD 15.00 (1 mes) o anual USD 150.00 (12 meses, un solo pago). Migración 202611110001_annual_plan.sql.
 - El conductor acepta y confirma cada renovación; no existe débito recurrente automático.
-- Un mes calendario desde confirmación; renovaciones suman un mes desde el vencimiento si sigue vigente. Solo se permite renovar en los últimos siete días.
+- Un mes calendario (o 12 en el plan anual) desde confirmación; las renovaciones se suman desde el vencimiento si sigue vigente. Solo se permite renovar en los últimos siete días.
 - El evento visual de éxito NO acredita acceso. Solo un IPN firmado válido actualiza la orden y la membresía en una transacción.
 - Los avisos repetidos son idempotentes; estados fallidos no anulan un pago confirmado.
 - Órdenes pendientes bloquean nuevas solicitudes diez minutos para evitar duplicados ante errores de conexión. Un aviso exitoso tardío sigue siendo registrado.

@@ -14,7 +14,7 @@ const steps = [
   {
     icon: CreditCard,
     title: "Activa tu membresía",
-    text: "$15 al mes con Yappy. Sin cargos automáticos: tú decides cuándo renovar.",
+    text: "$15 al mes o $150 al año con Yappy. Sin cargos automáticos: tú decides cuándo renovar.",
   },
   {
     icon: QrCode,

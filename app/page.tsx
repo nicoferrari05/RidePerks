@@ -5,11 +5,14 @@ import MobileCTA from "@/components/MobileCTA";
 import Hero from "@/components/sections/Hero";
 import Benefits from "@/components/sections/Benefits";
 import HowItWorks from "@/components/sections/HowItWorks";
+import AppShowcase from "@/components/sections/AppShowcase";
+import SavingsBand from "@/components/sections/SavingsBand";
 import Manifesto from "@/components/sections/Manifesto";
 import Pricing from "@/components/sections/Pricing";
 import JoinCTA from "@/components/sections/JoinCTA";
 import Footer from "@/components/sections/Footer";
 import LandingShell from "@/components/landing/LandingShell";
+import Marquee from "@/components/landing/Marquee";
 
 export default function Home() {
   return (
@@ -19,9 +22,12 @@ export default function Home() {
       <Nav />
       <main>
         <Hero />
+        <Marquee />
         <Benefits />
-        <Manifesto />
         <HowItWorks />
+        <AppShowcase />
+        <SavingsBand />
+        <Manifesto />
         <Pricing />
         <JoinCTA />
       </main>

@@ -15,7 +15,25 @@ type Order = {
   status: string;
   created_at: string;
   amount_cents: number;
+  plan?: "monthly" | "annual";
 };
+const PLAN_OPTIONS = {
+  monthly: {
+    label: "Mensual",
+    price: "$15.00",
+    note: "al mes",
+    consent:
+      "Acepto pagar $15.00 por un mes de membresía. La renovación es manual y no hay cargos automáticos.",
+  },
+  annual: {
+    label: "Anual",
+    price: "$150.00",
+    note: "un solo pago · 2 meses gratis",
+    consent:
+      "Acepto pagar $150.00 en un solo pago por 12 meses de membresía. No hay cargos automáticos ni renovación automática.",
+  },
+} as const;
+type PlanId = keyof typeof PLAN_OPTIONS;
 type Summary = {
   validUntil: string | null;
   orders: Order[];
@@ -24,13 +42,16 @@ type Summary = {
 export default function YappyCheckout({
   phone: initialPhone,
   scriptUrl,
+  initialPlan = "monthly",
 }: {
   phone: string;
   scriptUrl: string;
+  initialPlan?: PlanId;
 }) {
   const [phone, setPhone] = useState(
     initialPhone.replace(/^\+?507/, "").replace(/\D/g, ""),
   );
+  const [plan, setPlan] = useState<PlanId>(initialPlan);
   const [consent, setConsent] = useState(false),
     [message, setMessage] = useState(""),
     [busy, setBusy] = useState(false);
@@ -39,10 +60,10 @@ export default function YappyCheckout({
   const [pending, setPending] = useState(false);
   const [buttonVersion, setButtonVersion] = useState(0);
   const host = useRef<HTMLDivElement>(null);
-  const latest = useRef({ phone, consent, pending });
+  const latest = useRef({ phone, consent, pending, plan });
   useEffect(() => {
-    latest.current = { phone, consent, pending };
-  }, [phone, consent, pending]);
+    latest.current = { phone, consent, pending, plan };
+  }, [phone, consent, pending, plan]);
   const [observedAt, setObservedAt] = useState(0);
   useEffect(() => {
     let cancelled = false;
@@ -118,6 +139,7 @@ export default function YappyCheckout({
           body: JSON.stringify({
             phone: latest.current.phone,
             accepted: latest.current.consent,
+            plan: latest.current.plan,
           }),
         });
         const data = await r.json();
@@ -223,6 +245,36 @@ export default function YappyCheckout({
       {renew && (
         <section className="rp-panel rp-stack">
           <h2>{active ? "Renueva tu membresía" : "Activa tu membresía"}</h2>
+          <div
+            className="rp-plan-picker"
+            role="radiogroup"
+            aria-label="Plan de membresía"
+          >
+            {(Object.keys(PLAN_OPTIONS) as PlanId[]).map((id) => (
+              <label
+                key={id}
+                className="rp-plan-option"
+                data-selected={plan === id ? "" : undefined}
+              >
+                <input
+                  type="radio"
+                  name="plan"
+                  value={id}
+                  checked={plan === id}
+                  onChange={() => {
+                    setPlan(id);
+                    setConsent(false);
+                  }}
+                  disabled={busy || pending}
+                />
+                <span className="rp-plan-name">{PLAN_OPTIONS[id].label}</span>
+                <strong className="rp-plan-price">
+                  {PLAN_OPTIONS[id].price}
+                </strong>
+                <span className="rp-plan-note">{PLAN_OPTIONS[id].note}</span>
+              </label>
+            ))}
+          </div>
           <div className="rp-field">
             <label htmlFor="yappy-phone">Tu número de Yappy</label>
             <input
@@ -244,10 +296,7 @@ export default function YappyCheckout({
               onChange={(e) => setConsent(e.target.checked)}
               disabled={busy || pending}
             />
-            <span>
-              Acepto pagar $15.00 por un mes de membresía. La renovación es
-              manual y no hay cargos automáticos.
-            </span>
+            <span>{PLAN_OPTIONS[plan].consent}</span>
           </label>
           {pending && (
             <p role="status">
@@ -281,7 +330,11 @@ export default function YappyCheckout({
             {summary.orders.map((o) => (
               <div className="rp-list-row" key={o.id}>
                 <div>
-                  <strong>$15.00 · {labels[o.status] || o.status}</strong>
+                  <strong>
+                    ${(o.amount_cents / 100).toFixed(2)} ·{" "}
+                    {o.plan === "annual" ? "Anual · " : ""}
+                    {labels[o.status] || o.status}
+                  </strong>
                   <p className="rp-muted">
                     {new Date(o.created_at).toLocaleDateString("es-PA")} · Ref.{" "}
                     {o.id}

@@ -1,8 +1,7 @@
 import ThemeSync from "./ThemeSync";
 
-// Runs before the first paint so a returning visitor never sees the wrong
-// theme flash. Mirrors storedTheme() in theme.ts.
-const preload = `(function(){var t;try{t=localStorage.getItem("rp_lp_theme")}catch(e){}if(t!=="light"&&t!=="dark"&&t!=="dim"){t=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}document.documentElement.dataset.lpTheme=t})()`;
+// Set before the first paint so the overscroll area is mint from the start.
+const preload = `document.documentElement.dataset.lpTheme="light"`;
 
 export default function LandingShell({
   children,

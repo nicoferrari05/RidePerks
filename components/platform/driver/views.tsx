@@ -8,6 +8,7 @@ import MapPreview from "@/components/platform/MapPreview";
 import { FavoriteButton, FeedbackForm } from "@/components/platform/AppForms";
 import { NotificationBell } from "@/components/platform/notifications";
 import { ThemeSetting } from "@/components/platform/theme";
+import SetupProgress, { type SetupStep } from "@/components/ui/setup-progress";
 import {
   BenefitCard,
   BusinessMark,
@@ -73,50 +74,81 @@ function UseRow({ r, rate = false }: { r: Redemption; rate?: boolean }) {
   );
 }
 
-// Only the most urgent step shows, with a single action.
-function NextStep({
+/** Setup steps for a driver account, in the order they unlock each other. */
+export function driverSetupSteps({
   profile: p,
   hasAccess,
+  verificationPending,
+  hasUsedBenefit,
 }: {
   profile: Profile;
   hasAccess: boolean;
+  verificationPending: boolean;
+  hasUsedBenefit: boolean;
+}): SetupStep[] {
+  const verified = p.status === "verified";
+  return [
+    { label: "Crea tu cuenta", completed: true },
+    {
+      label: "Completa tu perfil",
+      completed: Boolean(p.phone && p.platform),
+      href: "/driver/profile/edit",
+      action: "Completar perfil",
+    },
+    {
+      label: "Verifica tu perfil de conductor",
+      completed: verified,
+      note: verified
+        ? undefined
+        : verificationPending
+          ? "En revisión: te avisamos al aprobarla"
+          : p.status === "rejected"
+            ? "Necesitamos otra captura"
+            : "Sube una captura de tu app",
+      href: verificationPending ? undefined : "/driver/verify",
+      action: "Verificar ahora",
+    },
+    {
+      label: "Activa tu membresía",
+      completed: hasAccess,
+      note: hasAccess ? undefined : "$15 al mes o $150 al año, con Yappy",
+      href: verified ? "/driver/membership" : undefined,
+      action: "Elegir plan",
+    },
+    {
+      label: "Usa tu primer beneficio",
+      completed: hasUsedBenefit,
+      note: hasUsedBenefit ? undefined : "Muestra tu código en un comercio",
+      href: verified && hasAccess ? "/driver/benefits" : undefined,
+      action: "Ver beneficios",
+    },
+  ];
+}
+
+// A suspended account gets one way out; otherwise the setup checklist shows
+// until every step is done.
+function NextStep({
+  profile: p,
+  steps,
+}: {
+  profile: Profile;
+  steps: SetupStep[];
 }) {
-  const step =
-    p.status === "suspended"
-      ? {
-          title: "Tu cuenta necesita atención",
-          text: "Escríbenos para revisar el estado de tu cuenta.",
-          href: "/driver/help",
-          label: "Obtener ayuda",
-        }
-      : p.status !== "verified"
-        ? {
-            title: "Verifica tu cuenta",
-            text: "Sube una captura de tu perfil de conductor para empezar a usar beneficios.",
-            href: "/driver/verify",
-            label: "Verificar ahora",
-          }
-        : !hasAccess
-          ? {
-              title: "Activa tu membresía",
-              text: "$15 al mes, con Yappy. Sin cargos automáticos.",
-              href: "/driver/membership",
-              label: "Activar",
-            }
-          : null;
-  if (!step) return null;
-  return (
-    <section className="rp-callout">
-      <h2>{step.title}</h2>
-      <p>{step.text}</p>
-      <Link
-        href={step.href}
-        className={buttonVariants({ variant: "default", size: "lg" })}
-      >
-        {step.label}
-      </Link>
-    </section>
-  );
+  if (p.status === "suspended")
+    return (
+      <section className="rp-callout">
+        <h2>Tu cuenta necesita atención</h2>
+        <p>Escríbenos para revisar el estado de tu cuenta.</p>
+        <Link
+          href="/driver/help"
+          className={buttonVariants({ variant: "default", size: "lg" })}
+        >
+          Obtener ayuda
+        </Link>
+      </section>
+    );
+  if (steps.every((s) => s.completed)) return null;
+  return <SetupProgress steps={steps} />;
 }
 
 export function DashboardView({
@@ -127,6 +159,7 @@ export function DashboardView({
   featured,
   live,
   hasAccess,
+  verificationPending = false,
   unread = 0,
 }: {
   profile: Profile;
@@ -136,8 +169,15 @@ export function DashboardView({
   featured: CatalogBenefit[];
   live: boolean;
   hasAccess: boolean;
+  verificationPending?: boolean;
   unread?: number;
 }) {
+  const steps = driverSetupSteps({
+    profile: p,
+    hasAccess,
+    verificationPending,
+    hasUsedBenefit: history.length > 0,
+  });
   return (
     <div className="rp-stack">
       <header className="rp-hello">
@@ -161,7 +201,7 @@ export function DashboardView({
         </div>
         <NotificationBell href="/driver/notifications" unread={unread} />
       </header>
-      <NextStep profile={p} hasAccess={hasAccess} />
+      <NextStep profile={p} steps={steps} />
       <SavingsCard monthly={monthly} total={total} />
       <section>
         <div className="rp-section-head">

@@ -220,7 +220,7 @@ export async function setCatalogLive(
     .upsert({ key: "catalog_live", value: live });
   if (error) return { error: "No pudimos cambiar el catálogo." };
   revalidatePath("/driver", "layout");
-  revalidatePath("/admin/platform");
+  revalidatePath("/admin/more");
   return {
     success: live
       ? "Catálogo visible para los conductores."

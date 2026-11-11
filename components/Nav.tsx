@@ -4,14 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import LogoMark from "@/components/LogoMark";
-import ThemeToggle from "@/components/landing/ThemeToggle";
 
-type Key = "inicio" | "beneficios" | "como" | "planes" | "nosotros";
+type Key = "inicio" | "beneficios" | "como" | "app" | "planes" | "nosotros";
 
 const LINKS: { href: string; label: string; key: Key; section?: string }[] = [
   { href: "/#top", label: "Inicio", key: "inicio", section: "top" },
   { href: "/#beneficios", label: "Beneficios", key: "beneficios", section: "beneficios" },
   { href: "/#como-funciona", label: "Cómo funciona", key: "como", section: "como-funciona" },
+  { href: "/#app", label: "La app", key: "app", section: "app" },
   { href: "/#planes", label: "Planes", key: "planes", section: "planes" },
   { href: "/about", label: "Nosotros", key: "nosotros" },
 ];
@@ -162,9 +162,6 @@ export default function Nav() {
           >
             Comercios
           </Link>
-          <div className="hidden min-[340px]:block">
-            <ThemeToggle compact />
-          </div>
           <Link
             href="/login"
             className="shrink-0 rounded-full bg-lp-accent px-4 py-2.5 text-[13px] font-semibold text-lp-accent-fg transition-[transform,opacity] duration-[160ms] ease-snappy hover:opacity-90 active:scale-[0.97] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-lp-fg sm:px-5 sm:text-sm"
