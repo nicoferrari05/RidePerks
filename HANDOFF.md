@@ -327,7 +327,8 @@ Editor (`node scripts/prepare-supabase.mjs` bundles them into
 `artifacts/ACTIVAR_RIDEPERKS.sql`, idempotent). Latest:
 `202611110001_annual_plan.sql` (annual plan; replaces the 3-argument
 `rp_create_payment` with a 4-argument one whose plan defaults to monthly,
-so code deployed before it keeps working). Before it
+so code deployed before it keeps working; applied in production, confirmed
+by the user on November 11, 2026). Before it
 `202610200001_app_features.sql` (notifications, announcements, favorites,
 hours/media, feedback, onboarding, admin metrics). Before it
 `202610130001_business_pins.sql` (business PINs, `redeemed_via`); before it
