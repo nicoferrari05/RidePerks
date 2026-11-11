@@ -12,7 +12,6 @@ import Pricing from "@/components/sections/Pricing";
 import JoinCTA from "@/components/sections/JoinCTA";
 import Footer from "@/components/sections/Footer";
 import LandingShell from "@/components/landing/LandingShell";
-import Marquee from "@/components/landing/Marquee";
 
 export default function Home() {
   return (
@@ -22,7 +21,6 @@ export default function Home() {
       <Nav />
       <main>
         <Hero />
-        <Marquee />
         <Benefits />
         <HowItWorks />
         <AppShowcase />

@@ -95,19 +95,18 @@ html[data-lp-theme="light"] body {
   background: var(--lp-fg);
   color: var(--lp-bg);
 }
-/* First-visit hero entrance: each line fades up out of a slight blur, in a
-   short stagger. Held while the homepage splash is still covering the page,
+/* First-visit hero entrance: each line fades up, in a short stagger.
+   Transform and opacity only (a blur here was costly on the large hero
+   phone image). Held while the homepage splash is still covering the page,
    so it plays as the splash fades instead of behind it. */
 @keyframes lp-enter {
   from {
     opacity: 0;
     transform: translateY(14px);
-    filter: blur(6px);
   }
   to {
     opacity: 1;
     transform: none;
-    filter: blur(0);
   }
 }
 .lp-enter {
@@ -132,11 +131,11 @@ html[data-lp-theme="light"] body {
 .lp button {
   -webkit-tap-highlight-color: transparent;
 }
-/* Frosted glass for surfaces that sit over the hero or scroll over content. */
+/* Light pill surface for things over the hero or scrolling content. No
+   backdrop-filter: over the animated hero canvas it was re-blurred every
+   frame, which made the page stutter on phones. */
 .lp-glass {
-  background: color-mix(in srgb, var(--lp-glass-tint) 58%, transparent);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
-  backdrop-filter: blur(18px) saturate(160%);
+  background: color-mix(in srgb, var(--lp-glass-tint) 86%, transparent);
   border: 1px solid var(--lp-glass-line);
   box-shadow:
     inset 0 1px 0 var(--lp-glass-hi),
@@ -343,48 +342,6 @@ body {
 .animate-delay-900 {
   animation-delay: 0.9s;
 }
-
-/* Landing marquee: the track holds two copies and slides by one. */
-@keyframes lp-marquee {
-  to {
-    transform: translateX(-50%);
-  }
-}
-.lp-marquee-track {
-  animation: lp-marquee 40s linear infinite;
-}
-.lp-marquee::before,
-.lp-marquee::after {
-  content: "";
-  position: absolute;
-  inset-block: 0;
-  z-index: 1;
-  width: 48px;
-  pointer-events: none;
-}
-.lp-marquee::before {
-  left: 0;
-  background: linear-gradient(to right, var(--lp-bg), transparent);
-}
-.lp-marquee::after {
-  right: 0;
-  background: linear-gradient(to left, var(--lp-bg), transparent);
-}
-/* Floating cards around the hero phone bob gently. */
-@keyframes lp-float {
-  50% {
-    transform: translateY(-8px);
-  }
-}
-.lp-float {
-  animation: lp-float 6s ease-in-out infinite;
-}
-@media (prefers-reduced-motion: reduce) {
-  .lp-marquee-track,
-  .lp-float {
-    animation: none;
-  }
-}
 /* Hero phone: only the top of the screen shows; it fades into the page. */
 .lp-hero-phone {
   height: 470px;
@@ -407,4 +364,10 @@ body {
 }
 .lp-rail::-webkit-scrollbar {
   display: none;
+}
+/* Cards floating beside the hero phone: solid and static. */
+.lp-card-solid {
+  background: var(--lp-bg);
+  border: 1px solid var(--lp-line);
+  box-shadow: 0 16px 36px -18px rgba(16, 11, 0, 0.4);
 }

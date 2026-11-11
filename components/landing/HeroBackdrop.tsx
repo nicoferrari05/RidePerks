@@ -5,7 +5,11 @@ import GradientWaves from "@/components/GradientWaves";
 // yellow-green crests.
 export default function HeroBackdrop() {
   return (
-    <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+    // Only the first screen: the canvas cost grows with its pixel area.
+    <div
+      className="pointer-events-none absolute inset-x-0 top-0 h-[100svh] max-h-[1000px]"
+      aria-hidden="true"
+    >
       <GradientWaves
         horizonColor="#CCE39A"
         waveColor="#3B341F"

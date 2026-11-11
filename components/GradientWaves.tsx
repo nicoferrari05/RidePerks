@@ -210,7 +210,9 @@ const GradientWaves = ({
       alpha: true,
       premultipliedAlpha: true,
       antialias: false,
-      dpr: Math.min(window.devicePixelRatio || 1, isNarrowViewport ? 1 : 2),
+      // A soft, blurry field: 1.5x is indistinguishable from 2x on desktop
+      // and draws ~44% fewer pixels.
+      dpr: Math.min(window.devicePixelRatio || 1, isNarrowViewport ? 1 : 1.5),
     });
 
     const gl = renderer.gl;
@@ -289,8 +291,15 @@ const GradientWaves = ({
     let isVisible = true;
     let isPageVisible = !document.hidden;
     const t0 = performance.now();
+    // The waves move very slowly, so ~30fps looks the same as 60 and halves
+    // the GPU work, leaving headroom for scrolling on low-end phones.
+    const FRAME_MS = 1000 / 30;
+    let last = 0;
 
     const loop = (t: number) => {
+      raf = requestAnimationFrame(loop);
+      if (t - last < FRAME_MS) return;
+      last = t;
       program.uniforms.iTime.value = (t - t0) * 0.001;
       const tx = enableMouseRef.current ? targetMouse[0] : 0.5;
       const ty = enableMouseRef.current ? targetMouse[1] : 0.5;
@@ -300,7 +309,6 @@ const GradientWaves = ({
       mouse[0] = currentMouse[0];
       mouse[1] = currentMouse[1];
       renderer.render({ scene: mesh });
-      raf = requestAnimationFrame(loop);
     };
 
     const tryStart = () => {
