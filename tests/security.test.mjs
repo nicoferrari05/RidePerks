@@ -13,6 +13,7 @@ import {
   createPinSession,
   readPinSession,
 } from "../lib/pinAuth.ts";
+import { parseBearer } from "../lib/platform/bearer.ts";
 test("redirect destinations cannot leave driver/business routes", () => {
   for (const url of [
     "https://example.com",
@@ -98,4 +99,21 @@ test("PIN sessions carry business and version, and resist tampering", () => {
   assert.equal(readPinSession("p1.x"), null);
   process.env.ADMIN_SESSION_SECRET = randomBytes(32).toString("hex");
   assert.equal(readPinSession(token), null);
+});
+test("the app's bearer header is read strictly", () => {
+  assert.equal(parseBearer("Bearer abc.DEF-1_2.x~y+z/="), "abc.DEF-1_2.x~y+z/=");
+  assert.equal(parseBearer("bearer abc.def.ghi"), "abc.def.ghi");
+  for (const value of [
+    null,
+    undefined,
+    "",
+    "Bearer",
+    "Bearer ",
+    "Basic abc",
+    "Bearer abc def",
+    "Bearer abc\ndef",
+    "Bearer <script>",
+    "Bearer " + "a".repeat(9000),
+  ])
+    assert.equal(parseBearer(value), null);
 });

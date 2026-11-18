@@ -1,11 +1,11 @@
 import { notFound } from "next/navigation";
 import { requireDriver } from "@/lib/platform/data";
-import { getSupabaseAdmin } from "@/lib/supabase-server";
+import { receiptData, receiptRows } from "@/lib/payments/membership";
 import { emailForUser } from "@/lib/email";
 import { SubHeader } from "@/components/platform/ui";
 import LogoMark from "@/components/LogoMark";
 import { PrintButton } from "@/components/platform/AppForms";
-import { dateLabel, money } from "@/lib/platform/types";
+import { money } from "@/lib/platform/types";
 export const metadata = { title: "Recibo · RidePerks" };
 // A paid membership order as a printable receipt ("Guardar como PDF" from
 // the print dialog). Only the driver who paid can open it.
@@ -16,35 +16,10 @@ export default async function Page({
 }) {
   const p = await requireDriver();
   const { id } = await params;
-  if (!/^[a-zA-Z0-9]{1,15}$/.test(id)) notFound();
-  const { data: o, error } = await getSupabaseAdmin()
-    .from("rp_payment_orders")
-    .select("id,amount_cents,plan,paid_at,period_start,period_end,transaction_id")
-    .eq("id", id)
-    .eq("driver_id", p.id)
-    .eq("status", "paid")
-    .maybeSingle();
-  if (error) throw new Error("No pudimos cargar el recibo.");
+  const o = await receiptData(p, id);
   if (!o) notFound();
   const email = await emailForUser(p.id);
-  const rows: [string, string][] = [
-    ["Referencia", o.id],
-    ...(o.transaction_id
-      ? [["Transacción Yappy", o.transaction_id] as [string, string]]
-      : []),
-    ["Fecha de pago", o.paid_at ? dateLabel(o.paid_at) : "—"],
-    ["Método", "Yappy"],
-    ["Cliente", p.full_name || "Conductor RidePerks"],
-    ...(email ? [["Correo", email] as [string, string]] : []),
-    [
-      "Período",
-      o.period_start && o.period_end
-        ? dateLabel(o.period_start) + " – " + dateLabel(o.period_end)
-        : o.plan === "annual"
-          ? "12 meses"
-          : "1 mes",
-    ],
-  ];
+  const rows = receiptRows(o, p.full_name, email);
   return (
     <div className="rp-stack">
       <div className="rp-no-print">

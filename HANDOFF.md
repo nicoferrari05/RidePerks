@@ -28,8 +28,9 @@ months (annual plan, "2 meses gratis"), both via Yappy with manual renewal.
 - The local Vercel CLI is logged in as `giancoferrari`, which does **not** have
   access to that team, so env vars are set by the user in the dashboard.
 - Before every commit: `npx tsc --noEmit`, `npm run lint`, `npm test`
-  (50 tests, most of them on PGlite), `npm run build`. With a server on :3100
-  (or `TEST_BASE_URL`), `npx playwright test` (12 public e2e tests).
+  (54 tests, most of them on PGlite), `npm run build`. With a server on :3100
+  (or `TEST_BASE_URL`), `npx playwright test` (15 public e2e tests). If
+  `mobile/` changed: `cd mobile && npx tsc --noEmit && npx expo lint`.
 - The user writes in Spanish (Latin American, tuteo, never voseo). All UI copy
   is Spanish with tuteo.
 - `AGENTS.md`: this Next.js (16) has breaking changes vs. training data
@@ -320,6 +321,121 @@ Footer, MobileCTA.
   `next.config.mjs`; switch to enforcing after confirming Yappy on
   `/driver/membership` shows no CSP warnings in the browser console.
 
+## Phone app (iOS + Android, in progress)
+
+Decided on November 18, 2026: native store apps built with **React Native
+(Expo SDK 58)** in `mobile/`, alongside the web, which keeps working as is.
+The user ruled out Capacitor (a web view inside an app). Same backend for
+both, same look.
+
+- **One backend, two entrances.** The web reads and writes through server
+  components and server actions with a cookie session. The app calls
+  `/api/app/*` (JSON) with `Authorization: Bearer <Supabase access token>`.
+  `sessionUserId()` in `lib/platform/supabase.ts` accepts either, so
+  `currentProfile()` and every function in `lib/platform` serve both. Rules go
+  in `lib/platform` once; `/api/app/*` routes are thin wrappers built with
+  `appRoute()` (`lib/platform/app-api.ts`: JSON, no-store, 401 means "sign in
+  again"). Sign-in rules are shared through `lib/platform/login-core.ts` (kept
+  out of the "use server" files on purpose).
+- **Endpoints so far:** `POST /api/app/auth/login` (same checks as the web
+  form, returns tokens), `POST /api/app/auth/refresh`, `POST
+  /api/app/auth/logout` (revokes only that phone's session), `GET
+  /api/app/me`; driver: `home`, `benefits`, `benefits/[id]`, `directory`,
+  `history`, `account` (GET), `favorites`, `feedback`, `codes` (POST),
+  `codes/[token]` (GET); `notifications` (GET) and `notifications/read`;
+  `driver/profile`, `driver/verification` (GET, multipart POST),
+  `driver/support`, `driver/membership`, `driver/membership/pay`,
+  `driver/receipts/[id]`; `account/password`, `account/delete`. The app stores the tokens in the keychain/keystore
+  (`expo-secure-store`) and renews them shortly before they expire.
+- **Same look:** `mobile/src/theme/tokens.ts` copies the web's colors (the
+  platform's `.rp-app` tokens, light and dark, and the sign-in screens'
+  palette). `tests/mobile-tokens.test.mjs` fails if they drift, so change a
+  color in both places. Font: Geist (`@expo-google-fonts/geist`). Icons:
+  `lucide-react-native` (same set as the web). Press feedback (`PressScale`,
+  0.97 on the snappy curve) and the sign-in entrance (`Enter`) mirror the
+  web's.
+- **Screens done (driver):** sign-in; the floating dock (`Dock.tsx`, the
+  sliding green bar, no spotlight glow: it showed as a dark smudge on iOS); Inicio (setup checklist, savings card, featured
+  rail, recent uses); Beneficios with Comercios (search and chips filter on
+  the phone with the web's rules); benefit detail with the one-time QR
+  (keeps the screen awake, polls for "used", copy code); Actividad with
+  "Calificar este uso"; Notificaciones; Cuenta with Claro/Oscuro; and the
+  Cuenta screens under `mobile/src/app/settings/`: Datos personales,
+  Membresía (plan picker, Yappy number, consent, payments list), recibo
+  (`receipt/[id]`, prints to PDF with expo-print), Verificación (picks the
+  screenshot, shrinks it to 1600px JPEG on the phone, uploads multipart),
+  Ayuda (FAQ + support form), Contraseña, Eliminar cuenta (password, check,
+  final confirm; the sign-in screen then shows the web's farewell notice).
+  Registration and password recovery open the web; the business side is a
+  placeholder; no welcome screens yet.
+- **Business side (`mobile/src/app/business/`):** tabs like BusinessNav
+  (owners: Escanear, Actividad, Beneficios, Cuenta; staff: Escanear,
+  Cuenta). Escanear uses the native camera (expo-camera, QR only) plus the
+  typed-code field, then preview → confirm, as on the web. Actividad has the
+  periods, drivers card, metrics, column chart (bars computed on the server
+  with the web's `dayBars`), ratings, last uses and the CSV (same file as
+  the web, `lib/platform/business-csv.ts`, saved and shared with
+  expo-file-system + expo-sharing). Beneficios: create, edit proposals,
+  pause/activate, propose changes (`manage/benefit`, dates typed as
+  AAAA-MM-DD). Owners also edit, under `mobile/src/app/manage/`: business
+  info, hours, logo and photos (shrunk on the phone), and staff (invite link
+  to share, remove access). All through the web's own business actions via
+  `runAction()` (owner refusals map to 403). Cuenta: business switcher (sent as `X-RP-Business`, read by
+  `requireBusiness`), Apariencia, Contraseña, Notificaciones, Escríbenos,
+  sign out, delete.
+- **Staff PIN in the app:** sign-in has the PIN tab. `/api/app/pin/session`
+  checks the PIN (`checkPin`, same limits as the web) and returns the same
+  signed session the web keeps in its cookie; the phone stores it and sends
+  `X-RP-Pin` (`pinBusinessFrom` in data.ts). `/pin` opens the camera and
+  registers each scan at once; a changed PIN sends the phone back to sign-in.
+- **Counter rules** (preview, redeem, PIN redeem, PIN check) live in
+  `lib/platform/counter.ts`, used by `/api/platform/preview|redeem`,
+  `/api/pin/redeem`, the web PIN form and the app. Business Actividad data:
+  `lib/platform/business-screens.ts` (also `loadBusinessBenefits`).
+- **Yappy in the app:** the web's `<btn-yappy>` only watches the payment
+  status (its `eventPayment` subscribes to Yappy's Firestore). The request
+  itself goes to the driver's Yappy app from the server (`payment-wc` with
+  `aliasYappy`), and only the IPN marks it paid. So the app calls
+  `/api/app/driver/membership/pay` (same `startPayment` as the web) and polls
+  `/api/app/driver/membership` every 4 s while pending, like the web does.
+  Inferred from Yappy's script, not yet confirmed with a real payment from
+  the app; check it on the first real one.
+- **More shared rules:** `lib/payments/membership.ts` (membership state,
+  payment summary, `startPayment`, receipts) serves `/driver/membership`,
+  `/api/payments/yappy` and the app; `lib/platform/self-service.ts`
+  (password checks, `setOwnPassword`, `closeOwnAccount`) serves the web
+  forms and the app. Profile, verification upload and support reuse the
+  web's form actions directly.
+- **Shared loaders:** `lib/platform/driver-screens.ts` loads each driver
+  screen for both the web pages and `/api/app/driver/*`;
+  `lib/platform/driver-rules.ts` holds the setup steps and rating window;
+  `lib/platform/codes.ts` issues and checks QR codes for both. App routes call
+  the web's own form actions through `runAction()` (favorites, feedback).
+  Notification links and setup steps arrive as web paths;
+  `mobile/src/lib/routes.ts` maps them to app screens.
+- **Previewing without an account:** `artifacts/mobile-screens.mjs <dir>
+  [--dark | --settings]` drives Expo web (:8081) with every `/api/app` call
+  faked.
+- Detail screens (benefit, notifications) hide the dock and slide in, as
+  native apps do; on the web the dock stays visible there.
+- **Order agreed with the user:** driver screens (Inicio, Beneficios, detail
+  with QR, Actividad, Notificaciones, Cuenta, membership with Yappy,
+  verification, help) → business screens with a native scanner and PIN →
+  native features Apple expects (push, haptics, splash, deep links) →
+  TestFlight / Play internal testing → both stores together. Admin stays web
+  only.
+- **Running it:** see `mobile/README.md`. In development the app talks to
+  `npm run dev` on port 3000 of the same computer (same Wi-Fi), so `/api/app`
+  changes don't need a deploy until store builds. Store builds use
+  `https://rideperks.app`, so the API must be pushed before them.
+- **Identifiers:** bundle id / package `app.rideperks`, scheme `rideperks`.
+  The bundle id can't change once published.
+- The user can borrow a Mac, but EAS builds both apps in the cloud from
+  Windows; the Mac is only for the iOS simulator.
+- Store risks to remember: Apple 4.2 (needs native features, not a wrapped
+  site), account deletion (exists), and in-app purchase rules for the Yappy
+  membership (real-world services exception, not guaranteed).
+
 ## Database
 
 Migrations in `supabase/migrations/`, applied manually in order via the SQL
@@ -369,7 +485,16 @@ pushing. A pathspec for an already-deleted file makes `git add` abort
 entirely; that once pushed a commit containing only a deletion, which broke
 the share image until a follow-up commit.
 
-## Last session (November 11, 2026)
+## Last session (November 18, 2026)
+
+Started the phone app (see "Phone app"): `/api/app` entry with bearer
+tokens over the same `lib/platform` code, web login refactored onto the
+shared `login-core.ts` (same behavior), Expo project in `mobile/` with the
+web's tokens, sign-in screen and a temporary home. `npm test` runs 54
+tests; `npx playwright test` 15. A real sign-in from the app was not tested
+(production data); the user tries it with a test account on their phone.
+
+## Session of November 11, 2026
 
 Landing: theme switcher removed (light only), app screenshots (hero phone,
 "Todo desde tu teléfono", dark savings band), marquee, new pricing with
@@ -419,5 +544,6 @@ things that look off; expect more of that.
   notification for merchants when a use is registered; per-person admin
   accounts with 2FA replacing the shared password; Sentry; usage analytics
   (PostHog/Plausible).
-- Dropped for now (user decision): push notifications, Google/Apple sign-in,
-  referrals, staging environment, offline mode, store publishing.
+- Dropped for now (user decision): Google/Apple sign-in, referrals, staging
+  environment, offline mode. Store publishing and push notifications are
+  back on as part of the phone app (November 18, 2026).

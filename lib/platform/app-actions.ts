@@ -1,13 +1,11 @@
 "use server";
-import { createHash } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
 import { currentProfile, rateLimit, requireDriver } from "./data";
 import { createAuthClient } from "./supabase";
-import { closeAccount } from "./account-closure";
+import { closeOwnAccount } from "./self-service";
 import type { ActionState } from "./types";
 
 // Welcome screens: shown once, then the driver goes to their first step.
@@ -119,47 +117,20 @@ export async function leaveFeedback(
   };
 }
 
-// Self-service account deletion (Cuenta → Eliminar cuenta). Asks for the
-// password again so a borrowed, unlocked phone can't delete the account.
+// Self-service account deletion (Cuenta → Eliminar cuenta). The rules live
+// in self-service.ts, shared with the phone app.
 export async function deleteOwnAccount(
   _: ActionState,
   form: FormData,
 ): Promise<ActionState> {
   const profile = await currentProfile();
   if (!profile) return { error: "Inicia sesión de nuevo para continuar." };
-  const password = form.get("password");
-  if (form.get("confirm") !== "on")
-    return { error: "Confirma que entiendes que no se puede deshacer." };
-  if (typeof password !== "string" || !password || password.length > 128)
-    return { error: "Escribe tu contraseña." };
-  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key =
-    process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !key) return { error: "No pudimos conectar. Intenta más tarde." };
-  try {
-    await rateLimit(
-      "delete-account:" + createHash("sha256").update(profile.id).digest("hex"),
-      5,
-      3600,
-    );
-    const user = await getSupabaseAdmin().auth.admin.getUserById(profile.id);
-    const email = user.data.user?.email;
-    if (!email) return { error: "No pudimos confirmar tu cuenta." };
-    // A throwaway client: checking the password must not touch the cookies.
-    const check = createClient(url, key, {
-      auth: { persistSession: false, autoRefreshToken: false },
-    });
-    const signed = await check.auth.signInWithPassword({ email, password });
-    if (signed.error) return { error: "La contraseña no es correcta." };
-    await check.auth.signOut({ scope: "local" });
-  } catch (e) {
-    return { error: e instanceof Error ? e.message : "No pudimos conectar." };
-  }
-  const result = await closeAccount(
-    profile.id,
-    "Eliminada por la persona desde la app.",
+  const result = await closeOwnAccount(
+    profile,
+    form.get("password"),
+    form.get("confirm") === "on",
   );
-  if ("error" in result) return { error: result.error };
+  if (result.error) return result;
   try {
     await (await createAuthClient()).auth.signOut({ scope: "local" });
   } catch {

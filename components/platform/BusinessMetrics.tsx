@@ -3,6 +3,7 @@ import { Download } from "lucide-react";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
 import { money } from "@/lib/platform/types";
 import BarChart, { dayBars } from "./BarChart";
+import { nextMilestone } from "@/lib/platform/business-screens";
 
 export type BusinessStats = {
   uses: number;
@@ -82,11 +83,8 @@ export default function BusinessMetrics({
   feedback?: FeedbackSummary;
 }) {
   const drivers = Number(data.drivers) || 0;
-  const milestones = [10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000];
-  const nextMilestone =
-    milestones.find((m) => m > drivers) ||
-    Math.ceil((drivers + 1) / 5000) * 5000;
-  const milestonePct = Math.max(0, Math.min(drivers / nextMilestone, 1)) * 100;
+  const next = nextMilestone(drivers);
+  const milestonePct = Math.max(0, Math.min(drivers / next, 1)) * 100;
   return (
     <section className="rp-stack" aria-label="Estadísticas del comercio">
       <nav className="rp-segmented" aria-label="Período">
@@ -117,7 +115,7 @@ export default function BusinessMetrics({
           />
         </div>
         <p className="rp-progress-label">
-          Próxima meta: <strong>{nextMilestone}</strong> conductores.
+          Próxima meta: <strong>{next}</strong> conductores.
         </p>
       </div>
       <dl className="rp-metrics">

@@ -1,11 +1,11 @@
 import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { getSupabaseAdmin } from "@/lib/supabase-server";
 import { ADMIN_COOKIE_NAME, verifySessionToken } from "@/lib/adminAuth";
 import { PIN_COOKIE_NAME, readPinSession } from "@/lib/pinAuth";
-import { authConfigured, createAuthClient } from "./supabase";
+import { sessionUserId } from "./supabase";
 import { uuidSchema } from "./validation";
 import type {
   Profile,
@@ -16,15 +16,14 @@ import type {
   AppNotification,
 } from "./types";
 // The session JWT is verified locally (asymmetric signing keys), which saves
-// a round trip to Supabase Auth on every page and action. A closed account
-// counts as signed out right away even while its token is still unexpired;
-// its login is also banned, so the token can't be refreshed.
+// a round trip to Supabase Auth on every page and action. It comes from the
+// web's cookies or the phone app's bearer token (see sessionUserId), so
+// every function below serves both. A closed account counts as signed out
+// right away even while its token is still unexpired; its login is also
+// banned, so the token can't be refreshed.
 export const currentProfile = cache(async (): Promise<Profile | null> => {
-  if (!authConfigured()) return null;
-  const auth = await createAuthClient();
-  const { data, error } = await auth.auth.getClaims();
-  const id = data?.claims?.sub;
-  if (error || !id) return null;
+  const id = await sessionUserId();
+  if (!id) return null;
   const result = await getSupabaseAdmin()
     .from("rp_profiles")
     .select("*")
@@ -65,7 +64,11 @@ export const requireBusiness = cache(async () => {
     business: row.rp_businesses,
     role: row.role,
   }));
-  const selected = (await cookies()).get("rp_business_id")?.value;
+  // The web remembers the chosen business in a cookie; the phone app sends
+  // its choice in a header.
+  const selected =
+    (await headers()).get("x-rp-business") ||
+    (await cookies()).get("rp_business_id")?.value;
   const current =
     businesses.find((row) => row.business.id === selected) || businesses[0];
   return {
@@ -82,8 +85,12 @@ export async function requireAdmin() {
 }
 // The business behind this device's PIN session, or null when there is no
 // session or its PIN was changed/removed or the business paused since.
-export const pinBusiness = cache(async () => {
-  const session = readPinSession((await cookies()).get(PIN_COOKIE_NAME)?.value);
+export const pinBusiness = cache(async () =>
+  pinBusinessFrom((await cookies()).get(PIN_COOKIE_NAME)?.value),
+);
+/** Same check for a PIN session the phone app sends in a header. */
+export async function pinBusinessFrom(value: string | undefined | null) {
+  const session = readPinSession(value);
   if (!session) return null;
   const { data, error } = await getSupabaseAdmin()
     .from("rp_businesses")
@@ -100,7 +107,7 @@ export const pinBusiness = cache(async () => {
         version: session.version,
       }
     : null;
-});
+}
 // Accepts either the full token (from the QR/camera) or the six-character
 // fallback code a driver can read out loud / type by hand. The redeem
 // transactions only ever see a real token uuid — this is a plain, read-only

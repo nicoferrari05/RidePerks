@@ -1,13 +1,6 @@
 import { notFound } from "next/navigation";
-import {
-  catalogLive,
-  getBenefits,
-  getFavorites,
-  requireDriver,
-} from "@/lib/platform/data";
-import { uuidSchema } from "@/lib/platform/validation";
-import { businessMedia } from "@/lib/platform/catalog";
-import { statusLine } from "@/lib/platform/hours";
+import { requireDriver } from "@/lib/platform/data";
+import { benefitDetailData } from "@/lib/platform/driver-screens";
 import { BenefitDetailView } from "@/components/platform/driver/views";
 export const metadata = { title: "Tu beneficio · RidePerks" };
 export default async function Page({
@@ -16,24 +9,17 @@ export default async function Page({
   params: Promise<{ id: string }>;
 }) {
   const p = await requireDriver();
-  const { id } = await params;
-  if (!uuidSchema.safeParse(id).success || !(await catalogLive())) notFound();
-  const [benefits, favorites] = await Promise.all([
-    getBenefits(),
-    getFavorites(p.id),
-  ]);
-  const b = benefits.find((b) => b.id === id);
-  if (!b) notFound();
-  const media = businessMedia(b.rp_businesses);
+  const d = await benefitDetailData(p, (await params).id);
+  if (!d) notFound();
   return (
     <BenefitDetailView
-      benefit={b}
-      verified={p.status === "verified"}
-      saved={favorites.benefits.has(b.id)}
-      logo={media.logo}
-      photos={media.photos}
-      hours={media.hours}
-      status={statusLine(b.rp_businesses.hours)}
+      benefit={d.benefit}
+      verified={d.verified}
+      saved={d.saved}
+      logo={d.logo}
+      photos={d.photos}
+      hours={d.hours}
+      status={d.status}
     />
   );
 }

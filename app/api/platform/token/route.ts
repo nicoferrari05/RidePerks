@@ -1,7 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import { currentProfile, rateLimit } from "@/lib/platform/data";
-import { getSupabaseAdmin } from "@/lib/supabase-server";
-import { uuidSchema } from "@/lib/platform/validation";
+import { currentProfile } from "@/lib/platform/data";
+import { codeStatus, issueCode } from "@/lib/platform/codes";
+import { AppError } from "@/lib/platform/app-api";
+
+// The web's benefit codes. The rules live in lib/platform/codes.ts, shared
+// with the phone app.
+const noStore = { "Cache-Control": "private, no-store" };
+
+function failure(e: unknown) {
+  if (e instanceof AppError)
+    return NextResponse.json({ error: e.message }, { status: e.status });
+  return NextResponse.json({ error: "Intenta nuevamente." }, { status: 500 });
+}
+
 export async function POST(request: NextRequest) {
   if (request.headers.get("origin") !== request.nextUrl.origin)
     return NextResponse.json(
@@ -20,61 +31,24 @@ export async function POST(request: NextRequest) {
   } catch {
     return NextResponse.json({ error: "Solicitud inválida." }, { status: 400 });
   }
-  const id = uuidSchema.safeParse(body?.benefit_id);
-  if (!id.success)
-    return NextResponse.json({ error: "Beneficio inválido." }, { status: 400 });
   try {
-    await rateLimit("token:" + profile.id, 30, 600);
-    const { data, error } = await getSupabaseAdmin().rpc("rp_issue_token", {
-      p_driver: profile.id,
-      p_benefit: id.data,
-    });
-    if (error)
-      return NextResponse.json(
-        {
-          error:
-            error.code === "P0001"
-              ? error.message
-              : "No pudimos generar el código.",
-        },
-        { status: 400 },
-      );
-    return NextResponse.json(data, {
-      headers: { "Cache-Control": "private, no-store" },
+    return NextResponse.json(await issueCode(profile, body?.benefit_id), {
+      headers: noStore,
     });
   } catch (e) {
-    return NextResponse.json(
-      { error: e instanceof Error ? e.message : "Intenta nuevamente." },
-      { status: 429 },
-    );
+    return failure(e);
   }
 }
 export async function GET(request: NextRequest) {
   const profile = await currentProfile();
   if (!profile)
     return NextResponse.json({ error: "Inicia sesión." }, { status: 401 });
-  const parsed = uuidSchema.safeParse(
-    request.nextUrl.searchParams.get("token"),
-  );
-  if (!parsed.success)
-    return NextResponse.json({ error: "Código inválido." }, { status: 400 });
-  const { data, error } = await getSupabaseAdmin()
-    .from("rp_qr_tokens")
-    .select("status,expires_at")
-    .eq("token", parsed.data)
-    .eq("driver_id", profile.id)
-    .maybeSingle();
-  if (error)
+  try {
     return NextResponse.json(
-      { error: "No pudimos consultar el código." },
-      { status: 503 },
+      await codeStatus(profile.id, request.nextUrl.searchParams.get("token")),
+      { headers: noStore },
     );
-  if (!data)
-    return NextResponse.json(
-      { error: "Código no encontrado." },
-      { status: 404 },
-    );
-  return NextResponse.json(data, {
-    headers: { "Cache-Control": "private, no-store" },
-  });
+  } catch (e) {
+    return failure(e);
+  }
 }

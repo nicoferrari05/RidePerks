@@ -1,11 +1,9 @@
 import { redirect } from "next/navigation";
 import { requireBusiness } from "@/lib/platform/data";
-import { getSupabaseAdmin } from "@/lib/supabase-server";
 import {
-  loadBusinessStats,
-  periodRange,
-  periods,
-} from "@/components/platform/BusinessMetrics";
+  businessActivityData,
+  readPeriod,
+} from "@/lib/platform/business-screens";
 import { ActivityView } from "@/components/platform/business/views";
 export const metadata = { title: "Actividad · RidePerks" };
 export default async function Page({
@@ -15,41 +13,14 @@ export default async function Page({
 }) {
   const { business, profile, role } = await requireBusiness();
   if (!business || role !== "owner") redirect("/business");
-  const requested = (await searchParams).period;
-  const period = periods.some(([v]) => v === requested) ? requested! : "30";
-  const { from, until } = periodRange(period);
-  const db = getSupabaseAdmin();
-  const [stats, recent, ratings] = await Promise.all([
-    loadBusinessStats(business.id, profile.id, period),
-    db
-      .from("rp_redemptions")
-      .select("id,benefit_title,redeemed_at,redeemed_via")
-      .eq("business_id", business.id)
-      .order("redeemed_at", { ascending: false })
-      .limit(30),
-    db
-      .from("rp_redemption_feedback")
-      .select("rating,applied")
-      .eq("business_id", business.id)
-      .gte("created_at", from.toISOString())
-      .lt("created_at", until.toISOString())
-      .limit(5000),
-  ]);
-  if (recent.error) throw new Error("No pudimos cargar los usos.");
-  const rows = ratings.data || [];
-  const feedback = {
-    count: rows.length,
-    avg: rows.length
-      ? rows.reduce((s, r) => s + Number(r.rating), 0) / rows.length
-      : null,
-    notApplied: rows.filter((r) => !r.applied).length,
-  };
+  const period = readPeriod((await searchParams).period);
+  const d = await businessActivityData(business.id, profile.id, period);
   return (
     <ActivityView
-      stats={stats}
+      stats={d.stats}
       period={period}
-      recent={recent.data}
-      feedback={feedback}
+      recent={d.recent}
+      feedback={d.feedback}
     />
   );
 }

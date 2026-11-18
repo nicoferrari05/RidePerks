@@ -11,5 +11,7 @@ export default defineConfig([
     "test-results/**",
     "playwright-report/**",
     "next-env.d.ts",
+    // The phone app has its own lint (cd mobile && npx expo lint).
+    "mobile/**",
   ]),
 ]);

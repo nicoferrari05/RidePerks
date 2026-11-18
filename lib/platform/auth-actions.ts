@@ -1,12 +1,11 @@
 "use server";
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { createHash } from "node:crypto";
 import { createAuthClient, authConfigured } from "./supabase";
+import { authLimit, passwordSignIn } from "./login-core";
+import { checkNewPassword, PASSWORD_CHANGED } from "./self-service";
 import {
   signupSchema,
   emailSchema,
-  passwordSchema,
   firstError,
   safeNext,
 } from "./validation";
@@ -16,20 +15,6 @@ import { verifyTurnstile } from "@/lib/turnstile";
 import type { ActionState } from "./types";
 function siteUrl() {
   return process.env.SITE_URL || "https://rideperks.app";
-}
-async function authLimit(email: string) {
-  const ip =
-    (await headers()).get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    "unknown";
-  await rateLimit(
-    "auth-ip:" + createHash("sha256").update(ip).digest("hex"),
-    30,
-  );
-  await rateLimit(
-    "auth-email:" +
-      createHash("sha256").update(email.toLowerCase()).digest("hex"),
-    10,
-  );
 }
 export async function login(
   _: ActionState,
@@ -43,40 +28,13 @@ export async function login(
     return { error: "El acceso aún no está habilitado. Intenta más tarde." };
   try {
     await authLimit(email.data);
-    const auth = await createAuthClient();
-    const { error } = await auth.auth.signInWithPassword({
-      email: email.data,
+    const result = await passwordSignIn(
+      await createAuthClient(),
+      email.data,
       password,
-    });
-    if (error)
-      return {
-        error: "No pudimos iniciar sesión. Revisa tu correo y contraseña.",
-      };
-    const {
-      data: { user },
-    } = await auth.auth.getUser();
-    const profile = user
-      ? await getSupabaseAdmin()
-          .from("rp_profiles")
-          .select("role")
-          .eq("id", user.id)
-          .single()
-      : null;
-    if (!profile?.data || profile.error) {
-      await auth.auth.signOut({ scope: "local" });
-      return { error: "No pudimos cargar tu cuenta. Intenta nuevamente." };
-    }
-    const audience =
-      form.get("audience") === "business" ? "business" : "driver";
-    if (profile.data.role !== audience) {
-      await auth.auth.signOut({ scope: "local" });
-      return {
-        error:
-          profile.data.role === "business"
-            ? "Esta cuenta es de comercio. Selecciona Comercio para entrar."
-            : "Esta cuenta es de conductor. Selecciona Conductor para entrar.",
-      };
-    }
+      form.get("audience") === "business" ? "business" : "driver",
+    );
+    if ("error" in result) return { error: result.error };
   } catch (e) {
     return {
       error:
@@ -185,10 +143,11 @@ export async function changePassword(
   _: ActionState,
   form: FormData,
 ): Promise<ActionState> {
-  const parsed = passwordSchema.safeParse(form.get("password"));
-  if (!parsed.success) return { error: firstError(parsed.error) };
-  if (parsed.data !== form.get("confirmation"))
-    return { error: "Las contraseñas no coinciden." };
+  const checked = checkNewPassword(
+    form.get("password"),
+    form.get("confirmation"),
+  );
+  if ("error" in checked) return { error: checked.error };
   try {
     const auth = await createAuthClient();
     const {
@@ -196,15 +155,13 @@ export async function changePassword(
     } = await auth.auth.getUser();
     if (!user) return { error: "El enlace venció. Solicita uno nuevo." };
     await rateLimit("password:" + user.id, 5);
-    const { error } = await auth.auth.updateUser({ password: parsed.data });
+    const { error } = await auth.auth.updateUser({ password: checked.password });
     if (error)
       return {
         error:
           "No pudimos cambiar la contraseña. Solicita un nuevo enlace de recuperación.",
       };
-    return {
-      success: "Contraseña actualizada. Ya puedes usarla para iniciar sesión.",
-    };
+    return { success: PASSWORD_CHANGED };
   } catch {
     return { error: "No pudimos conectar. Intenta nuevamente." };
   }

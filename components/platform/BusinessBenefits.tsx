@@ -1,4 +1,4 @@
-import { getSupabaseAdmin } from "@/lib/supabase-server";
+export { loadBusinessBenefits } from "@/lib/platform/business-screens";
 import { MerchantBenefitForm, MerchantToggle } from "./MerchantForms";
 import type { Benefit } from "@/lib/platform/types";
 
@@ -11,29 +11,6 @@ type Revision = {
     React.ComponentProps<typeof MerchantBenefitForm>["payload"]
   > & { title: string };
 };
-
-export async function loadBusinessBenefits(businessId: string) {
-  const db = getSupabaseAdmin();
-  const [benefits, revisions] = await Promise.all([
-    db
-      .from("rp_benefits")
-      .select("*")
-      .eq("business_id", businessId)
-      .order("created_at", { ascending: false }),
-    db
-      .from("rp_benefit_revisions")
-      .select("*")
-      .eq("business_id", businessId)
-      .in("status", ["draft", "pending", "returned"])
-      .order("created_at", { ascending: false }),
-  ]);
-  if (benefits.error || revisions.error)
-    throw new Error("No pudimos consultar tus beneficios.");
-  return {
-    benefits: benefits.data as Benefit[],
-    revisions: revisions.data as Revision[],
-  };
-}
 
 function statusLabel(b: Benefit, today: string) {
   if (b.valid_until && b.valid_until < today) return ["Expirado", ""];

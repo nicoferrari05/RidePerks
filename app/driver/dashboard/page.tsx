@@ -1,46 +1,23 @@
 import { redirect } from "next/navigation";
-import {
-  requireDriver,
-  getRedemptions,
-  getMonthlySavings,
-  getTotalSavings,
-  catalogLive,
-  getBenefits,
-  unreadNotifications,
-  getVerification,
-} from "@/lib/platform/data";
-import { getSupabaseAdmin } from "@/lib/supabase-server";
-import { decorateBenefit } from "@/lib/platform/catalog";
+import { requireDriver } from "@/lib/platform/data";
+import { dashboardData } from "@/lib/platform/driver-screens";
 import { DashboardView } from "@/components/platform/driver/views";
 export default async function Page() {
   const p = await requireDriver();
   // null = new account; undefined would mean the column is not migrated yet.
   if (p.onboarded_at === null) redirect("/driver/welcome");
-  const [history, monthly, total, live, access, unread, verification] =
-    await Promise.all([
-    getRedemptions(p.id),
-    getMonthlySavings(p.id),
-    getTotalSavings(p.id),
-    catalogLive(),
-    getSupabaseAdmin().rpc("rp_has_access", { p_driver: p.id }),
-    unreadNotifications(p.id),
-    p.status === "verified" ? null : getVerification(p.id),
-  ]);
-  if (access.error) throw new Error("No pudimos consultar tu membresía.");
-  const featured = live
-    ? (await getBenefits()).slice(0, 6).map((b) => decorateBenefit(b))
-    : [];
+  const d = await dashboardData(p);
   return (
     <DashboardView
       profile={p}
-      monthly={monthly}
-      total={total}
-      history={history}
-      featured={featured}
-      live={live}
-      hasAccess={Boolean(access.data)}
-      verificationPending={verification?.status === "pending"}
-      unread={unread}
+      monthly={d.monthly}
+      total={d.total}
+      history={d.history}
+      featured={d.featured}
+      live={d.live}
+      hasAccess={d.hasAccess}
+      verificationPending={d.verificationPending}
+      unread={d.unread}
     />
   );
 }

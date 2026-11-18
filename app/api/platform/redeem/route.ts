@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  currentProfile,
-  rateLimit,
-  resolveQrToken,
-} from "@/lib/platform/data";
-import { getSupabaseAdmin } from "@/lib/supabase-server";
+import { currentProfile } from "@/lib/platform/data";
+import { redeemCode } from "@/lib/platform/counter";
+import { AppError } from "@/lib/platform/app-api";
+// Business account: confirms a code and registers the use. The rules live in lib/platform/counter.ts, shared with the
+// phone app.
 export async function POST(request: NextRequest) {
   if (request.headers.get("origin") !== request.nextUrl.origin)
     return NextResponse.json(
@@ -12,52 +11,21 @@ export async function POST(request: NextRequest) {
       { status: 403 },
     );
   const profile = await currentProfile();
-  if (!profile || profile.role !== "business" || profile.status === "suspended")
-    return NextResponse.json(
-      { error: "Inicia sesión como comercio." },
-      { status: 401 },
-    );
-  try {
-    await rateLimit("redeem:" + profile.id, 120, 600);
-  } catch {
-    return NextResponse.json(
-      {
-        error: "Demasiados intentos. Espera unos minutos y vuelve a intentar.",
-      },
-      { status: 429 },
-    );
-  }
   let body;
   try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json({ error: "Solicitud inválida." }, { status: 400 });
-  }
-  const token = await resolveQrToken(body?.token);
-  if (!token)
-    return NextResponse.json({ error: "Código inválido." }, { status: 400 });
-  try {
-    const { data, error } = await getSupabaseAdmin().rpc("rp_redeem_token", {
-      p_owner: profile.id,
-      p_token: token,
-    });
-    if (error)
-      return NextResponse.json(
-        {
-          error:
-            error.code === "P0001"
-              ? error.message
-              : "No pudimos registrar el uso.",
-        },
-        { status: 400 },
-      );
-    return NextResponse.json(data, {
+    if (!profile || profile.role !== "business" || profile.status === "suspended")
+      throw new AppError("Inicia sesión como comercio.", 401);
+    try {
+      body = await request.json();
+    } catch {
+      throw new AppError("Solicitud inválida.", 400);
+    }
+    return NextResponse.json(await redeemCode(profile, body?.token), {
       headers: { "Cache-Control": "private, no-store" },
     });
   } catch (e) {
-    return NextResponse.json(
-      { error: e instanceof Error ? e.message : "Intenta nuevamente." },
-      { status: 429 },
-    );
+    if (e instanceof AppError)
+      return NextResponse.json({ error: e.message }, { status: e.status });
+    return NextResponse.json({ error: "Intenta nuevamente." }, { status: 500 });
   }
 }
