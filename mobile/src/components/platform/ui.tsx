@@ -492,7 +492,7 @@ export function SubHeader({ title, action }: { title: string; action?: ReactNode
       }}
     >
       <PressScale
-        onPress={() => (router.canGoBack() ? router.back() : router.replace("/(tabs)/index"))}
+        onPress={() => (router.canGoBack() ? router.back() : router.replace("/(tabs)"))}
         accessibilityRole="button"
         accessibilityLabel="Volver"
         style={{

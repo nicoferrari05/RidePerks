@@ -11,7 +11,6 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import * as Haptics from "expo-haptics";
-import * as WebBrowser from "expo-web-browser";
 import { Enter } from "@/components/Enter";
 import {
   AudienceSwitch,
@@ -25,7 +24,6 @@ import {
 import { useSession, type Audience } from "@/lib/session";
 import { api, currentPinSession, savePinSession } from "@/lib/api";
 import { router } from "expo-router";
-import { WEB_URL } from "@/lib/config";
 import { auth } from "@/theme/tokens";
 
 // Same screen as the web's /login and /business/login
@@ -36,13 +34,11 @@ const COPY = {
     title: "Qué bueno verte de vuelta.",
     question: "¿Primera vez por aquí?",
     create: "Crear cuenta gratis →",
-    register: "/register",
   },
   business: {
     title: "Tu comercio, conectado.",
     question: "¿Tu comercio aún no tiene cuenta?",
     create: "Registrar responsable →",
-    register: "/business/register",
   },
 } as const;
 
@@ -117,10 +113,6 @@ export default function LoginScreen() {
     }
   }
 
-  // Registration and password recovery still happen on the web for now.
-  const openWeb = (path: string) =>
-    void WebBrowser.openBrowserAsync(WEB_URL + path);
-
   return (
     <SafeAreaView style={styles.screen} edges={["top", "bottom"]}>
       <StatusBar style="dark" />
@@ -165,7 +157,7 @@ export default function LoginScreen() {
                       password
                       secretName="PIN"
                       value={pin}
-                      onChangeText={(v) => setPin(v.replace(/D/g, ""))}
+                      onChangeText={(v) => setPin(v.replace(/\D/g, ""))}
                       keyboardType="number-pad"
                       autoComplete="off"
                       maxLength={8}
@@ -229,7 +221,7 @@ export default function LoginScreen() {
                     />
                   </Enter>
                   <Enter delay={600} style={styles.forgot}>
-                    <TextLink onPress={() => openWeb("/recover")}>
+                    <TextLink onPress={() => router.push("/recover")}>
                       Olvidé mi contraseña
                     </TextLink>
                   </Enter>
@@ -246,7 +238,11 @@ export default function LoginScreen() {
                 <Enter delay={900}>
                   <Text style={[authText.small, styles.center]}>
                     {copy.question}{" "}
-                    <TextLink onPress={() => openWeb(copy.register)}>
+                    <TextLink
+                      onPress={() =>
+                        router.push({ pathname: "/register", params: { audience } })
+                      }
+                    >
                       {copy.create}
                     </TextLink>
                   </Text>

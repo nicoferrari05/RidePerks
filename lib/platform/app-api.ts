@@ -1,4 +1,6 @@
 import "server-only";
+import type { Session } from "@supabase/supabase-js";
+import { getSupabaseAdmin } from "@/lib/supabase-server";
 import { currentProfile } from "./data";
 import type { ActionState, Profile } from "./types";
 
@@ -144,4 +146,30 @@ export function publicProfile(profile: Profile) {
     role: profile.role,
     onboarded_at: profile.onboarded_at ?? null,
   };
+}
+
+/**
+ * What sign-in and sign-up send back to the phone: the session as tokens
+ * (kept in the phone's secure storage) and the person's public profile.
+ */
+export async function appSession(userId: string, session: Session) {
+  const { data, error } = await getSupabaseAdmin()
+    .from("rp_profiles")
+    .select("*")
+    .eq("id", userId)
+    .single();
+  if (error || !data) throw new AppError("No pudimos cargar tu cuenta.", 500);
+  return {
+    session: {
+      access_token: session.access_token,
+      refresh_token: session.refresh_token,
+      expires_at: session.expires_at,
+    },
+    profile: publicProfile(data as Profile),
+  };
+}
+
+/** Rate-limit errors from the shared rules become a 429 for the app. */
+export function tooMany(e: unknown): never {
+  throw new AppError(e instanceof Error ? e.message : "Intenta más tarde.", 429);
 }

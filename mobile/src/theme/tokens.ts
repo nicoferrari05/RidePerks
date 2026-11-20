@@ -100,6 +100,8 @@ export const auth = {
   link: "#3b341f", // --color-ember (text-ember)
   errorBg: "#ffe0d8", // --color-ember-soft
   errorText: "#ab2a09", // --color-ember-2
+  successBg: "rgba(16, 11, 0, 0.07)", // --rp-success-bg (app/auth.css)
+  successText: "#100b00", // --rp-success-fg
   placeholder: "rgba(16, 11, 0, 0.5)", // Tailwind's placeholder: text at 50%
   inputBg: "rgba(16, 11, 0, 0.05)", // bg-foreground/5
   inputFocusBorder: "rgba(59, 52, 31, 0.6)", // border-ember/60

@@ -3,14 +3,9 @@ import { redirect } from "next/navigation";
 import { createAuthClient, authConfigured } from "./supabase";
 import { authLimit, passwordSignIn } from "./login-core";
 import { checkNewPassword, PASSWORD_CHANGED } from "./self-service";
-import {
-  signupSchema,
-  emailSchema,
-  firstError,
-  safeNext,
-} from "./validation";
+import { emailSchema, firstError, safeNext } from "./validation";
 import { rateLimit } from "./data";
-import { getSupabaseAdmin } from "@/lib/supabase-server";
+import { createAccount } from "./signup-core";
 import { verifyTurnstile } from "@/lib/turnstile";
 import type { ActionState } from "./types";
 function siteUrl() {
@@ -45,50 +40,24 @@ export async function login(
   }
   redirect(safeNext(form.get("next")));
 }
-// Launch decision: web registration creates confirmed email identities without sending email.
-// Driver verification and permission to redeem remain a separate manual process.
+// Account rules live in signup-core (shared with the phone app). The web
+// adds its Turnstile check and signs the new account in with cookies.
 async function registerAccount(
   form: FormData,
   audience: "driver" | "business",
 ): Promise<ActionState> {
-  const raw = Object.fromEntries(form);
-  const parsed = signupSchema.safeParse(
-    audience === "business" ? { ...raw, platform: "multiple" } : raw,
-  );
-  if (!parsed.success) return { error: firstError(parsed.error) };
-  if (!authConfigured())
-    return { error: "El registro aún no está habilitado. Intenta más tarde." };
   try {
-    await verifyTurnstile(form.get("cf-turnstile-response"));
-    await authLimit(parsed.data.email);
-    const { email, password, full_name, phone, platform } = parsed.data;
-    const db = getSupabaseAdmin();
-    // createUser rejects duplicates. Never confirm or modify an existing account here.
-    const { data, error } = await db.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true,
-      user_metadata: { full_name, phone, platform },
-    });
-    if (error || !data.user)
-      return {
-        error:
-          "No pudimos crear la cuenta. Si ya estás registrado, inicia sesión con tu contraseña.",
-      };
-    if (audience === "business") {
-      const assigned = await db
-        .from("rp_profiles")
-        .update({ role: "business" })
-        .eq("id", data.user.id);
-      if (assigned.error) {
-        await db.auth.admin.deleteUser(data.user.id);
-        return {
-          error: "No pudimos crear la cuenta del comercio. Intenta nuevamente.",
-        };
-      }
-    }
+    const created = await createAccount(
+      Object.fromEntries(form),
+      audience,
+      () => verifyTurnstile(form.get("cf-turnstile-response")),
+    );
+    if ("error" in created) return { error: created.error };
     const auth = await createAuthClient();
-    const signed = await auth.auth.signInWithPassword({ email, password });
+    const signed = await auth.auth.signInWithPassword({
+      email: created.email,
+      password: created.password,
+    });
     if (signed.error)
       return {
         success:

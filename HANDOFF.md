@@ -75,9 +75,13 @@ As of November 18, 2026 the current project is **the native phone app**
   web, rebuilt natively, on the same backend through `/api/app/*`. The user
   tried it on their iPhone with Expo Go and said it looks right; the only
   fix asked for was removing the dock's dark glow (done).
+- **Done, not pushed** (November 20): sign-up, password recovery and the
+  welcome screens inside the app (§10).
 - **Not tested for real yet:** a Yappy payment from the app, scanning a QR
-  between two phones, uploads (verification, logo/photos) and the CSV share
-  sheet on a device.
+  between two phones, uploads (verification, logo/photos), the CSV share
+  sheet on a device, and creating a real new account from the app (only
+  tested with simulated server answers, since local dev uses the production
+  database).
 - **Next, in this order:**
   1. **Accounts (user).** Apple Developer ($99/yr), Google Play ($25) and the
      company's D-U-N-S (Apple needs it to enroll as an organization). Plan:
@@ -126,12 +130,11 @@ land.
 - [ ] **Demo accounts for the reviewer.** *User* creates them in production:
   a verified driver with an active membership (the reviewer won't pay or
   verify), a business owner, and a test PIN. They go in App Store Connect.
-- [ ] **Registration and password recovery inside the app.** Today
-  `mobile/src/app/login.tsx` opens the web for `/register`,
-  `/business/register` and `/recover`. *AI:* build driver sign-up, business
-  sign-up and password recovery natively (reuse the web's rules through
-  `/api/app`), with the privacy policy linked on the sign-up screen. Also the
-  driver welcome screen (web `/driver/welcome`; the app skips it today).
+- [x] **Registration and password recovery inside the app** (November 20,
+  2026). `mobile/src/app/register.tsx` (driver and business owner, terms and
+  privacy policy linked), `recover.tsx` and the driver welcome screens
+  `welcome.tsx`. Same rules as the web through `lib/platform/signup-core.ts`.
+  Not yet tried on a real phone with a real new account (§2).
 - [ ] **Guideline 4.2 (not just a website).** Camera, haptics, keychain and
   PDF printing already exist. *AI:* add **push notifications**
   (`expo-notifications`, a device-token table + migration, send from the
@@ -502,10 +505,16 @@ ruled out Capacitor (a web view inside an app). Same backend, same look.
   (`lib/platform/app-api.ts`: JSON, no-store, 401 means "sign in again"; dev
   CORS only for Expo web on :8081). Web form actions are reused through
   `runAction()` (owner refusals map to 403). Sign-in rules are shared through
-  `lib/platform/login-core.ts` (kept out of "use server" files on purpose).
+  `lib/platform/login-core.ts` and sign-up rules (`createAccount`,
+  `markOnboarded`) through `lib/platform/signup-core.ts`, both kept out of
+  "use server" files on purpose. `appSession()` builds the tokens + profile
+  answer for login and register.
 - **Endpoints:** auth: `POST auth/login` (same checks as the web, returns
-  tokens), `auth/refresh`, `auth/logout` (revokes only that phone's
-  session); `GET me`; driver: `home`, `benefits`, `benefits/[id]`,
+  tokens), `auth/register` (driver or business owner; returns tokens like
+  login), `auth/recover` (same email as the web; the link opens the web to
+  pick the new password), `auth/refresh`, `auth/logout` (revokes only that
+  phone's session); `GET me`; driver: `onboarding` (POST, welcome seen),
+  `home`, `benefits`, `benefits/[id]`,
   `directory`, `history`, `account`, `favorites`, `feedback`, `codes`
   (POST), `codes/[token]`, `profile`, `verification` (GET, multipart POST),
   `support`, `membership`, `membership/pay`, `receipts/[id]`;
@@ -540,8 +549,17 @@ ruled out Capacitor (a web view inside an app). Same backend, same look.
   Datos personales, Membresía (plan picker, Yappy number, consent,
   payments), recibo (`receipt/[id]`, PDF via expo-print), Verificación
   (shrinks the screenshot to 1600px JPEG, multipart upload), Ayuda,
-  Contraseña, Eliminar cuenta. **Registration, password recovery and the
-  welcome screen are not in the app yet** (§3).
+  Contraseña, Eliminar cuenta.
+- **Sign-up and welcome:** `register.tsx` (Conductor/Comercio switch without
+  PIN, platform as pills, terms checkbox; `?audience=business` from the
+  login's Comercio tab) and `recover.tsx`, both signed-out only. A new
+  driver (`onboarded_at` null) is sent by `(tabs)/_layout.tsx` to
+  `welcome.tsx` (3 steps like the web's `/driver/welcome`); Saltar or the
+  last button POST `driver/onboarding`, so the web won't show it again
+  either. The last button opens Verificación. **No Turnstile in the app**
+  (a native app can't show it): instead `auth/register` allows 10 accounts
+  per IP per hour (`app-signup-ip:`), plus the usual sign-in limits. Mobile
+  carriers share IPs, so raise it if real sign-ups get blocked.
 - **Business screens (`src/app/business/`, `src/app/manage/`):** owners get
   Escanear, Actividad, Beneficios, Cuenta; staff get Escanear, Cuenta.
   Escanear uses expo-camera (QR only) plus the typed-code field, then
@@ -662,6 +680,10 @@ staging environment, offline mode.
 
 ## 14. Session history
 
+- **November 20, 2026** — Sign-up (driver and business), password recovery
+  and the welcome screens inside the app, on shared server rules
+  (`signup-core.ts`). Also fixed the PIN field filter in `login.tsx`
+  (`/D/` → `/\D/`) and two typed-route paths (`/business`, `/(tabs)`).
 - **November 18, 2026** — Built the whole phone app (`6d3777f`): `/api/app`
   with bearer tokens over the same `lib/platform` code, shared loaders/rules
   pulled out of web pages (the web uses them too, same behavior), all driver

@@ -52,6 +52,7 @@ function Routes() {
     <Stack screenOptions={{ headerShown: false, animation: "slide_from_right" }}>
       <Stack.Protected guard={role === "driver"}>
         <Stack.Screen name="(tabs)" options={{ animation: "fade" }} />
+        <Stack.Screen name="welcome" options={{ animation: "fade", gestureEnabled: false }} />
         <Stack.Screen name="benefit/[id]" />
         <Stack.Screen name="settings/profile" />
         <Stack.Screen name="settings/membership" />
@@ -76,6 +77,8 @@ function Routes() {
       <Stack.Protected guard={!signedIn}>
         <Stack.Screen name="login" options={{ animation: "fade" }} />
         <Stack.Screen name="pin" options={{ animation: "fade" }} />
+        <Stack.Screen name="register" />
+        <Stack.Screen name="recover" />
       </Stack.Protected>
     </Stack>
   );

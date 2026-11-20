@@ -78,7 +78,7 @@ export default function BusinessAccountScreen() {
               forgetCachedData();
               setPicked(null);
               await reload();
-              router.navigate("/business/index");
+              router.navigate("/business");
             }}
           />
         </View>

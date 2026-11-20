@@ -8,7 +8,7 @@ import {
   type TextInputInstance,
   type TextInputProps,
 } from "react-native";
-import { CarFront, Eye, EyeOff, KeyRound, Store } from "lucide-react-native";
+import { Check, CarFront, Eye, EyeOff, KeyRound, Store } from "lucide-react-native";
 import { PressScale } from "./PressScale";
 import { auth, font } from "@/theme/tokens";
 import type { Audience } from "@/lib/session";
@@ -21,15 +21,17 @@ export type AccessTab = Audience | "pin";
 export function AudienceSwitch({
   value,
   onChange,
+  withPin = true,
 }: {
   value: AccessTab;
   onChange: (value: AccessTab) => void;
+  /** Sign-in offers a third way in (the business PIN); sign-up doesn't. */
+  withPin?: boolean;
 }) {
-  // Sign-in offers a third way in: the business PIN for on-site staff.
   const options = [
     { id: "driver" as const, label: "Conductor", Icon: CarFront },
     { id: "business" as const, label: "Comercio", Icon: Store },
-    { id: "pin" as const, label: "PIN", Icon: KeyRound },
+    ...(withPin ? [{ id: "pin" as const, label: "PIN", Icon: KeyRound }] : []),
   ];
   return (
     <View style={styles.switch} accessibilityRole="tablist" accessibilityLabel="Tipo de acceso">
@@ -108,10 +110,91 @@ export function Field({
   );
 }
 
-export function Notice({ children }: { children: ReactNode }) {
+/** `.rp-error` / `.rp-success` on the sign-in screens. */
+export function Notice({
+  children,
+  tone = "error",
+}: {
+  children: ReactNode;
+  tone?: "error" | "success";
+}) {
+  const success = tone === "success";
   return (
-    <View style={styles.notice} accessibilityRole="alert">
-      <Text style={styles.noticeText}>{children}</Text>
+    <View
+      style={[styles.notice, success && styles.noticeSuccess]}
+      accessibilityRole={success ? "summary" : "alert"}
+      accessibilityLiveRegion="polite"
+    >
+      <Text style={[styles.noticeText, success && styles.noticeSuccessText]}>{children}</Text>
+    </View>
+  );
+}
+
+/** A small set of choices as pills (the web's <select> on sign-up). */
+export function Choices<T extends string>({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  value: T | "";
+  options: { id: T; label: string }[];
+  onChange: (value: T) => void;
+}) {
+  return (
+    <View>
+      <Text style={styles.label}>{label}</Text>
+      <View style={styles.choices} accessibilityRole="radiogroup" accessibilityLabel={label}>
+        {options.map((option) => {
+          const active = option.id === value;
+          return (
+            <PressScale
+              key={option.id}
+              accessibilityRole="radio"
+              accessibilityState={{ checked: active }}
+              onPress={() => onChange(option.id)}
+              style={[styles.choice, active && styles.choiceActive]}
+            >
+              <Text style={[styles.choiceText, active && styles.choiceTextActive]}>
+                {option.label}
+              </Text>
+            </PressScale>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
+
+/** `.rp-check`: a checkbox with its sentence (links inside stay tappable). */
+export function Checkbox({
+  checked,
+  onChange,
+  label,
+  children,
+}: {
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  /** What a screen reader says for the box. */
+  label: string;
+  children: ReactNode;
+}) {
+  return (
+    <View style={styles.check}>
+      <Pressable
+        onPress={() => onChange(!checked)}
+        accessibilityRole="checkbox"
+        accessibilityState={{ checked }}
+        accessibilityLabel={label}
+        hitSlop={10}
+        style={[styles.box, checked && styles.boxOn]}
+      >
+        {checked && <Check size={16} color={auth.primaryFg} strokeWidth={3} />}
+      </Pressable>
+      <Text style={styles.checkText} onPress={() => onChange(!checked)} suppressHighlighting>
+        {children}
+      </Text>
     </View>
   );
 }
@@ -140,9 +223,22 @@ export function PrimaryButton({
   );
 }
 
-export function TextLink({ children, onPress }: { children: ReactNode; onPress: () => void }) {
+export function TextLink({
+  children,
+  onPress,
+  underline = false,
+}: {
+  children: ReactNode;
+  onPress: () => void;
+  underline?: boolean;
+}) {
   return (
-    <Text style={styles.link} onPress={onPress} accessibilityRole="link" suppressHighlighting>
+    <Text
+      style={[styles.link, underline && styles.underline]}
+      onPress={onPress}
+      accessibilityRole="link"
+      suppressHighlighting
+    >
       {children}
     </Text>
   );
@@ -234,6 +330,39 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: auth.errorText,
   },
+  noticeSuccess: { backgroundColor: auth.successBg },
+  noticeSuccessText: { color: auth.successText },
+  choices: { flexDirection: "row", flexWrap: "wrap", gap: 8, marginTop: 8 },
+  choice: {
+    minHeight: 44,
+    paddingHorizontal: 16,
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: auth.border,
+    borderRadius: 999,
+  },
+  choiceActive: { backgroundColor: auth.switchActiveBg, borderColor: auth.switchActiveBg },
+  choiceText: { fontFamily: font.medium, fontSize: 14.5, color: auth.text },
+  choiceTextActive: { color: auth.switchActiveFg },
+  check: { flexDirection: "row", alignItems: "flex-start", gap: 12 },
+  box: {
+    width: 24,
+    height: 24,
+    marginTop: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1.5,
+    borderColor: auth.text,
+    borderRadius: 7,
+  },
+  boxOn: { backgroundColor: auth.primary, borderColor: auth.primary },
+  checkText: {
+    flex: 1,
+    fontFamily: font.regular,
+    fontSize: 14,
+    lineHeight: 22,
+    color: auth.muted,
+  },
   button: {
     width: "100%",
     alignItems: "center",
@@ -248,6 +377,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: auth.primaryFg,
   },
+  underline: { textDecorationLine: "underline", color: auth.text },
   link: {
     fontFamily: font.regular,
     fontSize: 14,

@@ -14,6 +14,7 @@ const WEB_TO_APP: [RegExp, (m: RegExpMatchArray) => string][] = [
   [/^\/driver\/membership\/receipt\/([a-zA-Z0-9]{1,15})$/, (m) => "/receipt/" + m[1]],
   [/^\/driver\/membership(\?.*)?$/, () => "/settings/membership"],
   [/^\/driver\/verify$/, () => "/settings/verify"],
+  [/^\/driver\/welcome$/, () => "/welcome"],
   [/^\/driver\/help$/, () => "/settings/help"],
   [/^\/driver\/password$/, () => "/settings/password"],
   [/^\/account\/delete$/, () => "/settings/delete"],

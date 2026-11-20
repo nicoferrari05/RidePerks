@@ -6,16 +6,13 @@ import { getSupabaseAdmin } from "@/lib/supabase-server";
 import { currentProfile, rateLimit, requireDriver } from "./data";
 import { createAuthClient } from "./supabase";
 import { closeOwnAccount } from "./self-service";
+import { markOnboarded } from "./signup-core";
 import type { ActionState } from "./types";
 
 // Welcome screens: shown once, then the driver goes to their first step.
 export async function finishOnboarding(form: FormData) {
   const profile = await requireDriver();
-  await getSupabaseAdmin()
-    .from("rp_profiles")
-    .update({ onboarded_at: new Date().toISOString() })
-    .eq("id", profile.id)
-    .is("onboarded_at", null);
+  await markOnboarded(profile.id);
   revalidatePath("/driver", "layout");
   redirect(
     form.get("next") === "/driver/verify" ? "/driver/verify" : "/driver/dashboard",
