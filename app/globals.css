@@ -68,13 +68,11 @@
 }
 
 /* Palette: pitch black #100B00, yellow green #85CB33, frosted mint #EFFFC8,
-   ash grey #A5CBC3, dark khaki #3B341F. Since November 2026 the page is
-   white (like the footer it was redesigned around); mint is the soft
-   surface for cards and green the fluted-glass panels. */
+   ash grey #A5CBC3, dark khaki #3B341F. */
 .lp {
-  --lp-bg: #ffffff;
-  --lp-surface: #efffc8;
-  --lp-surface-2: #e2f3b3;
+  --lp-bg: #efffc8;
+  --lp-surface: #e2f3b3;
+  --lp-surface-2: #d6ec9c;
   --lp-fg: #100b00;
   --lp-muted: #3b341f;
   --lp-line: rgba(16, 11, 0, 0.14);
@@ -86,34 +84,12 @@
   --lp-band-line: rgba(239, 255, 200, 0.16);
   --lp-pill: #85cb33;
   --lp-pill-fg: #100b00;
-  --lp-glass-tint: #ffffff;
-  /* Outlined display type (.lp-outline), the footer's big wordmark. */
-  --lp-stroke: rgba(16, 11, 0, 0.32);
+  --lp-glass-tint: #efffc8;
   --lp-glass-line: rgba(255, 255, 255, 0.6);
   --lp-glass-hi: rgba(255, 255, 255, 0.85);
 }
 html[data-lp-theme="light"] body {
-  background: #ffffff;
-}
-/* Outlined display type: the footer's giant wordmark, the hero's backdrop
-   word, step numbers. Decorative only (aria-hidden), never body copy. */
-.lp-outline {
-  color: transparent;
-  -webkit-text-stroke: 1.5px var(--lp-stroke);
-  user-select: none;
-}
-/* The fluted-glass shader fades in over its panel's flat color. */
-@keyframes lp-fluted-in {
-  from {
-    opacity: 0;
-  }
-}
-.lp-fluted-in {
-  animation: lp-fluted-in 500ms ease-out both;
-}
-.lp-outline-strong {
-  color: transparent;
-  -webkit-text-stroke: 1.5px var(--lp-fg);
+  background: #efffc8;
 }
 .lp ::selection {
   background: var(--lp-fg);

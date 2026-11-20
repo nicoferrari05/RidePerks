@@ -1052,33 +1052,22 @@ html[data-rp-theme="dark"] .rp-app .rp-field select {
   font-weight: 600;
   pointer-events: none;
 }
-.rp-app .maplibregl-ctrl-attrib {
-  font-size: 10px;
+/* The map's only credit: one small line, required by the OpenStreetMap
+   data license. No box, no icon. */
+.rp-app .rp-map-credit {
+  position: absolute;
+  right: 10px;
+  bottom: 6px;
+  z-index: 2;
+  font-size: 9px;
+  line-height: 1;
+  color: rgba(16, 11, 0, 0.55);
+  text-decoration: none;
+  text-shadow: 0 0 3px rgba(255, 255, 255, 0.9);
 }
-/* The platform's accordion (details/summary) styles must not reach the
-   map's credits, which are a details element too. */
-.rp-app details.maplibregl-ctrl-attrib {
-  border-bottom: 0;
-}
-.rp-app .maplibregl-ctrl-attrib-button {
-  display: block;
-  height: 24px;
-  min-height: 0;
-  padding: 0;
-  background-repeat: no-repeat;
-}
-.rp-app .maplibregl-ctrl-attrib-button::after {
-  content: none;
-}
-html[data-rp-theme="dark"] .rp-app .maplibregl-ctrl-attrib {
-  background: rgba(38, 34, 26, 0.88);
-  color: var(--rp-muted);
-}
-html[data-rp-theme="dark"] .rp-app .maplibregl-ctrl-attrib a {
-  color: var(--rp-text);
-}
-html[data-rp-theme="dark"] .rp-app .maplibregl-ctrl-attrib-button {
-  filter: invert(1);
+html[data-rp-theme="dark"] .rp-app .rp-map-credit {
+  color: rgba(255, 255, 255, 0.55);
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.9);
 }
 /* A pin brings its business card into view and flashes it once. */
 .rp-app [data-flash] {

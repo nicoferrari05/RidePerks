@@ -16,7 +16,6 @@ import {
   type VerticalCutRevealRef,
 } from "@/components/ui/vertical-cut-reveal";
 import { cn } from "@/lib/utils";
-import FlutedGlassBackdrop from "@/components/ui/fluted-glass-backdrop";
 
 type Period = "monthly" | "annual";
 
@@ -244,9 +243,8 @@ export default function PricingSection() {
           timelineRef={sectionRef}
           customVariants={reveal}
         >
-          <Card className="relative isolate flex h-full flex-col justify-between overflow-hidden rounded-[26px] border-none bg-gradient-to-b from-[#1d180b] to-lp-band text-lp-band-fg shadow-[0_30px_60px_-30px_rgba(16,11,0,0.7)]">
-            <FlutedGlassBackdrop tone="dark" size={0.75} />
-            <CardContent className="relative p-6 sm:p-8">
+          <Card className="relative flex h-full flex-col justify-between rounded-[26px] border-none bg-gradient-to-b from-[#1d180b] to-lp-band text-lp-band-fg shadow-[0_30px_60px_-30px_rgba(16,11,0,0.7)]">
+            <CardContent className="p-6 sm:p-8">
               <div className="flex items-start justify-between gap-3">
                 <p className="flex items-baseline gap-1.5">
                   <span className="text-[3.25rem] font-semibold leading-none tracking-[-0.04em]">
@@ -279,7 +277,7 @@ export default function PricingSection() {
                 dark
               />
             </CardContent>
-            <CardFooter className="relative flex-col gap-3 p-6 pt-0 sm:p-8 sm:pt-0">
+            <CardFooter className="flex-col gap-3 p-6 pt-0 sm:p-8 sm:pt-0">
               <Link
                 href="/register"
                 className={cn(

@@ -247,16 +247,15 @@ one page with long-form text.
 | --- | --- |
 | Pitch black (text, dark bands) | `#100B00` |
 | Yellow green (landing only: buttons, active states) | `#85CB33` |
-| Frosted mint (soft surface: landing cards, pricing) | `#EFFFC8` |
+| Frosted mint (light background) | `#EFFFC8` |
 | Dark khaki (dark-mode bands, secondary surfaces) | `#3B341F` |
 | Ash grey `#A5CBC3` | Part of the palette but **intentionally unused**; the user asked to avoid it |
 
-**White backgrounds since November 20, 2026**: the landing and every
-sign-in screen (web and app) moved from mint to white at the user's request.
-Mint stays as the soft surface for cards. The landing's look now comes from
-the footer the user supplied: **giant outlined type** (`.lp-outline`,
-`.lp-outline-strong`) and **yellow-green or black panels with a fluted-glass
-shader** (`components/ui/fluted-glass-backdrop.tsx`).
+**Sign-in screens are white since November 20, 2026** (web and app, at the
+user's request); the landing stays mint. A landing redesign around a
+supplied footer (white page, giant outlined type, fluted-glass shader
+panels) shipped in `da59964` and **the user asked to undo it the same day**;
+don't bring it back unless asked.
 
 Font: Geist (`next/font`; `@expo-google-fonts/geist` in the app), wordmark
 "RIDEPERKS" as plain text (no pill) via `<LogoMark variant="text" />`.
@@ -290,7 +289,7 @@ tokens in `app/globals.css`. The app mirrors them (`PressScale`, `Enter`).
 1. **Landing** (`/`, `/about`) — Tailwind + CSS variables `--lp-*` scoped to
    `.lp` (see `components/landing/LandingShell.tsx`). **Light only** (the
    user removed the theme switcher and the dark/dim themes on November 11,
-   2026). `ThemeSync` sets `html[data-lp-theme="light"]` (white body
+   2026). `ThemeSync` sets `html[data-lp-theme="light"]` (mint body
    background for overscroll) and removes it when leaving the landing.
    Tokens live in `app/globals.css`; use `bg-lp-bg`, `text-lp-fg`,
    `bg-lp-accent`, etc.
@@ -361,28 +360,16 @@ tokens in `app/globals.css`. The app mirrors them (`PressScale`, `Enter`).
 
 ## 8. Landing
 
-`app/page.tsx`: Nav, Hero (the app's home screen in a phone, two floating
-cards, and a giant outlined "RIDEPERKS" behind the phone from 640px up),
-Benefits (mint cards; "¿Tienes un comercio?" is a green fluted panel),
-HowItWorks (big outlined step numbers), AppShowcase (`#app`, four real
-screens, outlined numbers), SavingsBand (black band with fluted glass),
-Manifesto (first line outlined), Pricing (the Membresía card has fluted
-glass), Footer, MobileCTA. **No loading animation**: the splash screen was
-removed on November 20, 2026 at the user's request (the marquee and hero tag
-went in `170c20e`; JoinCTA was folded into the footer).
+`app/page.tsx`: Nav, Hero (the app's home screen in a phone and two floating
+cards), Benefits, HowItWorks, AppShowcase (`#app`, four real screens),
+SavingsBand (dark band with the notification screen), Manifesto, Pricing,
+JoinCTA (`#unete`), Footer, MobileCTA. **No loading animation**: the splash
+screen was removed on November 20, 2026 at the user's request (the marquee
+and hero tag went in `170c20e`).
 
-- **Footer** (`components/ui/footer-section-5.tsx`, adapted from the
-  21st.dev component the user supplied; `components/sections/Footer.tsx`
-  passes the contact address): giant outlined "RIDEPERKS" sinking into a
-  yellow-green panel with the fluted-glass shader. The panel holds the last
-  call to action (`#unete`, which MobileCTA watches), **"Contáctanos"**
-  (`mailto:` `SUPPORT_EMAIL`, falling back to `soporte@rideperks.app`),
-  Instagram and the link columns. Used by `/` and `/about`.
-- **Fluted glass** (`@paper-design/shaders-react` `FlutedGlass`): static
-  WebGL, loaded only near the screen, pixel count capped. It's on four
-  panels (business band, SavingsBand, Membresía card, footer); don't add
-  many more, each one is a WebGL context.
-
+- **Footer** (`components/sections/Footer.tsx`, black band): logo,
+  **"Contáctanos"** (`mailto:` `SUPPORT_EMAIL`, falling back to
+  `soporte@rideperks.app`) and Instagram, then the link columns.
 - **App screenshots**: `public/landing/app-*.png` (1170×2532, supplied by the
   user), shown with `components/landing/PhoneFrame.tsx`. The businesses and
   amounts in them are examples; AppShowcase says so in a note under the
@@ -438,7 +425,10 @@ went in `170c20e`; JoinCTA was folded into the footer).
   business; a pin scrolls to and flashes that business's card. Built on the
   user-supplied mapcn component (`components/ui/mapcn-marker-label.tsx`,
   MapLibre GL) with **OpenFreeMap** tiles (free, no key, commercial use OK;
-  CARTO's free tier isn't). Hidden until at least one business has a point.
+  CARTO's free tier isn't). **Credit:** the user asked not to show
+  "OpenFreeMap", so MapLibre's credits box is off and the map shows only a
+  tiny "© OpenStreetMap" link (`.rp-map-credit`); keep at least that, the
+  OpenStreetMap data license requires a visible credit. Hidden until at least one business has a point.
   Kept fast: lazy-loaded, locked to Panama City (`lib/platform/map-area.ts`),
   no rotation/pitch, pixel ratio ≤ 2, two-finger panning on touch screens
   (measured steady 60 fps while panning). MapLibre's worker is set with
@@ -730,11 +720,12 @@ staging environment, offline mode.
 
 ## 14. Session history
 
-- **November 20, 2026 (later)** — Landing redesign around the footer the
-  user supplied (white background, outlined type, fluted-glass panels,
-  contact button), splash removed, sign-in screens white (web and app),
-  and the business map (web MapLibre + OpenFreeMap, app react-native-maps,
-  admin location picker, migration `202611200001`, applied in production).
+- **November 20, 2026 (later)** — Splash removed, "Contáctanos" in the
+  footer, sign-in screens white (web and app), and the business map (web
+  MapLibre + OpenFreeMap with only a "© OpenStreetMap" credit, app
+  react-native-maps, admin location picker, migration `202611200001`,
+  applied in production). A landing redesign around a supplied footer went
+  out in `da59964` and was reverted at the user's request.
 - **November 20, 2026** — Sign-up (driver and business), password recovery
   and the welcome screens inside the app, on shared server rules
   (`signup-core.ts`). Also fixed the PIN field filter in `login.tsx`

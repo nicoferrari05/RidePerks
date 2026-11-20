@@ -8,6 +8,7 @@ import AboutHelp from "@/components/sections/AboutHelp";
 import AboutAudiences from "@/components/sections/AboutAudiences";
 import AboutRedemption from "@/components/sections/AboutRedemption";
 import AboutFAQ from "@/components/sections/AboutFAQ";
+import JoinCTA from "@/components/sections/JoinCTA";
 import Footer from "@/components/sections/Footer";
 import LandingShell from "@/components/landing/LandingShell";
 import { SHARE_IMAGE } from "@/lib/share";
@@ -48,6 +49,7 @@ export default function AboutPage() {
         <AboutRedemption />
         <AboutHelp />
         <AboutFAQ />
+        <JoinCTA />
       </main>
       <Footer />
       <MobileCTA />

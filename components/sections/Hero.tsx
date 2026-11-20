@@ -40,15 +40,6 @@ export default function Hero() {
 
         {/* The app itself, rising out of the fold, with two moments of a
             real redemption floating beside it. */}
-        {/* The footer's outlined wordmark, echoed behind the phone. */}
-        <p
-          aria-hidden="true"
-          style={{ "--enter-delay": "160ms" } as React.CSSProperties}
-          className="lp-enter lp-outline pointer-events-none absolute left-1/2 hidden sm:block top-[min(66svh,560px)] -translate-x-1/2 whitespace-nowrap text-[clamp(4.2rem,16vw,16rem)] font-semibold leading-none tracking-[-0.05em] sm:top-[min(64svh,600px)]"
-        >
-          RIDEPERKS
-        </p>
-
         <div
           style={{ "--enter-delay": "200ms" } as React.CSSProperties}
           className="lp-enter relative mt-14 w-full max-w-[300px] sm:mt-20 sm:max-w-[340px]"

@@ -8,6 +8,7 @@ import AppShowcase from "@/components/sections/AppShowcase";
 import SavingsBand from "@/components/sections/SavingsBand";
 import Manifesto from "@/components/sections/Manifesto";
 import Pricing from "@/components/sections/Pricing";
+import JoinCTA from "@/components/sections/JoinCTA";
 import Footer from "@/components/sections/Footer";
 import LandingShell from "@/components/landing/LandingShell";
 
@@ -24,6 +25,7 @@ export default function Home() {
         <SavingsBand />
         <Manifesto />
         <Pricing />
+        <JoinCTA />
       </main>
       <Footer />
       <MobileCTA />

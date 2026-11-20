@@ -1,6 +1,5 @@
 import { BellRing, ChartNoAxesColumn, Receipt } from "lucide-react";
 import PhoneFrame from "@/components/landing/PhoneFrame";
-import FlutedGlassBackdrop from "@/components/ui/fluted-glass-backdrop";
 
 const POINTS = [
   {
@@ -23,9 +22,8 @@ const POINTS = [
 export default function SavingsBand() {
   return (
     <section className="px-3 sm:px-4">
-      <div className="relative isolate mx-auto grid max-w-[1400px] items-center gap-12 overflow-hidden rounded-[28px] bg-lp-band px-6 pt-14 text-lp-band-fg sm:rounded-[36px] sm:px-12 sm:pt-20 lg:grid-cols-2 lg:gap-8 lg:px-20 lg:py-0">
-        <FlutedGlassBackdrop tone="dark" />
-        <div className="relative lg:py-24">
+      <div className="mx-auto grid max-w-[1400px] items-center gap-12 overflow-hidden rounded-[28px] bg-lp-band px-6 pt-14 text-lp-band-fg sm:rounded-[36px] sm:px-12 sm:pt-20 lg:grid-cols-2 lg:gap-8 lg:px-20 lg:py-0">
+        <div className="lg:py-24">
           <h2
             data-reveal
             className="max-w-md text-balance text-[clamp(2.25rem,5.5vw,4.25rem)] font-medium leading-[1.02] tracking-[-0.035em]"
@@ -46,7 +44,7 @@ export default function SavingsBand() {
             ))}
           </ul>
         </div>
-        <div data-reveal className="relative mx-auto w-full max-w-[320px] lg:mt-20 lg:self-end">
+        <div data-reveal className="mx-auto w-full max-w-[320px] lg:mt-20 lg:self-end">
           <div className="lp-band-phone">
             <PhoneFrame
               src="/landing/app-aviso.png"

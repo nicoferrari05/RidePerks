@@ -67,10 +67,7 @@ export default function AppShowcase() {
               sizes="(min-width: 1024px) 280px, 68vw"
             />
             <div className="mt-5 flex gap-3 px-1">
-              <span
-                aria-hidden="true"
-                className="text-[2.5rem] font-semibold leading-[0.8] tracking-[-0.04em] text-transparent opacity-40 [-webkit-text-stroke:1.5px_var(--lp-fg)]"
-              >
+              <span className="font-mono text-xs tracking-[0.14em] text-lp-muted">
                 {s.n}
               </span>
               <div>

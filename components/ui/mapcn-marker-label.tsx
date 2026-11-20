@@ -6,6 +6,9 @@
 //   instead of CARTO, whose free tier excludes commercial apps.
 // - Light/dark follows the platform's theme (html[data-rp-theme]) as well
 //   as a `.dark` class or the system setting.
+// - The map credit is one small line, "© OpenStreetMap" (the data license
+//   requires it to stay visible), instead of MapLibre's credits box; the
+//   user asked not to show "OpenFreeMap".
 // - Tuned so it doesn't stutter on phones: pixel ratio capped at 2, no
 //   rotation or pitch, no label fade, a small tile cache, and callers keep
 //   it inside Panama City with maxBounds.
@@ -196,7 +199,7 @@ const Map = forwardRef<MapRef, MapProps>(function Map(
       container: containerRef.current,
       style: theme === "dark" ? initialStyles.current.dark : initialStyles.current.light,
       renderWorldCopies: false,
-      attributionControl: { compact: true },
+      attributionControl: false,
       pixelRatio: Math.min(window.devicePixelRatio || 1, 2),
       fadeDuration: 0,
       dragRotate: false,
@@ -270,6 +273,14 @@ const Map = forwardRef<MapRef, MapProps>(function Map(
       <div ref={containerRef} className={cn("relative h-full w-full", className)}>
         {(!isLoaded || loading) && <DefaultLoader />}
         {mapInstance && children}
+        <a
+          href="https://www.openstreetmap.org/copyright"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="rp-map-credit"
+        >
+          © OpenStreetMap
+        </a>
       </div>
     </MapContext.Provider>
   );
