@@ -22,8 +22,11 @@ export async function saveBusiness(
   await requireAdmin();
   const parsed = businessSchema.safeParse(Object.fromEntries(form));
   if (!parsed.success) return { error: firstError(parsed.error) };
-  const { id, owner_user_id, ...values } = parsed.data;
-  const { error } = await getSupabaseAdmin().rpc("rp_save_business", {
+  const { id, owner_user_id, latitude, longitude, ...values } = parsed.data;
+  if ((latitude === "") !== (longitude === ""))
+    return { error: "Marca la ubicación en el mapa o quítala por completo." };
+  const db = getSupabaseAdmin();
+  const { data: savedId, error } = await db.rpc("rp_save_business", {
     p_id: id || null,
     p_values: {
       ...values,
@@ -38,6 +41,15 @@ export async function saveBusiness(
           ? error.message
           : "No pudimos guardar el comercio. Revisa la cuenta vinculada.",
     };
+  const located = await db
+    .from("rp_businesses")
+    .update({
+      latitude: latitude === "" ? null : latitude,
+      longitude: longitude === "" ? null : longitude,
+    })
+    .eq("id", (savedId as string | null) || id);
+  if (located.error)
+    return { error: "Guardamos el comercio, pero no su ubicación. Intenta nuevamente." };
   refresh();
   return { success: "Comercio guardado." };
 }

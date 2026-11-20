@@ -26,6 +26,10 @@ export const businessSchema = z.object({
     .regex(/^[+0-9 ()-]*$/),
   category,
   owner_user_id: optionalId,
+  // The map point: both empty (no point) or both inside Panama, like the
+  // database check (202611200001_business_location.sql).
+  latitude: z.union([z.literal(""), z.coerce.number().min(7).max(9.8)]).default(""),
+  longitude: z.union([z.literal(""), z.coerce.number().min(-83.2).max(-77.1)]).default(""),
 });
 export const benefitSchema = z
   .object({

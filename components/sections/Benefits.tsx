@@ -1,6 +1,7 @@
 import { Fuel, UtensilsCrossed, Wrench } from "lucide-react";
 import PillLink from "@/components/landing/PillLink";
 import InfoCard from "@/components/landing/InfoCard";
+import FlutedGlassBackdrop from "@/components/ui/fluted-glass-backdrop";
 
 const BENEFITS = [
   {
@@ -53,15 +54,16 @@ export default function Benefits() {
 
         <div
           data-reveal
-          className="mt-3 flex flex-col gap-6 rounded-[28px] bg-lp-band p-7 text-lp-band-fg sm:mt-4 sm:flex-row sm:items-center sm:justify-between sm:p-12"
+          className="relative isolate mt-3 flex flex-col gap-6 overflow-hidden rounded-[28px] bg-lp-accent p-7 text-lp-accent-fg sm:mt-4 sm:flex-row sm:items-center sm:justify-between sm:p-12"
         >
-          <div>
+          <FlutedGlassBackdrop size={0.7} />
+          <div className="relative">
             <h3 className="text-[clamp(1.75rem,3.5vw,2.75rem)] font-medium leading-[1.05] tracking-[-0.03em]">
               ¿Tienes un comercio?
             </h3>
-            <p className="mt-2 text-lp-band-muted sm:mt-3">Unirte no le cuesta nada a tu negocio.</p>
+            <p className="mt-2 text-lp-fg/75 sm:mt-3">Unirte no le cuesta nada a tu negocio.</p>
           </div>
-          <PillLink href="/business/register" variant="pill" className="self-start sm:self-auto">
+          <PillLink href="/business/register" variant="dark" className="relative self-start sm:self-auto">
             Registra tu comercio
           </PillLink>
         </div>

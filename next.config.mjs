@@ -5,9 +5,9 @@ const csp = [
     (isDev ? " 'unsafe-eval'" : "") +
     " https://bt-cdn.yappy.cloud https://challenges.cloudflare.com",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://*.supabase.co",
+  "img-src 'self' data: blob: https://*.supabase.co https://tiles.openfreemap.org",
   "font-src 'self' data:",
-  "connect-src 'self' https://*.supabase.co https://*.yappy.cloud https://*.bgeneral.cloud https://challenges.cloudflare.com",
+  "connect-src 'self' https://*.supabase.co https://*.yappy.cloud https://*.bgeneral.cloud https://challenges.cloudflare.com https://tiles.openfreemap.org",
   "frame-src https://*.yappy.cloud https://*.bgeneral.cloud https://challenges.cloudflare.com",
   "worker-src 'self' blob:",
   "object-src 'none'",

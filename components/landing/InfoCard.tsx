@@ -85,7 +85,15 @@ export default function InfoCard({
         </span>
         <span>
           {label && (
-            <span className="mb-1 block font-mono text-xs opacity-60">{label}</span>
+            <span
+              aria-hidden="true"
+              className={cn(
+                "mb-2 block text-[3.25rem] font-semibold leading-none tracking-[-0.04em] text-transparent [-webkit-text-stroke:1.5px_var(--lp-fg)]",
+                highlight ? "opacity-60" : "opacity-35",
+              )}
+            >
+              {label}
+            </span>
           )}
           <span className="block text-[1.75rem] font-medium leading-tight tracking-[-0.03em] sm:text-3xl">
             {title}

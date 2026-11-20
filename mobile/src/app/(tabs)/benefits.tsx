@@ -18,9 +18,10 @@ import {
   type BenefitTile,
 } from "@/components/platform/ui";
 import { ComingSoon, FavoriteButton } from "@/components/platform/driver";
-import { MapPreview } from "@/components/platform/MapPreview";
+import { BusinessMap } from "@/components/platform/BusinessMap";
 import { useApi } from "@/lib/use-api";
-import { categories, isOpen, mapsLink, matches, phoneLink } from "@/lib/format";
+import { categories, isOpen, matches, phoneLink } from "@/lib/format";
+import { directionsLink } from "@/lib/map-area";
 import { useTheme } from "@/theme/theme";
 import { font } from "@/theme/tokens";
 
@@ -36,6 +37,8 @@ type Business = {
   category: string;
   address: string;
   phone: string | null;
+  latitude: number | null;
+  longitude: number | null;
   logo: string | null;
   photos: string[];
   status: string | null;
@@ -137,7 +140,6 @@ export default function BenefitsScreen() {
           { id: "directory", label: "Comercios" },
         ]}
       />
-      {tab === "directory" && <MapPreview />}
 
       {!current.data ? (
         current.error ? (
@@ -196,6 +198,7 @@ export default function BenefitsScreen() {
             );
             return list.length ? (
               <View style={{ gap: 10 }}>
+                <BusinessMap businesses={list} />
                 {list.map((b) => (
                   <BusinessCard
                     key={b.id}
@@ -245,7 +248,7 @@ function BusinessCard({ b, onSaved }: { b: Business; onSaved: (saved: boolean) =
           icon={ArrowUpRight}
           variant="white"
           size="md"
-          onPress={() => void Linking.openURL(mapsLink(b.name, b.address))}
+          onPress={() => void Linking.openURL(directionsLink(b))}
         />
         {b.phone && (
           <Button

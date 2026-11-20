@@ -42,10 +42,6 @@ const platformLight = {
     "0 1px 2px rgba(16, 11, 0, 0.06), 0 14px 32px -12px rgba(16, 11, 0, 0.28)",
   shadow:
     "0 1px 2px rgba(16, 11, 0, 0.06), 0 6px 16px -8px rgba(16, 11, 0, 0.18)",
-  mapLand: "#ebece4",
-  mapRoad: "#ffffff",
-  mapWater: "#dde7e3",
-  mapPark: "#e2efd2",
 };
 
 export type PlatformColors = typeof platformLight;
@@ -72,10 +68,6 @@ const platformDark: PlatformColors = {
   greenText: "#b8e290",
   greenLine: "#a6d872",
   chartBar: "#6e9e40",
-  mapLand: "#1d1a13",
-  mapRoad: "#38332a",
-  mapWater: "#1a2220",
-  mapPark: "#232c19",
   warnBg: "rgba(231, 177, 64, 0.16)",
   warnFg: "#f3cf7d",
   dock: "#1d1a13",
@@ -91,7 +83,7 @@ export const platform = { light: platformLight, dark: platformDark };
 
 /** Sign-in screens: the landing's mint palette. */
 export const auth = {
-  bg: "#efffc8", // --color-background
+  bg: "#ffffff", // --color-background
   text: "#100b00", // --color-foreground
   muted: "#3b341f", // --color-muted-foreground
   border: "rgba(16, 11, 0, 0.16)", // --color-border
@@ -107,7 +99,7 @@ export const auth = {
   inputFocusBorder: "rgba(59, 52, 31, 0.6)", // border-ember/60
   inputFocusBg: "rgba(59, 52, 31, 0.05)", // bg-ember/5
   switchActiveBg: "#100b00",
-  switchActiveFg: "#efffc8",
+  switchActiveFg: "#ffffff",
   switchPressed: "rgba(16, 11, 0, 0.07)",
 };
 

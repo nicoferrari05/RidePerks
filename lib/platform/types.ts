@@ -24,6 +24,9 @@ export type Business = {
   hours?: WeekHours | null;
   logo_path?: string | null;
   photo_paths?: string[];
+  /** Point on the map (both or neither), set by the admin. */
+  latitude?: number | null;
+  longitude?: number | null;
 };
 export type AppNotification = {
   id: string;

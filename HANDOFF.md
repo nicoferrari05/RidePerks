@@ -125,8 +125,13 @@ land.
 - [ ] **Catalog must be live (guideline 2.1, incomplete app).** With
   `rp_settings.catalog_live = false` the reviewer sees "Próximamente" in
   Beneficios and Comercios and rejects. *User:* real approved benefits, then
-  Más → Catálogo on. *AI:* hide the blurred "map coming soon" placeholder
-  (`MapPreview`) in the app; Apple rejects placeholder content.
+  Más → Catálogo on. (The "map coming soon" placeholder is gone: the real
+  map replaced it on November 20, 2026, and it only shows once a business
+  has a point.)
+- [ ] **Google Maps key for Android.** The app's map (`react-native-maps`)
+  works in Expo Go, but an Android store build needs a Google Maps API key
+  (`android.config.googleMaps.apiKey` in `mobile/app.json`). *User:* create
+  it in Google Cloud (Maps SDK for Android). iOS uses Apple Maps, no key.
 - [ ] **Demo accounts for the reviewer.** *User* creates them in production:
   a verified driver with an active membership (the reviewer won't pay or
   verify), a business owner, and a test PIN. They go in App Store Connect.
@@ -242,9 +247,16 @@ one page with long-form text.
 | --- | --- |
 | Pitch black (text, dark bands) | `#100B00` |
 | Yellow green (landing only: buttons, active states) | `#85CB33` |
-| Frosted mint (light background) | `#EFFFC8` |
+| Frosted mint (soft surface: landing cards, pricing) | `#EFFFC8` |
 | Dark khaki (dark-mode bands, secondary surfaces) | `#3B341F` |
 | Ash grey `#A5CBC3` | Part of the palette but **intentionally unused**; the user asked to avoid it |
+
+**White backgrounds since November 20, 2026**: the landing and every
+sign-in screen (web and app) moved from mint to white at the user's request.
+Mint stays as the soft surface for cards. The landing's look now comes from
+the footer the user supplied: **giant outlined type** (`.lp-outline`,
+`.lp-outline-strong`) and **yellow-green or black panels with a fluted-glass
+shader** (`components/ui/fluted-glass-backdrop.tsx`).
 
 Font: Geist (`next/font`; `@expo-google-fonts/geist` in the app), wordmark
 "RIDEPERKS" as plain text (no pill) via `<LogoMark variant="text" />`.
@@ -278,17 +290,18 @@ tokens in `app/globals.css`. The app mirrors them (`PressScale`, `Enter`).
 1. **Landing** (`/`, `/about`) — Tailwind + CSS variables `--lp-*` scoped to
    `.lp` (see `components/landing/LandingShell.tsx`). **Light only** (the
    user removed the theme switcher and the dark/dim themes on November 11,
-   2026). `ThemeSync` sets `html[data-lp-theme="light"]` (mint body
+   2026). `ThemeSync` sets `html[data-lp-theme="light"]` (white body
    background for overscroll) and removes it when leaving the landing.
    Tokens live in `app/globals.css`; use `bg-lp-bg`, `text-lp-fg`,
    `bg-lp-accent`, etc.
 2. **Auth screens** (`/login`, `/register`, `/recover`, business login/register,
    `/admin/login`, the `/pin` entry) — `components/ui/sign-in.tsx` `AuthShell`
    with class `.rp-auth`, which re-points the shadcn-style Tailwind tokens to
-   the mint palette (light only), with black buttons (no green). Their legacy
-   controls (`.rp-field`, `.rp-button`, `.rp-access-switch`…) live in
-   `app/auth.css`, every rule scoped to `.rp-auth`. **The user asked to leave
-   these screens as they are.**
+   a white background (mint until November 20, 2026, changed at the user's
+   request; the app's `auth` tokens match), with black buttons (no green).
+   Their legacy controls (`.rp-field`, `.rp-button`, `.rp-access-switch`…)
+   live in `app/auth.css`, every rule scoped to `.rp-auth`. Otherwise **the
+   user asked to leave these screens as they are.**
 3. **Platform** (`/driver/*`, `/business/*`, `/pin` scanner,
    `/account/password`, all signed-in `/admin/*`, `/privacidad`, `/terminos`)
    — redesigned October 2026 in the spirit of Uber/Airbnb: **white
@@ -348,12 +361,27 @@ tokens in `app/globals.css`. The app mirrors them (`PressScale`, `Enter`).
 
 ## 8. Landing
 
-`app/page.tsx`: SplashScreen (first visit per session; text logo on black;
-the hero entrance animation waits for it via `:has()`), Nav, Hero (the app's
-home screen in a phone and two floating cards), Benefits, HowItWorks,
-AppShowcase (`#app`, four real screens), SavingsBand (dark band with the
-notification screen), Manifesto, Pricing, JoinCTA (`#unete`), Footer,
-MobileCTA. (The marquee and the hero tag were removed in `170c20e`.)
+`app/page.tsx`: Nav, Hero (the app's home screen in a phone, two floating
+cards, and a giant outlined "RIDEPERKS" behind the phone from 640px up),
+Benefits (mint cards; "¿Tienes un comercio?" is a green fluted panel),
+HowItWorks (big outlined step numbers), AppShowcase (`#app`, four real
+screens, outlined numbers), SavingsBand (black band with fluted glass),
+Manifesto (first line outlined), Pricing (the Membresía card has fluted
+glass), Footer, MobileCTA. **No loading animation**: the splash screen was
+removed on November 20, 2026 at the user's request (the marquee and hero tag
+went in `170c20e`; JoinCTA was folded into the footer).
+
+- **Footer** (`components/ui/footer-section-5.tsx`, adapted from the
+  21st.dev component the user supplied; `components/sections/Footer.tsx`
+  passes the contact address): giant outlined "RIDEPERKS" sinking into a
+  yellow-green panel with the fluted-glass shader. The panel holds the last
+  call to action (`#unete`, which MobileCTA watches), **"Contáctanos"**
+  (`mailto:` `SUPPORT_EMAIL`, falling back to `soporte@rideperks.app`),
+  Instagram and the link columns. Used by `/` and `/about`.
+- **Fluted glass** (`@paper-design/shaders-react` `FlutedGlass`): static
+  WebGL, loaded only near the screen, pixel count capped. It's on four
+  panels (business band, SavingsBand, Membresía card, footer); don't add
+  many more, each one is a WebGL context.
 
 - **App screenshots**: `public/landing/app-*.png` (1170×2532, supplied by the
   user), shown with `components/landing/PhoneFrame.tsx`. The businesses and
@@ -405,8 +433,20 @@ MobileCTA. (The marquee and the hero tag were removed in `170c20e`.)
   was it applied, comment) for 30 days, once (`rp_leave_feedback`).
 - **Receipts**: `/driver/membership/receipt/[id]` for paid orders, printable.
   Not a fiscal invoice (says so).
-- **Map (coming soon)**: Beneficios → Comercios shows `MapPreview.tsx`, a
-  blurred hand-drawn SVG with "Próximamente". No real map yet.
+- **Business map** (November 20, 2026): Beneficios → Comercios shows a map
+  of Panama City (`components/platform/map/`) with a pin and name label per
+  business; a pin scrolls to and flashes that business's card. Built on the
+  user-supplied mapcn component (`components/ui/mapcn-marker-label.tsx`,
+  MapLibre GL) with **OpenFreeMap** tiles (free, no key, commercial use OK;
+  CARTO's free tier isn't). Hidden until at least one business has a point.
+  Kept fast: lazy-loaded, locked to Panama City (`lib/platform/map-area.ts`),
+  no rotation/pitch, pixel ratio ≤ 2, two-finger panning on touch screens
+  (measured steady 60 fps while panning). MapLibre's worker is set with
+  `setWorkerUrl(new URL(..., import.meta.url))` because the bundler doesn't
+  place it next to the module. The admin places each business in its editor
+  (`LocationPicker`: tap or drag the pin, "Quitar ubicación"); `saveBusiness`
+  writes `latitude`/`longitude` after `rp_save_business`. "Cómo llegar" uses
+  the exact point when there is one. CSP allows `tiles.openfreemap.org`.
 
 ### Business
 - Scanner (preview then confirm), staff invites, benefit proposals reviewed
@@ -550,6 +590,13 @@ ruled out Capacitor (a web view inside an app). Same backend, same look.
   payments), recibo (`receipt/[id]`, PDF via expo-print), Verificación
   (shrinks the screenshot to 1600px JPEG, multipart upload), Ayuda,
   Contraseña, Eliminar cuenta.
+- **Business map:** `src/components/platform/BusinessMap.tsx` above the
+  Comercios list (Apple Maps on iPhone, Google Maps on Android, via
+  `react-native-maps`, which works in Expo Go). Pins drawn once
+  (`tracksViewChanges` off); the bubble opens directions. Android locks the
+  camera to Panama City; `BusinessMap.web.tsx` hides it in the Expo web
+  preview (no web version). Needs a store build (native module) and, for
+  Android, a Google Maps key (§3).
 - **Sign-up and welcome:** `register.tsx` (Conductor/Comercio switch without
   PIN, platform as pills, terms checkbox; `?audience=business` from the
   login's Comercio tab) and `recover.tsx`, both signed-out only. A new
@@ -606,10 +653,11 @@ ruled out Capacitor (a web view inside an app). Same backend, same look.
 Migrations in `supabase/migrations/`, applied manually in order via the SQL
 Editor (`node scripts/prepare-supabase.mjs` bundles them into
 `artifacts/ACTIVAR_RIDEPERKS.sql`, idempotent). **All are applied in
-production** (latest confirmed by the user on November 11, 2026):
+production** (latest confirmed by the user on November 20, 2026):
 
 | Migration | What |
 | --- | --- |
+| `202611200001_business_location.sql` | `latitude`/`longitude` on `rp_businesses` (both or neither, inside Panama); applied November 20, 2026 |
 | `202611110001_annual_plan.sql` | annual plan; 4-argument `rp_create_payment` whose plan defaults to monthly |
 | `202610200001_app_features.sql` | notifications, announcements, favorites, hours/media, feedback, onboarding, admin metrics |
 | `202610130001_business_pins.sql` | business PINs, `redeemed_via` |
@@ -659,14 +707,16 @@ otherwise the old build keeps being served.
   dialog centered, and the app's polling flow), uploads, CSV share sheet,
   PWA install.
 - Enforce the CSP (§9).
+- Confirm the "Contáctanos" inbox receives mail (`SUPPORT_EMAIL` on Vercel,
+  else `soporte@rideperks.app`, which today is a Resend sender address).
 - `public/offline.html` (PWA offline page) still uses the old navy/ember
   colors; the user was told and hasn't asked for it yet.
 - `PRODUCT.md` and `README.md` still describe the old navy/ember identity and
   waitlist-first funnel; update them if they matter to the next task.
 
 **Ideas pending by the user's choice (October 20, 2026)**, in order of
-interest: real map of businesses with the driver's location ("cerca de ti",
-distance filter; needs lat/lng per business); verifying email or WhatsApp
+interest: the driver's own location on the map ("cerca de ti", distance
+filter; the businesses already have lat/lng since November 20); verifying email or WhatsApp
 with a one-time code; monthly savings summary (email/push); sound or
 notification for merchants when a use is registered; per-person admin
 accounts with 2FA replacing the shared password; Sentry; usage analytics
@@ -680,6 +730,11 @@ staging environment, offline mode.
 
 ## 14. Session history
 
+- **November 20, 2026 (later)** — Landing redesign around the footer the
+  user supplied (white background, outlined type, fluted-glass panels,
+  contact button), splash removed, sign-in screens white (web and app),
+  and the business map (web MapLibre + OpenFreeMap, app react-native-maps,
+  admin location picker, migration `202611200001`, applied in production).
 - **November 20, 2026** — Sign-up (driver and business), password recovery
   and the welcome screens inside the app, on shared server rules
   (`signup-core.ts`). Also fixed the PIN field filter in `login.tsx`

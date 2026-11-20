@@ -1,4 +1,5 @@
 "use client";
+import LocationPicker from "@/components/platform/map/LocationPicker";
 import { useActionState } from "react";
 import {
   saveBusiness,
@@ -90,6 +91,7 @@ export function BusinessForm({
       <Textarea name="description" label="Descripción" value={b?.description} />
       <Category value={b?.category} />
       <Input name="address" label="Dirección en Panamá" value={b?.address} />
+      <LocationPicker latitude={b?.latitude} longitude={b?.longitude} />
       <Input
         name="phone"
         label="Teléfono"

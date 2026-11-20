@@ -127,7 +127,7 @@ export async function resolveQrToken(value: unknown) {
 }
 // Business columns safe to show drivers (never the PIN hash).
 export const BUSINESS_PUBLIC =
-  "id,name,category,address,phone,description,is_active,owner_user_id,hours,logo_path,photo_paths";
+  "id,name,category,address,phone,description,is_active,owner_user_id,hours,logo_path,photo_paths,latitude,longitude";
 export const MEDIA_BUCKET = "rp-business-media";
 /** Public URL of a business logo or photo stored in the media bucket. */
 export function mediaUrl(path: string | null | undefined) {

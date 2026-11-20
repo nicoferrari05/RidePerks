@@ -136,6 +136,8 @@ export async function directoryData(p: Profile, filter: CatalogFilter) {
         category: b.category,
         address: b.address,
         phone: b.phone,
+        latitude: b.latitude ?? null,
+        longitude: b.longitude ?? null,
         logo: media.logo,
         photos: media.photos,
         status: statusLine(b.hours, now),

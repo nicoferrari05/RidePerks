@@ -68,11 +68,13 @@
 }
 
 /* Palette: pitch black #100B00, yellow green #85CB33, frosted mint #EFFFC8,
-   ash grey #A5CBC3, dark khaki #3B341F. */
+   ash grey #A5CBC3, dark khaki #3B341F. Since November 2026 the page is
+   white (like the footer it was redesigned around); mint is the soft
+   surface for cards and green the fluted-glass panels. */
 .lp {
-  --lp-bg: #efffc8;
-  --lp-surface: #e2f3b3;
-  --lp-surface-2: #d6ec9c;
+  --lp-bg: #ffffff;
+  --lp-surface: #efffc8;
+  --lp-surface-2: #e2f3b3;
   --lp-fg: #100b00;
   --lp-muted: #3b341f;
   --lp-line: rgba(16, 11, 0, 0.14);
@@ -84,12 +86,34 @@
   --lp-band-line: rgba(239, 255, 200, 0.16);
   --lp-pill: #85cb33;
   --lp-pill-fg: #100b00;
-  --lp-glass-tint: #efffc8;
+  --lp-glass-tint: #ffffff;
+  /* Outlined display type (.lp-outline), the footer's big wordmark. */
+  --lp-stroke: rgba(16, 11, 0, 0.32);
   --lp-glass-line: rgba(255, 255, 255, 0.6);
   --lp-glass-hi: rgba(255, 255, 255, 0.85);
 }
 html[data-lp-theme="light"] body {
-  background: #efffc8;
+  background: #ffffff;
+}
+/* Outlined display type: the footer's giant wordmark, the hero's backdrop
+   word, step numbers. Decorative only (aria-hidden), never body copy. */
+.lp-outline {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--lp-stroke);
+  user-select: none;
+}
+/* The fluted-glass shader fades in over its panel's flat color. */
+@keyframes lp-fluted-in {
+  from {
+    opacity: 0;
+  }
+}
+.lp-fluted-in {
+  animation: lp-fluted-in 500ms ease-out both;
+}
+.lp-outline-strong {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--lp-fg);
 }
 .lp ::selection {
   background: var(--lp-fg);
@@ -97,8 +121,7 @@ html[data-lp-theme="light"] body {
 }
 /* First-visit hero entrance: each line fades up, in a short stagger.
    Transform and opacity only (a blur here was costly on the large hero
-   phone image). Held while the homepage splash is still covering the page,
-   so it plays as the splash fades instead of behind it. */
+   phone image). */
 @keyframes lp-enter {
   from {
     opacity: 0;
@@ -112,9 +135,6 @@ html[data-lp-theme="light"] body {
 .lp-enter {
   animation: lp-enter 700ms var(--ease-snappy) both;
   animation-delay: var(--enter-delay, 0ms);
-}
-.lp:has(.rp-splash-fade.opacity-100) .lp-enter {
-  animation-play-state: paused;
 }
 /* The header turns into a floating glass tab once the page scrolls, so its
    text never sits directly on top of page content. */
@@ -173,15 +193,6 @@ body {
   }
 }
 
-/* The homepage splash (components/SplashScreen.tsx) fade-out: kept as its
-   own class, not an inline Tailwind duration, so the reduced-motion override
-   below (a class selector) can out-specificity the universal one further
-   down and still let this one deliberate crossfade play — a plain opacity
-   dissolve, not the kind of motion prefers-reduced-motion is meant to stop. */
-.rp-splash-fade {
-  transition: opacity 600ms ease-out;
-}
-
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -189,9 +200,6 @@ body {
   [data-reveal] {
     opacity: 1;
     transform: none;
-  }
-  .rp-splash-fade {
-    transition-duration: 600ms !important;
   }
   *,
   *::before,
@@ -206,7 +214,7 @@ body {
 /* Auth screens (components/ui/sign-in.tsx AuthShell) in the landing palette.
    Only colors change; the layout and components stay as they are. */
 .rp-auth {
-  --color-background: #efffc8;
+  --color-background: #ffffff;
   --color-foreground: #100b00;
   --color-primary: #100b00;
   --color-primary-foreground: #ffffff;
@@ -224,12 +232,12 @@ body {
 }
 .rp-auth .rp-field :is(input, select, textarea) {
   border-color: rgba(16, 11, 0, 0.16);
-  background: #f7ffe0;
+  background: #f6f6f2;
   color: #100b00;
 }
 .rp-auth .rp-field :is(input, select, textarea):focus {
   border-color: #3b341f;
-  background: #fbffef;
+  background: #ffffff;
 }
 .rp-auth .rp-field input::placeholder {
   color: #6b6650;
@@ -249,7 +257,7 @@ body {
 }
 .rp-auth .rp-access-switch a[aria-current] {
   background: #100b00;
-  color: #efffc8;
+  color: #ffffff;
 }
 .rp-auth .rp-access-switch a:not([aria-current]):hover {
   background: rgba(16, 11, 0, 0.07);

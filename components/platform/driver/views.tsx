@@ -4,7 +4,8 @@ import { buttonVariants } from "@/components/ui/button-variants";
 import { Button } from "@/components/ui/button";
 import SavingsCard from "@/components/platform/SavingsCard";
 import BenefitCode from "@/components/platform/BenefitCode";
-import MapPreview from "@/components/platform/MapPreview";
+import BusinessMap from "@/components/platform/map/BusinessMap";
+import { directionsLink } from "@/lib/platform/map-area";
 import { FavoriteButton, FeedbackForm } from "@/components/platform/AppForms";
 import { NotificationBell } from "@/components/platform/notifications";
 import { ThemeSetting } from "@/components/platform/theme";
@@ -372,6 +373,8 @@ export type DirectoryBusiness = {
   category: string;
   address: string;
   phone: string | null;
+  latitude: number | null;
+  longitude: number | null;
   logo: string | null;
   photos: string[];
   status: string | null;
@@ -419,7 +422,7 @@ export function DirectoryView({
     <div className="rp-stack">
       <h1>Beneficios</h1>
       <CatalogTabs current="directory" />
-      <MapPreview />
+      {live && <BusinessMap businesses={businesses} />}
       {live && (
         <CatalogFilters
           base="/driver/directory"
@@ -433,7 +436,7 @@ export function DirectoryView({
       ) : businesses.length ? (
         <div className="rp-grid">
           {businesses.map((b) => (
-            <article className="rp-panel rp-stack tight" key={b.id}>
+            <article className="rp-panel rp-stack tight" key={b.id} id={"comercio-" + b.id}>
               <div className="rp-hello">
                 <BusinessMark category={b.category} logo={b.logo} />
                 <div>
@@ -453,7 +456,7 @@ export function DirectoryView({
               <div className="rp-actions">
                 <a
                   className={buttonVariants({ variant: "white", size: "md" })}
-                  href={mapsLink(b.name, b.address)}
+                  href={directionsLink(b)}
                   target="_blank"
                   rel="noopener noreferrer"
                 >

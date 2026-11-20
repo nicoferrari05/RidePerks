@@ -1,11 +1,11 @@
 /* Legacy look of the auth screens (sign-in, register, recover, business and
-   admin sign-in, the PIN entry): the mint palette and the original controls.
+   admin sign-in, the PIN entry): the white background (mint until November 2026) and the original controls.
    The platform itself (app/platform.css) moved to its own system; these rules
    are scoped to .rp-auth so the two never reach each other's markup, even
    though CSS stays loaded across client-side navigation. */
 .rp-auth {
-  --rp-bg: #efffc8;
-  --rp-surface: #f7ffe0;
+  --rp-bg: #ffffff;
+  --rp-surface: #f6f6f2;
   --rp-surface-2: rgba(16, 11, 0, 0.07);
   --rp-surface-3: rgba(16, 11, 0, 0.12);
   --rp-text: #100b00;
@@ -23,8 +23,8 @@
   --rp-glass: rgba(239, 255, 200, 0.8);
   --rp-glass-line: rgba(255, 255, 255, 0.6);
   --rp-glass-hi: rgba(255, 255, 255, 0.85);
-  --rp-input: #f7ffe0;
-  --rp-input-focus: #fbffef;
+  --rp-input: #f6f6f2;
+  --rp-input-focus: #ffffff;
   --rp-danger-bg: #ffe2d6;
   --rp-danger-fg: #8a2810;
   --rp-success-bg: rgba(16, 11, 0, 0.07);
@@ -32,7 +32,7 @@
   --rp-shadow: 0 18px 40px -26px rgba(16, 11, 0, 0.45);
   --rp-ease: cubic-bezier(0.23, 1, 0.32, 1);
   --rp-ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
-  --sw-tint: #efffc8;
+  --sw-tint: #ffffff;
   --sw-ink: var(--rp-text);
 }
 
@@ -278,7 +278,7 @@ html[data-rp-theme="dark"] .rp-auth .rp-field select {
 }
 .rp-auth .rp-access-switch a[aria-current] {
   background: #100b00;
-  color: #efffc8;
+  color: #ffffff;
 }
 .rp-auth .rp-access-switch a:not([aria-current]):hover {
   background: rgba(16, 11, 0, 0.07);

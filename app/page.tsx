@@ -1,6 +1,5 @@
 import Nav from "@/components/Nav";
 import ScrollAnimations from "@/components/ScrollAnimations";
-import SplashScreen from "@/components/SplashScreen";
 import MobileCTA from "@/components/MobileCTA";
 import Hero from "@/components/sections/Hero";
 import Benefits from "@/components/sections/Benefits";
@@ -9,14 +8,12 @@ import AppShowcase from "@/components/sections/AppShowcase";
 import SavingsBand from "@/components/sections/SavingsBand";
 import Manifesto from "@/components/sections/Manifesto";
 import Pricing from "@/components/sections/Pricing";
-import JoinCTA from "@/components/sections/JoinCTA";
 import Footer from "@/components/sections/Footer";
 import LandingShell from "@/components/landing/LandingShell";
 
 export default function Home() {
   return (
     <LandingShell>
-      <SplashScreen />
       <ScrollAnimations />
       <Nav />
       <main>
@@ -27,7 +24,6 @@ export default function Home() {
         <SavingsBand />
         <Manifesto />
         <Pricing />
-        <JoinCTA />
       </main>
       <Footer />
       <MobileCTA />
