@@ -18,9 +18,15 @@ export default function Hero() {
 
         <p
           style={{ "--enter-delay": "60ms" } as React.CSSProperties}
-          className="lp-enter mt-5 max-w-xs text-pretty text-lg text-lp-muted sm:mt-6 sm:max-w-md sm:text-xl"
+          className="lp-enter mt-5 max-w-sm text-pretty text-lg text-lp-muted sm:mt-6 sm:max-w-2xl sm:text-xl"
         >
-          Descuentos reales en gasolina, comida y taller, desde tu teléfono.
+          <span className="block font-medium text-lp-fg">
+            La plataforma de beneficios y descuentos para conductores de apps de
+            transporte y delivery en Panamá.
+          </span>
+          <span className="mt-2 block">
+            Ahorra en gasolina, comida y taller desde tu teléfono.
+          </span>
         </p>
 
         <div

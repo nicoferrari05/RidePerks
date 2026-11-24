@@ -75,8 +75,8 @@ As of November 18, 2026 the current project is **the native phone app**
   web, rebuilt natively, on the same backend through `/api/app/*`. The user
   tried it on their iPhone with Expo Go and said it looks right; the only
   fix asked for was removing the dock's dark glow (done).
-- **Done, not pushed** (November 20): sign-up, password recovery and the
-  welcome screens inside the app (§10).
+- **Done and pushed** (`f308531`, November 20): sign-up, password recovery
+  and the welcome screens inside the app (§10).
 - **Not tested for real yet:** a Yappy payment from the app, scanning a QR
   between two phones, uploads (verification, logo/photos), the CSV share
   sheet on a device, and creating a real new account from the app (only
@@ -84,12 +84,19 @@ As of November 18, 2026 the current project is **the native phone app**
   database).
 - **Next, in this order:**
   1. **Accounts (user).** Apple Developer ($99/yr), Google Play ($25) and the
-     company's D-U-N-S (Apple needs it to enroll as an organization). Plan:
-     the user's brother may hold the Apple Developer account and invite the
-     user (Admin role in App Store Connect); EAS then builds and submits from
-     this PC. Ask whether accounts are ready before building.
+     company's D-U-N-S (Apple needs it to enroll as an organization).
+     **Update 2026-11-24:** the user decided to create the Apple Developer
+     account themselves (not the brother) and received a step-by-step
+     guide: choose Individual vs Organization (Organization needs the
+     D-U-N-S first, 5–14 days), enroll through the Apple Developer iPhone
+     app, pay $99, wait for approval; then App Store Connect (accept the
+     free-apps agreement, create the app: name RidePerks, Spanish (Mexico),
+     bundle id `app.rideperks`, SKU `rideperks-ios`), then EAS build/submit,
+     TestFlight, listing and review. Ask how far the enrollment has gone
+     before building. EAS then builds and submits from this PC.
   2. **Code work for store approval** — the AI items in §3, all doable
-     before the accounts exist.
+     before the accounts exist. The user said to leave these for later;
+     start them only when the user asks.
   3. **EAS.** `npx eas-cli@latest login` (Expo account `giancoferrari`,
      already signed in on this PC), `eas init`, an `eas.json` with
      development / preview / production profiles, then builds for TestFlight
@@ -363,7 +370,10 @@ tokens in `app/globals.css`. The app mirrors them (`PressScale`, `Enter`).
 `app/page.tsx`: Nav, Hero (the app's home screen in a phone and two floating
 cards), Benefits, HowItWorks, AppShowcase (`#app`, four real screens),
 SavingsBand (dark band with the notification screen), Manifesto, Pricing,
-JoinCTA (`#unete`), Footer, MobileCTA. **No loading animation**: the splash
+JoinCTA (`#unete`), Footer, MobileCTA. Under the headline, the Hero says
+plainly what RidePerks is ("La plataforma de beneficios y descuentos para
+conductores de apps de transporte y delivery en Panamá", asked for on
+November 24, 2026); keep that sentence in any redesign. **No loading animation**: the splash
 screen was removed on November 20, 2026 at the user's request (the marquee
 and hero tag went in `170c20e`).
 
@@ -720,6 +730,10 @@ staging environment, offline mode.
 
 ## 14. Session history
 
+- **November 24, 2026** — Hero subtitle now states what RidePerks is
+  (benefits and discounts platform for ride-hailing and delivery drivers in
+  Panama). Started a landing redesign demo (white base, soft glow, glass
+  cards) as a local preview only.
 - **November 20, 2026 (later)** — Splash removed, "Contáctanos" in the
   footer, sign-in screens white (web and app), and the business map (web
   MapLibre + OpenFreeMap with only a "© OpenStreetMap" credit, app
