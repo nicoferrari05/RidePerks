@@ -299,7 +299,11 @@ white "rp" on a soft blue gradient with film grain (deep blue top left,
 celeste bottom right, pale highlight top right), after the user's
 `RPlogofavicon.jpeg`. Web: the browser-tab favicon (`public/favicon.ico`
 and `app/icon.png`) is **a circle** (transparent corners) with the "rp"
-centred on the circle's centre, as the user asked; `apple-touch-icon.png`, `icon-192/512.png`, `icon-maskable-512.png` (mark
+centred on the circle's centre, as the user asked. Since November 25, 2026
+it is cut straight from the user's darker `RPlogofavicon2.jpeg` (cropped
+and resized only) by `artifacts/favicon-from-image.py <image>`; the other
+icons below still come from `brand-icons.py`. `apple-touch-icon.png`,
+`icon-192/512.png`, `icon-maskable-512.png` (mark
 inside the 80% safe zone). Phone app: `mobile/assets/images/icon.png`
 (1024), `favicon.png`, Android adaptive foreground and splash (white mark on
 transparent, over `#0066CC` set in `mobile/app.json`). Share card
