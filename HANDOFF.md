@@ -297,8 +297,9 @@ in light mode, white in dark mode).
 **Icons and share card** (`artifacts/brand-icons.py` builds them all): the
 white "rp" on a soft blue gradient with film grain (deep blue top left,
 celeste bottom right, pale highlight top right), after the user's
-`RPlogofavicon.jpeg`. Web: `public/favicon.ico`, `app/icon.png`,
-`apple-touch-icon.png`, `icon-192/512.png`, `icon-maskable-512.png` (mark
+`RPlogofavicon.jpeg`. Web: the browser-tab favicon (`public/favicon.ico`
+and `app/icon.png`) is **a circle** (transparent corners) with the "rp"
+centred on the circle's centre, as the user asked; `apple-touch-icon.png`, `icon-192/512.png`, `icon-maskable-512.png` (mark
 inside the 80% safe zone). Phone app: `mobile/assets/images/icon.png`
 (1024), `favicon.png`, Android adaptive foreground and splash (white mark on
 transparent, over `#0066CC` set in `mobile/app.json`). Share card
@@ -444,6 +445,10 @@ must not lag.
   featured in blue with "2 meses gratis", Mensual), and the closing "Crea tu
   cuenta gratis." panel on the same gradient (`JoinCta` in
   `components/site/ui.tsx`, shared with About).
+- **Always opens at the top** (`startAtTop` in `components/site/Reveal.tsx`,
+  asked for on November 25, 2026): scroll restoration is off, and a reload
+  or back/forward visit drops a leftover anchor (`/#planes`) and scrolls to
+  0. A fresh link to a section still lands on it.
 - **Header** (`SiteNav.tsx`): same structure as the old nav (logo, sliding
   pill of section links, Comercios, Iniciar sesión / "Entrar" on phones);
   becomes a white tab on scroll; section links point to `/#…` off the home
@@ -790,6 +795,15 @@ staging environment, offline mode.
 
 ## 14. Session history
 
+- **November 25, 2026 (later)** — Circular browser favicon; the site always
+  opens at the top; privacy policy and terms rewritten for transparency
+  (`/privacidad` lists every provider that handles data: Supabase, Vercel,
+  Resend, Cloudflare Turnstile, Yappy, OpenFreeMap / Apple Maps / Google
+  Maps, the app stores; what the merchant sees; retention, including what
+  survives an account closure; rights under Panama's Ley 81 of 2019 and
+  ANTAI). Keep these pages in sync when a provider or a retention rule
+  changes. Not reviewed by a lawyer; the legal entity's name isn't stated
+  because it isn't recorded anywhere in the repo.
 - **November 25, 2026** — **New brand identity**, everywhere: "rp" logo,
   brand blue `#0066CC` with navy and celeste, Plus Jakarta Sans on the
   public site. The landing demo was approved and became `/` (About rebuilt
