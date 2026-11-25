@@ -294,19 +294,20 @@ celeste tint. **Red (danger; auth errors via `ember-2` / `ember-soft`) and
 amber (warning) keep their meaning.** Platform buttons stay monochrome (navy
 in light mode, white in dark mode).
 
-**Icons and share card** (`artifacts/brand-icons.py` builds them all): the
-white "rp" on a soft blue gradient with film grain (deep blue top left,
-celeste bottom right, pale highlight top right), after the user's
-`RPlogofavicon.jpeg`. Web: the browser-tab favicon (`public/favicon.ico`
-and `app/icon.png`) is **a circle** (transparent corners) with the "rp"
-centred on the circle's centre, as the user asked. Since November 25, 2026
-it is cut straight from the user's darker `RPlogofavicon2.jpeg` (cropped
-and resized only) by `artifacts/favicon-from-image.py <image>`; the other
-icons below still come from `brand-icons.py`. `apple-touch-icon.png`,
-`icon-192/512.png`, `icon-maskable-512.png` (mark
+**Icons** (since November 25, 2026, later): every app icon is cut straight
+from the user's darker artwork (sent as `RPlogofavicon2.jpeg`, kept as
+`artifacts/brand-source/rp-icon-dark.jpeg`): white "rp" on a deep-to-light
+blue blur with grain. Only cropped (square centred on the mark) and
+resized, never redrawn; `artifacts/icons-from-image.py` builds them. Web:
+the browser-tab favicon (`public/favicon.ico` and `app/icon.png`) is **a
+circle** (transparent corners) with the "rp" centred on the circle's
+centre, as the user asked; `apple-touch-icon.png`, `icon-192/512.png`,
+`icon-maskable-512.png` (background mirrored outward so the mark sits well
 inside the 80% safe zone). Phone app: `mobile/assets/images/icon.png`
-(1024), `favicon.png`, Android adaptive foreground and splash (white mark on
-transparent, over `#0066CC` set in `mobile/app.json`). Share card
+(1024, RGB) and `favicon.png`. Still from `artifacts/brand-icons.py` (the
+older, lighter generated gradient): the Android adaptive foreground and
+splash (white mark on transparent, over `#0066CC` set in
+`mobile/app.json`) and the share card. Share card
 `public/share-rp.jpg` (1200×630, white lockup on the gradient), declared in
 `lib/share.ts`; rename it if it changes (WhatsApp/Facebook/X cache by URL).
 `theme-color` is white (light) / navy (dark); the PWA manifest launches on
