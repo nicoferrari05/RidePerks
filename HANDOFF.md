@@ -324,8 +324,8 @@ Plataforma wears the blue gradient of the landing's featured plan.
 
 **Recovery email** (`supabase/email-templates/recovery.html`) rebuilt in the
 new style (white card, navy pill button with a blue arrow circle, blue
-manifesto band, navy lockup image). **The user must paste it into Supabase
-again** (§13).
+manifesto band, navy lockup image). The user pasted it into Supabase on
+November 25, 2026; paste it again whenever the file changes.
 
 Motion follows Emil Kowalski's guidance (`/emil-design-eng` skill): buttons
 scale to 0.97 on press in 160ms with `ease-snappy`
@@ -567,8 +567,8 @@ must not lag.
   of the audience), `/admin/more` (access, catalog, appearance, logout).
 - Shared `ADMIN_PASSWORD` cookie for `/admin/*`, plus a personal identity in
   `rp_admin_users` (self-enroll at `/admin/access`) required for access
-  grants, reviews, announcements and manual payment credit. As of the last
-  check nobody had enrolled; remind the user.
+  grants, reviews, announcements and manual payment credit. The user
+  enrolled on November 25, 2026.
 
 ### Payments
 - `free_access = false` (billing live). Two plans
@@ -590,7 +590,8 @@ must not lag.
   `soporte@rideperks.app`); app emails (receipt, verification result, renewal
   reminder) use `lib/email.ts` (`RESEND_API_KEY` / `EMAIL_FROM`). The branded
   reset template `supabase/email-templates/recovery.html` doesn't sync: the
-  user pastes it into Supabase → Auth → Emails → Reset Password (pending).
+  user pastes it into Supabase → Auth → Emails → Reset Password (current
+  version pasted November 25, 2026).
 - **Security**: optional Cloudflare Turnstile on registration (active only
   if both keys are set). HSTS on. CSP ships as **report-only** in
   `next.config.mjs`; enforce it after confirming Yappy on
@@ -762,9 +763,6 @@ otherwise the old build keeps being served.
 **Phone app:** everything in §2 and §3.
 
 **By the user (one-time):**
-- Paste the new `recovery.html` (rebranded November 25, 2026) into Supabase
-  (Authentication → Email Templates → Reset password).
-- Enroll in `rp_admin_users` (`/admin/access`).
 - Turn on `catalog_live` once there are approved benefits.
 
 **Checks and small fixes:**
