@@ -11,7 +11,7 @@ export default function AdminLoginPage() {
   // LoginForm renders the full-viewport AuthShell itself; don't wrap it in
   // another layout container.
   return (
-    <Suspense fallback={<div className="min-h-[100dvh] bg-[#efffc8]" />}>
+    <Suspense fallback={<div className="min-h-[100dvh] bg-[#eaf3fb]" />}>
       <LoginForm />
     </Suspense>
   );

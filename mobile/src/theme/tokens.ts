@@ -7,72 +7,72 @@
 
 const platformLight = {
   bg: "#ffffff",
-  surface: "#f4f4f1",
-  surface2: "#e9e9e4",
+  surface: "#f3f5f9",
+  surface2: "#e7ebf2",
   raised: "#ffffff",
-  text: "#100b00",
-  muted: "#6b675e",
-  faint: "#9a968b",
-  line: "rgba(16, 11, 0, 0.08)",
-  lineStrong: "rgba(16, 11, 0, 0.16)",
-  accent: "#100b00",
+  text: "#0b1220",
+  muted: "#5d6474",
+  faint: "#8e95a3",
+  line: "rgba(11, 18, 32, 0.08)",
+  lineStrong: "rgba(11, 18, 32, 0.16)",
+  accent: "#0b1220",
   accentFg: "#ffffff",
-  accentText: "#100b00",
-  accentSoft: "#f4f4f1",
-  hero: "#100b00",
+  accentText: "#0b1220",
+  accentSoft: "#f3f5f9",
+  hero: "#0b1220",
   heroFg: "#ffffff",
   heroMuted: "rgba(255, 255, 255, 0.62)",
   heroSurface: "rgba(255, 255, 255, 0.1)",
   danger: "#d93a14",
   dangerBg: "#fdece7",
   dangerFg: "#a12a0b",
-  greenSoft: "#eef6e3",
-  greenText: "#3d6a1c",
-  greenLine: "#6aa83a",
-  greenFill: "#a6d872",
-  chartBar: "#5a962f",
+  greenSoft: "#e8f1fc",
+  greenText: "#0066cc",
+  greenLine: "#3d8fe0",
+  greenFill: "#8dc3e8",
+  chartBar: "#0066cc",
   warnBg: "#fdf3dc",
   warnFg: "#7d5300",
   dock: "#ffffff",
-  dockFg: "#100b00",
-  dockMuted: "#8a867c",
-  dockLine: "rgba(16, 11, 0, 0.08)",
-  dockSpot: "rgba(16, 11, 0, 0.09)",
+  dockFg: "#0b1220",
+  dockMuted: "#868d9b",
+  dockLine: "rgba(11, 18, 32, 0.08)",
+  dockSpot: "rgba(11, 18, 32, 0.09)",
   dockShadow:
-    "0 1px 2px rgba(16, 11, 0, 0.06), 0 14px 32px -12px rgba(16, 11, 0, 0.28)",
+    "0 1px 2px rgba(11, 18, 32, 0.06), 0 14px 32px -12px rgba(11, 18, 32, 0.28)",
   shadow:
-    "0 1px 2px rgba(16, 11, 0, 0.06), 0 6px 16px -8px rgba(16, 11, 0, 0.18)",
+    "0 1px 2px rgba(11, 18, 32, 0.06), 0 6px 16px -8px rgba(11, 18, 32, 0.18)",
 };
 
 export type PlatformColors = typeof platformLight;
 
 const platformDark: PlatformColors = {
   ...platformLight,
-  bg: "#100b00",
-  surface: "#1d1a13",
-  surface2: "#2a261d",
-  raised: "#26221a",
+  bg: "#0b1220",
+  surface: "#161d2b",
+  surface2: "#232b3b",
+  raised: "#1c2433",
   text: "#ffffff",
-  muted: "#aaa69c",
-  faint: "#78746a",
+  muted: "#a4abb8",
+  faint: "#737a88",
   line: "rgba(255, 255, 255, 0.08)",
   lineStrong: "rgba(255, 255, 255, 0.18)",
   accent: "#ffffff",
-  accentFg: "#100b00",
+  accentFg: "#0b1220",
   accentText: "#ffffff",
-  accentSoft: "#1d1a13",
-  hero: "#1d1a13",
+  accentSoft: "#161d2b",
+  hero: "#161d2b",
   dangerBg: "rgba(217, 58, 20, 0.18)",
   dangerFg: "#ffb49e",
-  greenSoft: "rgba(166, 216, 114, 0.13)",
-  greenText: "#b8e290",
-  greenLine: "#a6d872",
-  chartBar: "#6e9e40",
+  greenSoft: "rgba(141, 195, 232, 0.13)",
+  greenText: "#9fcbf0",
+  greenLine: "#8dc3e8",
+  chartBar: "#3d8fe0",
   warnBg: "rgba(231, 177, 64, 0.16)",
   warnFg: "#f3cf7d",
-  dock: "#1d1a13",
+  dock: "#161d2b",
   dockFg: "#ffffff",
-  dockMuted: "#8f8b80",
+  dockMuted: "#8b92a0",
   dockLine: "rgba(255, 255, 255, 0.1)",
   dockSpot: "rgba(255, 255, 255, 0.22)",
   dockShadow: "0 16px 36px -14px rgba(0, 0, 0, 0.8)",
@@ -81,26 +81,26 @@ const platformDark: PlatformColors = {
 
 export const platform = { light: platformLight, dark: platformDark };
 
-/** Sign-in screens: the landing's mint palette. */
+/** Sign-in screens: white, navy ink and slate muted text. */
 export const auth = {
   bg: "#ffffff", // --color-background
-  text: "#100b00", // --color-foreground
-  muted: "#3b341f", // --color-muted-foreground
-  border: "rgba(16, 11, 0, 0.16)", // --color-border
-  primary: "#100b00", // --color-primary
+  text: "#0b1220", // --color-foreground
+  muted: "#4a5263", // --color-muted-foreground
+  border: "rgba(11, 18, 32, 0.16)", // --color-border
+  primary: "#0b1220", // --color-primary
   primaryFg: "#ffffff", // --color-primary-foreground
-  link: "#3b341f", // --color-ember (text-ember)
+  link: "#4a5263", // --color-ember (text-ember)
   errorBg: "#ffe0d8", // --color-ember-soft
   errorText: "#ab2a09", // --color-ember-2
-  successBg: "rgba(16, 11, 0, 0.07)", // --rp-success-bg (app/auth.css)
-  successText: "#100b00", // --rp-success-fg
-  placeholder: "rgba(16, 11, 0, 0.5)", // Tailwind's placeholder: text at 50%
-  inputBg: "rgba(16, 11, 0, 0.05)", // bg-foreground/5
-  inputFocusBorder: "rgba(59, 52, 31, 0.6)", // border-ember/60
-  inputFocusBg: "rgba(59, 52, 31, 0.05)", // bg-ember/5
-  switchActiveBg: "#100b00",
+  successBg: "rgba(11, 18, 32, 0.07)", // --rp-success-bg (app/auth.css)
+  successText: "#0b1220", // --rp-success-fg
+  placeholder: "rgba(11, 18, 32, 0.5)", // Tailwind's placeholder: text at 50%
+  inputBg: "rgba(11, 18, 32, 0.05)", // bg-foreground/5
+  inputFocusBorder: "rgba(74, 82, 99, 0.6)", // border-ember/60
+  inputFocusBg: "rgba(74, 82, 99, 0.05)", // bg-ember/5
+  switchActiveBg: "#0b1220",
   switchActiveFg: "#ffffff",
-  switchPressed: "rgba(16, 11, 0, 0.07)",
+  switchPressed: "rgba(11, 18, 32, 0.07)",
 };
 
 /** Geist, the web's font. React Native picks a weight by family name. */

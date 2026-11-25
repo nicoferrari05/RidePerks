@@ -7,9 +7,9 @@ export default function manifest(): MetadataRoute.Manifest {
     start_url: "/driver/dashboard",
     scope: "/",
     display: "standalone",
-    // Matches the icon's black field so the launch splash reads as one piece.
-    background_color: "#100b00",
-    theme_color: "#100b00",
+    // Launch splash in the brand blue, like the icon; the app itself is white.
+    background_color: "#0066cc",
+    theme_color: "#ffffff",
     lang: "es-PA",
     icons: [
       { src: "/icon-192.png", sizes: "192x192", type: "image/png" },

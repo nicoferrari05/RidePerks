@@ -1,0 +1,262 @@
+/* Landing redesign demo (/demo). Every rule is scoped to .rpx so nothing
+   leaks into the real landing or the platform after client navigation. */
+
+.rpx {
+  --ink: #0b1220;
+  --iris: #0066cc;
+  --ultra: #3d8fe0;
+  --sky: #8dc3e8;
+  --mist: #eaf3fb;
+  --surface: #f4f6fb;
+  --muted: rgba(11, 18, 32, 0.62);
+  --faint: rgba(11, 18, 32, 0.4);
+  --line: rgba(11, 18, 32, 0.08);
+  --ease: cubic-bezier(0.23, 1, 0.32, 1);
+  background: #fff;
+  color: var(--ink);
+  font-family: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+/* White behind the page too (overscroll on iOS, short screens). */
+html:has(.rpx),
+body:has(.rpx) {
+  background: #fff;
+}
+
+.rpx ::selection {
+  background: #d6e9f7;
+  color: var(--ink);
+}
+
+.rpx a,
+.rpx button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ---------- Brand marks (PNG used as a mask, so any colour works) ---------- */
+
+.rpx-lockup {
+  display: block;
+  aspect-ratio: 1252 / 249;
+  background: currentColor;
+  -webkit-mask: url(/brand/rideperks-lockup.png) center / contain no-repeat;
+  mask: url(/brand/rideperks-lockup.png) center / contain no-repeat;
+}
+.rpx-mark {
+  display: block;
+  aspect-ratio: 1285 / 1245;
+  background: currentColor;
+  -webkit-mask: url(/brand/rideperks-mark.png) center / contain no-repeat;
+  mask: url(/brand/rideperks-mark.png) center / contain no-repeat;
+}
+.rpx-mark-grad {
+  background: linear-gradient(160deg, var(--sky) 0%, var(--ultra) 45%, var(--iris) 100%);
+}
+
+/* ---------- Silk Blend ---------- */
+
+/* The rotating layer paints over this; before it runs the panel already
+   shows the same gradient at rest. */
+.rpx-silk {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  background-color: #fff;
+  background-image: linear-gradient(191deg, #fff 54%, #a8d2ee 59%, #3d8fe0 64%, #0066cc 100%);
+}
+/* GPU only: a still texture turned by a compositor animation. */
+.rpx-silk-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: block;
+  width: 0;
+  height: 0;
+  max-width: none;
+  transform: rotate(11deg);
+  animation: rpx-sway 9s cubic-bezier(0.37, 0, 0.63, 1) -4.5s infinite alternate;
+  will-change: transform;
+}
+.rpx-silk.is-off .rpx-silk-layer {
+  animation-play-state: paused;
+}
+@keyframes rpx-sway {
+  from {
+    transform: rotate(6deg);
+  }
+  to {
+    transform: rotate(16deg);
+  }
+}
+/* Vignette and a light film grain stay still above the moving colour. The
+   grain is white specks, so it only shows on the blue, with no blend mode
+   (a blend over an animated layer costs an extra full-screen pass). */
+.rpx-silk::before,
+.rpx-silk::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.rpx-silk::before {
+  z-index: 1;
+  background: radial-gradient(circle at 50% 50%, rgba(11, 18, 32, 0) 60%, rgba(11, 18, 32, 0.06) 100%);
+}
+.rpx-silk::after {
+  z-index: 2;
+  opacity: 0.2;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 2.4 -1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Still version for the smaller panels: mist on top so the card reads
+   against the white page, blue rising from the bottom. */
+.rpx-silk-still {
+  background-color: var(--mist);
+  background-image:
+    radial-gradient(80% 50% at 50% 100%, rgba(0, 102, 204, 0.55), rgba(0, 102, 204, 0) 100%),
+    linear-gradient(191deg, var(--mist) 34%, #cfe4f5 52%, #a8d2ee 60%, #3d8fe0 78%, #0066cc 100%);
+}
+
+/* ---------- Surfaces ---------- */
+
+.rpx-tab {
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid var(--line);
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 16px 40px -22px rgba(11, 18, 32, 0.4);
+}
+.rpx-glass {
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(11, 18, 32, 0.06);
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 12px 32px -20px rgba(11, 18, 32, 0.35);
+}
+.rpx-chip {
+  background: #fff;
+  box-shadow:
+    0 1px 2px rgba(11, 18, 32, 0.06),
+    0 24px 48px -20px rgba(0, 70, 150, 0.45);
+}
+.rpx-featured {
+  background:
+    radial-gradient(90% 55% at 85% 0%, rgba(141, 195, 232, 0.55), rgba(141, 195, 232, 0) 100%),
+    linear-gradient(170deg, var(--ultra) 0%, var(--iris) 100%);
+  color: #fff;
+  box-shadow: 0 40px 80px -40px rgba(0, 102, 204, 0.7);
+}
+
+/* ---------- Motion ---------- */
+
+.rpx-btn {
+  transition:
+    transform 160ms var(--ease),
+    background-color 200ms var(--ease),
+    color 200ms var(--ease),
+    box-shadow 200ms var(--ease);
+}
+.rpx-btn:active {
+  transform: scale(0.97);
+}
+.rpx-btn-icon {
+  transition: transform 260ms var(--ease);
+}
+@media (hover: hover) and (pointer: fine) {
+  .rpx-btn:hover .rpx-btn-icon,
+  .rpx-card-link:hover .rpx-btn-icon {
+    transform: translate(2px, -2px);
+  }
+}
+
+.rpx-in {
+  animation: rpx-in 900ms var(--ease) both;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes rpx-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 24px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rpx-rise {
+  animation: rpx-rise 1200ms var(--ease) both;
+  animation-delay: var(--d, 250ms);
+}
+@keyframes rpx-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 90px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rpx-float {
+  animation: rpx-float 6s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+  animation-delay: var(--f, 0s);
+}
+@keyframes rpx-float {
+  from {
+    transform: translate3d(0, -5px, 0);
+  }
+  to {
+    transform: translate3d(0, 5px, 0);
+  }
+}
+
+/* Scroll reveals. Hidden only once JS is on, so nothing stays invisible
+   without it. */
+.rpx.rpx-js [data-rv] {
+  opacity: 0;
+  transform: translate3d(0, 28px, 0);
+  transition:
+    opacity 900ms var(--ease),
+    transform 900ms var(--ease);
+  transition-delay: var(--d, 0ms);
+}
+.rpx.rpx-js [data-rv].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+.rpx-no-scrollbar {
+  scrollbar-width: none;
+}
+.rpx-no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ---------- Footer scene ---------- */
+
+.rpx-scene canvas {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: block;
+  max-width: none;
+  image-rendering: pixelated;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rpx *,
+  .rpx *::before,
+  .rpx *::after {
+    animation: none !important;
+    transition-duration: 0ms !important;
+  }
+  .rpx.rpx-js [data-rv] {
+    opacity: 1;
+    transform: none;
+  }
+}

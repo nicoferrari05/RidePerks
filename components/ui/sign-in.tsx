@@ -61,7 +61,7 @@ export function AuthShell({
                   animationSpeed={2.2}
                   dotSize={5}
                   colors={[
-                    [239, 255, 200],
+                    [141, 195, 232],
                     [255, 255, 255],
                   ]}
                   opacities={[0.15, 0.15, 0.2, 0.2, 0.3, 0.3, 0.4, 0.4, 0.5, 0.6]}

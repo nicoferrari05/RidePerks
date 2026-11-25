@@ -6,53 +6,53 @@
     <meta name="color-scheme" content="light only" />
     <meta name="supported-color-schemes" content="light only" />
     <title>Cambia tu contraseña · RidePerks</title>
-    <!-- Geist, la tipografía de la landing, donde el cliente la soporta
-         (Apple Mail, iOS). En el resto cae a Helvetica/Arial.
+    <!-- Plus Jakarta Sans, la tipografía de la landing, donde el cliente la
+         soporta (Apple Mail, iOS). En el resto cae a Helvetica/Arial.
          Colores sólidos (sin rgba) porque varios clientes no los soportan:
-         son los tokens --lp-* de app/globals.css ya mezclados con su fondo. -->
+         son los tokens de components/site/site.css ya mezclados con su fondo. -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;800&family=JetBrains+Mono:wght@400&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
   </head>
-  <body style="margin:0;padding:0;background-color:#efffc8;">
-    <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#efffc8;">
+  <body style="margin:0;padding:0;background-color:#f3f5f9;">
+    <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#f3f5f9;">
       Usa este enlace para elegir una nueva contraseña. Es de un solo uso.
     </div>
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#efffc8" style="background-color:#efffc8;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f3f5f9" style="background-color:#f3f5f9;">
       <tr>
         <td align="center" style="padding:28px 16px 40px;">
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:540px;">
-            <!-- Wordmark: el mismo LogoMark variant="text" del Nav -->
+            <!-- Logo: el lockup «rp» + wordmark de la landing -->
             <tr>
-              <td style="padding:0 4px 24px;font-family:Geist,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:22px;line-height:1;font-weight:800;letter-spacing:-0.5px;color:#100b00;">
-                RIDEPERKS
+              <td style="padding:4px 4px 24px;">
+                <img src="https://rideperks.app/brand/rideperks-lockup-navy.png" width="130" height="26" alt="RidePerks" style="display:block;width:130px;height:auto;border:0;" />
               </td>
             </tr>
 
-            <!-- Tarjeta: la superficie de «Crea tu cuenta» (JoinCTA) -->
+            <!-- Tarjeta blanca, como las tarjetas de la landing -->
             <tr>
-              <td bgcolor="#e2f3b3" style="background-color:#e2f3b3;border:1px solid #d0ddac;border-radius:28px;padding:40px 28px 32px;">
-                <h1 style="margin:0 0 16px;font-family:Geist,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:40px;line-height:1.02;font-weight:500;letter-spacing:-1.6px;color:#100b00;">
+              <td bgcolor="#ffffff" style="background-color:#ffffff;border:1px solid #e3e8f0;border-radius:28px;padding:40px 28px 32px;">
+                <h1 style="margin:0 0 16px;font-family:'Plus Jakarta Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:38px;line-height:1.05;font-weight:600;letter-spacing:-1.5px;color:#0b1220;">
                   Elige una nueva contraseña.
                 </h1>
-                <p style="margin:0 0 28px;font-family:Geist,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:16px;line-height:1.55;color:#3b341f;">
+                <p style="margin:0 0 28px;font-family:'Plus Jakarta Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:16px;line-height:1.6;color:#5d6474;">
                   Recibimos una solicitud para cambiar la contraseña de tu cuenta de RidePerks. Pulsa el botón para elegir una nueva.
                 </p>
 
-                <!-- Botón: el PillLink de la landing (pastilla verde + flecha en su círculo) -->
+                <!-- Botón: el de la landing (pastilla azul marino + flecha en su círculo azul) -->
                 <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 32px;">
                   <tr>
-                    <td bgcolor="#85cb33" style="background-color:#85cb33;border-radius:999px;padding:6px 6px 6px 24px;">
+                    <td bgcolor="#0b1220" style="background-color:#0b1220;border-radius:999px;padding:6px 6px 6px 24px;">
                       <table role="presentation" cellpadding="0" cellspacing="0" border="0">
                         <tr>
                           <td style="padding-right:16px;">
-                            <a href="{{ .ConfirmationURL }}" target="_blank" style="display:inline-block;font-family:Geist,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:40px;font-weight:600;color:#100b00;text-decoration:none;">
+                            <a href="{{ .ConfirmationURL }}" target="_blank" style="display:inline-block;font-family:'Plus Jakarta Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:15px;line-height:40px;font-weight:600;color:#ffffff;text-decoration:none;">
                               Cambiar mi contraseña
                             </a>
                           </td>
-                          <td width="40" height="40" align="center" valign="middle" bgcolor="#100b00" style="width:40px;height:40px;background-color:#100b00;border-radius:999px;">
-                            <a href="{{ .ConfirmationURL }}" target="_blank" style="display:block;width:40px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:18px;line-height:40px;font-weight:700;color:#85cb33;text-decoration:none;text-align:center;">
+                          <td width="40" height="40" align="center" valign="middle" bgcolor="#0066cc" style="width:40px;height:40px;background-color:#0066cc;border-radius:999px;">
+                            <a href="{{ .ConfirmationURL }}" target="_blank" style="display:block;width:40px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:18px;line-height:40px;font-weight:700;color:#ffffff;text-decoration:none;text-align:center;">
                               &#8599;&#xFE0E;
                             </a>
                           </td>
@@ -64,13 +64,13 @@
 
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                   <tr>
-                    <td style="border-top:1px solid #d0ddac;padding-top:20px;">
-                      <p style="margin:0 0 8px;font-family:Geist,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.6;color:#3b341f;">
-                        <strong style="font-weight:600;color:#100b00;">¿No fuiste tú?</strong> Ignora este correo: tu contraseña actual sigue igual. El enlace es de un solo uso y vence pronto.
+                    <td style="border-top:1px solid #e3e8f0;padding-top:20px;">
+                      <p style="margin:0 0 8px;font-family:'Plus Jakarta Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.6;color:#5d6474;">
+                        <strong style="font-weight:600;color:#0b1220;">¿No fuiste tú?</strong> Ignora este correo: tu contraseña actual sigue igual. El enlace es de un solo uso y vence pronto.
                       </p>
-                      <p style="margin:0;font-family:Geist,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.6;color:#3b341f;">
+                      <p style="margin:0;font-family:'Plus Jakarta Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:13px;line-height:1.6;color:#5d6474;">
                         ¿El botón no funciona?
-                        <a href="{{ .ConfirmationURL }}" target="_blank" style="color:#100b00;font-weight:600;text-decoration:underline;">Abre este enlace</a>.
+                        <a href="{{ .ConfirmationURL }}" target="_blank" style="color:#0066cc;font-weight:600;text-decoration:underline;">Abre este enlace</a>.
                       </p>
                     </td>
                   </tr>
@@ -80,18 +80,18 @@
 
             <tr><td height="12" style="height:12px;line-height:12px;font-size:0;">&nbsp;</td></tr>
 
-            <!-- Banda oscura: la frase del Manifiesto y el pie del Footer -->
+            <!-- Banda azul de marca: la frase del manifiesto y el pie del sitio -->
             <tr>
-              <td bgcolor="#100b00" style="background-color:#100b00;border-radius:28px;padding:36px 28px 24px;">
-                <p style="margin:0 0 28px;font-family:Geist,'Helvetica Neue',Helvetica,Arial,sans-serif;font-size:26px;line-height:1.1;font-weight:500;letter-spacing:-1px;color:#efffc8;">
-                  <span style="color:#acb68c;">Tú manejas para ganar más.</span><br />
+              <td bgcolor="#0066cc" style="background-color:#0066cc;border-radius:28px;padding:36px 28px 24px;">
+                <p style="margin:0 0 28px;font-family:'Plus Jakarta Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:26px;line-height:1.15;font-weight:600;letter-spacing:-0.8px;color:#ffffff;">
+                  <span style="color:#a9cdef;">Tú manejas para ganar más.</span><br />
                   Nosotros te ayudamos a gastar menos.
                 </p>
                 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                   <tr>
-                    <td style="border-top:1px solid #34321f;padding-top:18px;font-family:'JetBrains Mono',Menlo,Consolas,monospace;font-size:11px;line-height:1.6;letter-spacing:1px;color:#acb68c;">
+                    <td style="border-top:1px solid #2f84d6;padding-top:18px;font-family:'Plus Jakarta Sans','Helvetica Neue',Helvetica,Arial,sans-serif;font-size:11px;line-height:1.6;letter-spacing:1.5px;font-weight:600;color:#a9cdef;">
                       © 2026 RIDEPERKS · PANAMÁ ·
-                      <a href="https://rideperks.app" target="_blank" style="color:#acb68c;text-decoration:underline;">RIDEPERKS.APP</a>
+                      <a href="https://rideperks.app" target="_blank" style="color:#a9cdef;text-decoration:underline;">RIDEPERKS.APP</a>
                     </td>
                   </tr>
                 </table>

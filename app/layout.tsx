@@ -58,8 +58,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#efffc8" },
-    { media: "(prefers-color-scheme: dark)", color: "#100b00" },
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0b1220" },
   ],
 };
 
@@ -69,7 +69,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      // The theme scripts set data-lp-theme / data-rp-theme before hydration.
+      // The platform theme script sets data-rp-theme before hydration.
       suppressHydrationWarning
       className={`${geist.variable} ${jetbrainsMono.variable}`}
     >

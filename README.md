@@ -141,14 +141,14 @@ volver a desplegar nada.
 
 ## 9. Marca: fuente y colores
 
-Coinciden con lo que ya está en producción en rideperks.app:
+Identidad nueva desde el 25 de noviembre de 2026 (detalle en `HANDOFF.md` §6):
 
-- **Fuente principal:** Geist (vía `next/font/google`)
-- **Acento:** Fraunces itálica — solo para la palabra emocional de cada
-  sección (nunca en párrafos)
-- **Mono:** JetBrains Mono — la "voz de los recibos": IDs, cifras, labels
-- **Colores** (`app/globals.css`, bloque `@theme`): ember `#cf3b18`, navy
-  `#041429`, bone `#f5f1ea`, sol `#e7b140`, verde `#338a66`, entre otros
+- **Logo:** el símbolo «rp» junto al wordmark «rideperks» (`public/brand/`).
+- **Colores:** azul de marca `#0066CC`, azul medio `#3D8FE0`, celeste
+  `#8DC3E8`, celeste claro `#EAF3FB` y tinta azul marino `#0B1220`, sobre
+  blanco.
+- **Fuentes:** Plus Jakarta Sans en el sitio público (la más parecida al
+  wordmark); Geist en la plataforma y la app; JetBrains Mono para cifras e IDs.
 
 ## 10. Estructura del proyecto
 

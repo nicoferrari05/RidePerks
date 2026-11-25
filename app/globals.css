@@ -1,19 +1,23 @@
 @import "tailwindcss";
 
 @theme {
-  /* RidePerks brand tokens — matched to the live production palette at
-     rideperks.app (a refinement of RidePerks Brand Identity.html). */
-  --color-ember: #cf3b18;
+  /* RidePerks brand tokens (new identity, November 2026): brand blue
+     #0066CC, navy ink #0B1220, celeste #8DC3E8 and its light tint, on white.
+     The legacy token names are kept because components use them as classes
+     (text-ember, bg-navy, ...); their values follow the new palette. */
+  --color-ember: #0066cc;
+  /* ember-2 and ember-soft are the error text and background of the auth
+     screens: they stay red. */
   --color-ember-2: #ab2a09;
   --color-ember-soft: #ffe0d8;
-  --color-navy: #041429;
-  --color-navy-2: #091f3b;
-  --color-bone: #f5f1ea;
-  --color-bone-2: #eae4da;
-  --color-paper: #fdfaf4;
-  --color-ink: #050911;
-  --color-mute: #66635e;
-  --color-line: #d4d0ca;
+  --color-navy: #0b1220;
+  --color-navy-2: #162033;
+  --color-bone: #eaf3fb;
+  --color-bone-2: #dceaf7;
+  --color-paper: #ffffff;
+  --color-ink: #0b1220;
+  --color-mute: #5d6474;
+  --color-line: #d7dde7;
   --color-sol: #e7b140;
   --color-verde: #338a66;
 
@@ -46,98 +50,6 @@
   --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
-/* Landing tokens. Only `.lp` (components/landing/LandingShell) reads them;
-   the landing has a single light theme. The
-   landing is deliberately monochrome: the primary action uses the text
-   color, not ember. */
-@theme inline {
-  --color-lp-bg: var(--lp-bg);
-  --color-lp-surface: var(--lp-surface);
-  --color-lp-surface-2: var(--lp-surface-2);
-  --color-lp-fg: var(--lp-fg);
-  --color-lp-muted: var(--lp-muted);
-  --color-lp-line: var(--lp-line);
-  --color-lp-accent: var(--lp-accent);
-  --color-lp-accent-fg: var(--lp-accent-fg);
-  --color-lp-band: var(--lp-band);
-  --color-lp-band-fg: var(--lp-band-fg);
-  --color-lp-band-muted: var(--lp-band-muted);
-  --color-lp-band-line: var(--lp-band-line);
-  --color-lp-pill: var(--lp-pill);
-  --color-lp-pill-fg: var(--lp-pill-fg);
-}
-
-/* Palette: pitch black #100B00, yellow green #85CB33, frosted mint #EFFFC8,
-   ash grey #A5CBC3, dark khaki #3B341F. */
-.lp {
-  --lp-bg: #efffc8;
-  --lp-surface: #e2f3b3;
-  --lp-surface-2: #d6ec9c;
-  --lp-fg: #100b00;
-  --lp-muted: #3b341f;
-  --lp-line: rgba(16, 11, 0, 0.14);
-  --lp-accent: #85cb33;
-  --lp-accent-fg: #100b00;
-  --lp-band: #100b00;
-  --lp-band-fg: #efffc8;
-  --lp-band-muted: rgba(239, 255, 200, 0.7);
-  --lp-band-line: rgba(239, 255, 200, 0.16);
-  --lp-pill: #85cb33;
-  --lp-pill-fg: #100b00;
-  --lp-glass-tint: #efffc8;
-  --lp-glass-line: rgba(255, 255, 255, 0.6);
-  --lp-glass-hi: rgba(255, 255, 255, 0.85);
-}
-html[data-lp-theme="light"] body {
-  background: #efffc8;
-}
-.lp ::selection {
-  background: var(--lp-fg);
-  color: var(--lp-bg);
-}
-/* First-visit hero entrance: each line fades up, in a short stagger.
-   Transform and opacity only (a blur here was costly on the large hero
-   phone image). */
-@keyframes lp-enter {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-.lp-enter {
-  animation: lp-enter 700ms var(--ease-snappy) both;
-  animation-delay: var(--enter-delay, 0ms);
-}
-/* The header turns into a floating glass tab once the page scrolls, so its
-   text never sits directly on top of page content. */
-.lp-tab {
-  background: color-mix(in srgb, var(--lp-glass-tint) 82%, transparent);
-  -webkit-backdrop-filter: blur(20px) saturate(170%);
-  backdrop-filter: blur(20px) saturate(170%);
-  border: 1px solid var(--lp-glass-line);
-  box-shadow:
-    inset 0 1px 0 var(--lp-glass-hi),
-    0 16px 40px -20px rgba(16, 11, 0, 0.45);
-}
-.lp a,
-.lp button {
-  -webkit-tap-highlight-color: transparent;
-}
-/* Light pill surface for things over the hero or scrolling content. No
-   backdrop-filter: over the animated hero canvas it was re-blurred every
-   frame, which made the page stutter on phones. */
-.lp-glass {
-  background: color-mix(in srgb, var(--lp-glass-tint) 86%, transparent);
-  border: 1px solid var(--lp-glass-line);
-  box-shadow:
-    inset 0 1px 0 var(--lp-glass-hi),
-    0 12px 36px -18px rgba(4, 20, 41, 0.35);
-}
-
 * {
   box-sizing: border-box;
 }
@@ -154,28 +66,24 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-::selection {
-  background: var(--color-ember);
-  color: var(--color-bone);
+/* The RidePerks lockup ("rp" + wordmark) in the current text colour. */
+.rp-lockup {
+  display: inline-block;
+  flex-shrink: 0;
+  aspect-ratio: 1252 / 249;
+  background: currentColor;
+  -webkit-mask: url(/brand/rideperks-lockup.png) center / contain no-repeat;
+  mask: url(/brand/rideperks-lockup.png) center / contain no-repeat;
 }
 
-/* Only hide scroll-reveal targets when JS can actually run the reveal
-   animation — otherwise (no JS / crawlers) the content is visible by
-   default and nothing is ever permanently hidden. */
-@media (scripting: enabled) {
-  [data-reveal] {
-    opacity: 0;
-    transform: translateY(16px);
-  }
+::selection {
+  background: #d6e9f7;
+  color: var(--color-ink);
 }
 
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
-  }
-  [data-reveal] {
-    opacity: 1;
-    transform: none;
   }
   *,
   *::before,
@@ -191,55 +99,56 @@ body {
    Only colors change; the layout and components stay as they are. */
 .rp-auth {
   --color-background: #ffffff;
-  --color-foreground: #100b00;
-  --color-primary: #100b00;
+  --color-foreground: #0b1220;
+  --color-primary: #0b1220;
   --color-primary-foreground: #ffffff;
-  --color-secondary: rgba(16, 11, 0, 0.07);
-  --color-secondary-foreground: #100b00;
-  --color-border: rgba(16, 11, 0, 0.16);
-  --color-muted-foreground: #3b341f;
-  --color-ember: #3b341f;
-  --color-bone: #efffc8;
-  --color-navy: #100b00;
-  --rp-border: rgba(16, 11, 0, 0.16);
-  --rp-text: #100b00;
+  --color-secondary: rgba(11, 18, 32, 0.07);
+  --color-secondary-foreground: #0b1220;
+  --color-border: rgba(11, 18, 32, 0.16);
+  --color-muted-foreground: #4a5263;
+  --color-ember: #4a5263;
+  --color-bone: #eaf3fb;
+  /* The sign-in side panel (bg-navy) is the brand blue. */
+  --color-navy: #0066cc;
+  --rp-border: rgba(11, 18, 32, 0.16);
+  --rp-text: #0b1220;
   background: var(--color-background);
   color: var(--color-foreground);
 }
 .rp-auth .rp-field :is(input, select, textarea) {
-  border-color: rgba(16, 11, 0, 0.16);
-  background: #f6f6f2;
-  color: #100b00;
+  border-color: rgba(11, 18, 32, 0.16);
+  background: #f5f7fb;
+  color: #0b1220;
 }
 .rp-auth .rp-field :is(input, select, textarea):focus {
-  border-color: #3b341f;
+  border-color: #4a5263;
   background: #ffffff;
 }
 .rp-auth .rp-field input::placeholder {
-  color: #6b6650;
+  color: #5d6474;
 }
 .rp-auth .rp-button {
-  background: #100b00;
+  background: #0b1220;
   color: #ffffff;
 }
 .rp-auth .rp-button:hover {
-  background: #2a2516;
+  background: #1d2433;
 }
 .rp-auth .rp-text-link {
-  color: #3b341f;
+  color: #4a5263;
 }
 .rp-auth .rp-check input {
-  accent-color: #100b00;
+  accent-color: #0b1220;
 }
 .rp-auth .rp-access-switch a[aria-current] {
-  background: #100b00;
+  background: #0b1220;
   color: #ffffff;
 }
 .rp-auth .rp-access-switch a:not([aria-current]):hover {
-  background: rgba(16, 11, 0, 0.07);
+  background: rgba(11, 18, 32, 0.07);
 }
 .rp-auth .rp-password button {
-  color: #3b341f;
+  color: #4a5263;
 }
 
 /* Sign-in page entrance animation (components/ui/sign-in.tsx). */
@@ -325,33 +234,4 @@ body {
 }
 .animate-delay-900 {
   animation-delay: 0.9s;
-}
-/* Hero phone: only the top of the screen shows; it fades into the page. */
-.lp-hero-phone {
-  height: 470px;
-  overflow: hidden;
-  -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent);
-  mask-image: linear-gradient(to bottom, #000 62%, transparent);
-}
-@media (min-width: 640px) {
-  .lp-hero-phone {
-    height: 540px;
-  }
-}
-/* Dark band phone: cut by the band's bottom edge. */
-.lp-band-phone {
-  height: 520px;
-  overflow: hidden;
-}
-.lp-rail {
-  scrollbar-width: none;
-}
-.lp-rail::-webkit-scrollbar {
-  display: none;
-}
-/* Cards floating beside the hero phone: solid and static. */
-.lp-card-solid {
-  background: var(--lp-bg);
-  border: 1px solid var(--lp-line);
-  box-shadow: 0 16px 36px -18px rgba(16, 11, 0, 0.4);
 }

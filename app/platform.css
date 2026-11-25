@@ -2,8 +2,9 @@
    of Uber / Airbnb: white background, soft gray cards without borders, one
    big number or title per screen, few icons, black (light mode) or white
    (dark mode) actions and a floating dock (components/ui/spotlight-dock.tsx).
-   A soft green (--rp-green-*) marks only what is positive: savings, success,
-   confirmations, progress and the active tab. Buttons stay monochrome.
+   The brand blue #0066CC (the --rp-green-* tokens, named before the November
+   2026 rebrand) marks only what is positive: savings, success,
+   confirmations, progress and the active tab. Buttons stay monochrome navy.
    Dark mode (black with white text) is chosen in Cuenta → Apariencia and
    lives on html[data-rp-theme="dark"].
    Class names are the platform's API: pages and forms depend on them, so
@@ -12,47 +13,47 @@
 
 .rp-app {
   --rp-bg: #ffffff;
-  --rp-surface: #f4f4f1;
-  --rp-surface-2: #e9e9e4;
+  --rp-surface: #f3f5f9;
+  --rp-surface-2: #e7ebf2;
   --rp-raised: #ffffff;
-  --rp-text: #100b00;
-  --rp-muted: #6b675e;
-  --rp-faint: #9a968b;
-  --rp-line: rgba(16, 11, 0, 0.08);
-  --rp-line-strong: rgba(16, 11, 0, 0.16);
+  --rp-text: #0b1220;
+  --rp-muted: #5d6474;
+  --rp-faint: #8e95a3;
+  --rp-line: rgba(11, 18, 32, 0.08);
+  --rp-line-strong: rgba(11, 18, 32, 0.16);
   /* Monochrome: actions are black in light mode, white in dark mode. */
-  --rp-accent: #100b00;
+  --rp-accent: #0b1220;
   --rp-accent-fg: #ffffff;
-  --rp-accent-text: #100b00;
-  --rp-accent-soft: #f4f4f1;
-  --rp-hero: #100b00;
+  --rp-accent-text: #0b1220;
+  --rp-accent-soft: #f3f5f9;
+  --rp-hero: #0b1220;
   --rp-hero-fg: #ffffff;
   --rp-hero-muted: rgba(255, 255, 255, 0.62);
   --rp-hero-surface: rgba(255, 255, 255, 0.1);
   --rp-danger: #d93a14;
   --rp-danger-bg: #fdece7;
   --rp-danger-fg: #a12a0b;
-  /* Soft green, derived from the brand's yellow green (#85CB33). */
-  --rp-green-soft: #eef6e3;
-  --rp-green-text: #3d6a1c;
-  --rp-green-line: #6aa83a;
-  --rp-green-fill: #a6d872;
+  /* Brand blue accents (token names kept from the green era). */
+  --rp-green-soft: #e8f1fc;
+  --rp-green-text: #0066cc;
+  --rp-green-line: #3d8fe0;
+  --rp-green-fill: #8dc3e8;
   --rp-success-bg: var(--rp-green-soft);
   --rp-success-fg: var(--rp-green-text);
-  /* Chart columns: green validated for contrast on each surface. */
-  --rp-chart-bar: #5a962f;
+  /* Chart columns: brand blue, validated for contrast on each surface. */
+  --rp-chart-bar: #0066cc;
   --rp-warn-bg: #fdf3dc;
   --rp-warn-fg: #7d5300;
   /* Dock: light, but still reads as a floating bar (hairline + shadow). */
   --rp-dock: #ffffff;
-  --rp-dock-fg: #100b00;
-  --rp-dock-muted: #8a867c;
-  --rp-dock-line: rgba(16, 11, 0, 0.08);
-  --rp-dock-spot: rgba(16, 11, 0, 0.09);
+  --rp-dock-fg: #0b1220;
+  --rp-dock-muted: #868d9b;
+  --rp-dock-line: rgba(11, 18, 32, 0.08);
+  --rp-dock-spot: rgba(11, 18, 32, 0.09);
   --rp-dock-shadow:
-    0 1px 2px rgba(16, 11, 0, 0.06), 0 14px 32px -12px rgba(16, 11, 0, 0.28);
+    0 1px 2px rgba(11, 18, 32, 0.06), 0 14px 32px -12px rgba(11, 18, 32, 0.28);
   --rp-shadow:
-    0 1px 2px rgba(16, 11, 0, 0.06), 0 6px 16px -8px rgba(16, 11, 0, 0.18);
+    0 1px 2px rgba(11, 18, 32, 0.06), 0 6px 16px -8px rgba(11, 18, 32, 0.18);
   --rp-ease: cubic-bezier(0.23, 1, 0.32, 1);
   --rp-ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 
@@ -79,31 +80,31 @@
   font-variant-numeric: tabular-nums;
 }
 html[data-rp-theme="dark"] .rp-app {
-  --rp-bg: #100b00;
-  --rp-surface: #1d1a13;
-  --rp-surface-2: #2a261d;
-  --rp-raised: #26221a;
+  --rp-bg: #0b1220;
+  --rp-surface: #161d2b;
+  --rp-surface-2: #232b3b;
+  --rp-raised: #1c2433;
   --rp-text: #ffffff;
-  --rp-muted: #aaa69c;
-  --rp-faint: #78746a;
+  --rp-muted: #a4abb8;
+  --rp-faint: #737a88;
   --rp-line: rgba(255, 255, 255, 0.08);
   --rp-line-strong: rgba(255, 255, 255, 0.18);
   --rp-accent: #ffffff;
-  --rp-accent-fg: #100b00;
+  --rp-accent-fg: #0b1220;
   --rp-accent-text: #ffffff;
-  --rp-accent-soft: #1d1a13;
-  --rp-hero: #1d1a13;
+  --rp-accent-soft: #161d2b;
+  --rp-hero: #161d2b;
   --rp-danger-bg: rgba(217, 58, 20, 0.18);
   --rp-danger-fg: #ffb49e;
-  --rp-green-soft: rgba(166, 216, 114, 0.13);
-  --rp-green-text: #b8e290;
-  --rp-green-line: #a6d872;
-  --rp-chart-bar: #6e9e40;
+  --rp-green-soft: rgba(141, 195, 232, 0.13);
+  --rp-green-text: #9fcbf0;
+  --rp-green-line: #8dc3e8;
+  --rp-chart-bar: #3d8fe0;
   --rp-warn-bg: rgba(231, 177, 64, 0.16);
   --rp-warn-fg: #f3cf7d;
-  --rp-dock: #1d1a13;
+  --rp-dock: #161d2b;
   --rp-dock-fg: #ffffff;
-  --rp-dock-muted: #8f8b80;
+  --rp-dock-muted: #8b92a0;
   --rp-dock-line: rgba(255, 255, 255, 0.1);
   --rp-dock-spot: rgba(255, 255, 255, 0.22);
   --rp-dock-shadow: 0 16px 36px -14px rgba(0, 0, 0, 0.8);
@@ -114,7 +115,7 @@ body:has(.rp-app) {
   background: #ffffff;
 }
 html[data-rp-theme="dark"] body:has(.rp-app) {
-  background: #100b00;
+  background: #0b1220;
 }
 .rp-app * {
   min-width: 0;
@@ -468,7 +469,7 @@ html[data-rp-theme="dark"] body:has(.rp-app) {
 }
 .rp-app .rp-hero .rp-segmented > [aria-selected="true"] {
   background: var(--rp-hero-fg);
-  color: #100b00;
+  color: #0b1220;
   box-shadow: none;
 }
 /* Older markup names for the same control. */
@@ -1030,12 +1031,12 @@ html[data-rp-theme="dark"] .rp-app .rp-field select {
   height: 22px;
   border-radius: 999px;
   border: 3px solid #ffffff;
-  background: #85cb33;
-  box-shadow: 0 4px 12px -2px rgba(16, 11, 0, 0.45);
+  background: #0066cc;
+  box-shadow: 0 4px 12px -2px rgba(11, 18, 32, 0.45);
   transition: scale 160ms var(--rp-ease);
 }
 .rp-app .rp-map-pin[data-active] {
-  background: #100b00;
+  background: #0b1220;
   scale: 1.18;
 }
 @media (hover: hover) and (pointer: fine) {
@@ -1061,7 +1062,7 @@ html[data-rp-theme="dark"] .rp-app .rp-field select {
   z-index: 2;
   font-size: 9px;
   line-height: 1;
-  color: rgba(16, 11, 0, 0.55);
+  color: rgba(11, 18, 32, 0.55);
   text-decoration: none;
   text-shadow: 0 0 3px rgba(255, 255, 255, 0.9);
 }
@@ -1393,7 +1394,7 @@ btn-yappy dialog {
   border: 2px solid var(--rp-bg);
   border-radius: 999px;
   background: var(--rp-green-line);
-  color: #100b00;
+  color: #0b1220;
   font-size: 0.66rem;
   font-weight: 700;
   line-height: 1;
@@ -1747,7 +1748,7 @@ btn-yappy dialog {
   }
   .rp-app .rp-receipt {
     background: #ffffff;
-    color: #100b00;
+    color: #0b1220;
   }
 }
 
@@ -1836,7 +1837,7 @@ btn-yappy dialog {
   width: 32px;
   height: 32px;
   border-radius: 999px;
-  background: rgba(16, 11, 0, 0.72);
+  background: rgba(11, 18, 32, 0.72);
   color: #ffffff;
   cursor: pointer;
 }
@@ -2204,9 +2205,14 @@ btn-yappy dialog {
     background: var(--rp-surface-2);
   }
 }
+/* The open section wears the brand blue, like the featured plan on the
+   landing. */
 .rp-app .rp-admin-tile[aria-current="page"] {
-  background: var(--rp-hero);
-  color: var(--rp-hero-fg);
+  background:
+    radial-gradient(90% 70% at 85% 0%, rgba(141, 195, 232, 0.55), rgba(141, 195, 232, 0) 100%),
+    linear-gradient(170deg, #3d8fe0 0%, #0066cc 100%);
+  color: #ffffff;
+  box-shadow: 0 18px 36px -22px rgba(0, 102, 204, 0.8);
 }
 .rp-app .rp-admin-tile strong {
   font-size: 1.75rem;
@@ -2233,7 +2239,7 @@ btn-yappy dialog {
   color: var(--rp-muted);
 }
 .rp-app .rp-admin-tile[aria-current="page"] .rp-admin-tile-hint {
-  color: var(--rp-hero-muted);
+  color: rgba(255, 255, 255, 0.78);
 }
 .rp-app .rp-admin-section-head {
   display: flex;

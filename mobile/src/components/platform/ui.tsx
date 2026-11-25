@@ -272,7 +272,7 @@ export function Segmented<T extends string>({
               style={{
                 fontFamily: font.medium,
                 fontSize: hero ? 13.6 : 14.4,
-                color: selected ? (hero ? "#100b00" : c.text) : hero ? c.heroMuted : c.muted,
+                color: selected ? (hero ? "#0b1220" : c.text) : hero ? c.heroMuted : c.muted,
               }}
             >
               {option.label}
@@ -563,7 +563,7 @@ export function BellButton({ unread }: { unread: number }) {
             backgroundColor: c.greenLine,
           }}
         >
-          <Text style={{ fontFamily: font.bold, fontSize: 10.5, lineHeight: 12, color: "#100b00" }}>
+          <Text style={{ fontFamily: font.bold, fontSize: 10.5, lineHeight: 12, color: "#0b1220" }}>
             {unread > 9 ? "9+" : unread}
           </Text>
         </View>

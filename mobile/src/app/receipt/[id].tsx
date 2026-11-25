@@ -22,12 +22,12 @@ function receiptHtml(r: Receipt) {
     .map(([label, value]) => `<tr><td>${escape(label)}</td><td>${escape(value)}</td></tr>`)
     .join("");
   return `<!doctype html><html><head><meta charset="utf-8"><style>
-body{font-family:-apple-system,Helvetica,Arial,sans-serif;color:#100b00;padding:32px}
+body{font-family:-apple-system,Helvetica,Arial,sans-serif;color:#0b1220;padding:32px}
 header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
-.brand{font-weight:700;font-size:20px}.paid{background:#eef6e3;color:#3d6a1c;border-radius:999px;padding:4px 10px;font-weight:600;font-size:12px}
+.brand{font-weight:700;font-size:20px}.paid{background:#e8f1fc;color:#0066cc;border-radius:999px;padding:4px 10px;font-weight:600;font-size:12px}
 h2{margin:0 0 8px}.total{font-size:44px;font-weight:600;letter-spacing:-0.04em;margin:0}
-.muted{color:#6b675e}table{width:100%;border-collapse:collapse;margin-top:16px}
-td{padding:12px 0;border-bottom:1px solid rgba(16,11,0,.08)}td:last-child{text-align:right;font-weight:500}
+.muted{color:#5d6474}table{width:100%;border-collapse:collapse;margin-top:16px}
+td{padding:12px 0;border-bottom:1px solid rgba(11, 18, 32,.08)}td:last-child{text-align:right;font-weight:500}
 </style></head><body><header><span class="brand">RidePerks</span><span class="paid">Pagado</span></header>
 <h2>Recibo de pago</h2><p class="total">${escape(r.total)}</p>
 <p class="muted">Membresía RidePerks · ${escape(r.plan_label)}</p><table>${rows}</table>

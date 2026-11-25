@@ -138,7 +138,7 @@ type MapProps = {
 
 function DefaultLoader() {
   return (
-    <div className="absolute inset-0 z-10 flex items-center justify-center bg-[var(--rp-surface,#f4f4f1)]">
+    <div className="absolute inset-0 z-10 flex items-center justify-center bg-[var(--rp-surface,#f3f5f9)]">
       <div className="flex gap-1">
         <span className="size-1.5 animate-pulse rounded-full bg-current opacity-50" />
         <span className="size-1.5 animate-pulse rounded-full bg-current opacity-50 [animation-delay:150ms]" />
@@ -406,7 +406,7 @@ function MarkerContent({ children, className }: MarkerContentProps) {
 
 function DefaultMarkerIcon() {
   return (
-    <div className="relative h-4 w-4 rounded-full border-2 border-white bg-[#85cb33] shadow-lg" />
+    <div className="relative h-4 w-4 rounded-full border-2 border-white bg-[#0066cc] shadow-lg" />
   );
 }
 
@@ -445,7 +445,7 @@ function MarkerTooltip({ children, className, ...popupOptions }: MarkerTooltipPr
   return createPortal(
     <div
       className={cn(
-        "pointer-events-none rounded-md bg-[#100b00] px-2 py-1 text-xs text-balance text-white shadow-md",
+        "pointer-events-none rounded-md bg-[#0b1220] px-2 py-1 text-xs text-balance text-white shadow-md",
         className,
       )}
     >

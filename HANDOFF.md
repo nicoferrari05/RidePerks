@@ -15,6 +15,11 @@ notes), `YAPPY.md` (payments), `docs/merchant-access.md` (merchant roles and
 access grants), `mobile/README.md` (running the phone app), `PRODUCT.md`
 (brand voice only: its colors and waitlist funnel are outdated, see §6).
 
+> **New brand identity since November 25, 2026** (§6): the "rp" logo, brand
+> blue `#0066CC` with navy ink and celeste, Plus Jakarta Sans on the public
+> site, and a new landing (§8). Anything older in this file that mentions
+> mint, yellow green, `#100B00` or the RIDEPERKS text wordmark is history.
+
 ---
 
 ## 1. Rules (read before touching anything)
@@ -243,44 +248,83 @@ meses gratis"), both via Yappy with manual renewal.
 
 ---
 
-## 6. Brand identity (current since September 2026)
+## 6. Brand identity (new since November 25, 2026)
 
-Chosen after trying several palettes. **Monochrome base + one green action
-color. No orange (ember), no italics, no serif accent word** — the user
-explicitly removed all of them. Minimal copy on the landing; "Nosotros" is the
-one page with long-form text.
+The user replaced the whole identity on November 25, 2026 and asked for it
+everywhere: landing, web app, admin, sign-in screens, phone app, icons,
+share card. **The web app and the phone app only changed logo and colours,
+not layout** (the user's rule: "no hagas cambios de diseño en sí"); the
+landing, About and the admin portal could change design.
+
+**Logo.** The "rp" mark beside the lowercase "rideperks" wordmark. Files the
+user supplied, cleaned (drop shadow removed, cropped) into `public/brand/`:
+
+- `rideperks-lockup.png` (white on transparent, 1252×249) and
+  `rideperks-mark.png` (the "rp" alone, upscaled with crisp edges). Both are
+  used as **CSS masks**, so they take any colour: `.rp-lockup` in
+  `app/globals.css` (platform, sign-in and legal pages through
+  `components/LogoMark.tsx`) and `.rpx-lockup` / `.rpx-mark` in
+  `components/site/site.css` (public site).
+- `rideperks-lockup-navy.png`: a coloured copy for places that can't use a
+  mask (the recovery email).
+- The wordmark's font is the user's; the closest Google face, used for the
+  public site's type, is **Plus Jakarta Sans** (wide, round).
+
+**Colours.**
 
 | Role | Color |
 | --- | --- |
-| Pitch black (text, dark bands) | `#100B00` |
-| Yellow green (landing only: buttons, active states) | `#85CB33` |
-| Frosted mint (light background) | `#EFFFC8` |
-| Dark khaki (dark-mode bands, secondary surfaces) | `#3B341F` |
-| Ash grey `#A5CBC3` | Part of the palette but **intentionally unused**; the user asked to avoid it |
+| Brand blue (accents, "rinde más", active states, savings) | `#0066CC` |
+| Mid blue (gradients) | `#3D8FE0` |
+| Celeste | `#8DC3E8` |
+| Celeste tint (soft backgrounds) | `#EAF3FB` |
+| Navy ink (text, buttons, dark mode) | `#0B1220` |
+| Cool surfaces | `#F3F5F9` / `#F4F6FB` |
 
-**Sign-in screens are white since November 20, 2026** (web and app, at the
-user's request); the landing stays mint. A landing redesign around a
-supplied footer (white page, giant outlined type, fluted-glass shader
-panels) shipped in `da59964` and **the user asked to undo it the same day**;
-don't bring it back unless asked.
+The user picked `#0066CC` from a swatch ("Royal Navy Blue"); the soft
+blue/celeste direction comes from their artwork with the logo on a blue
+gradient. **No purple** (an iris/ultramarine version was rejected), no
+green, no mint, no black `#100B00`, no orange.
 
-Font: Geist (`next/font`; `@expo-google-fonts/geist` in the app), wordmark
-"RIDEPERKS" as plain text (no pill) via `<LogoMark variant="text" />`.
+How the old palette was mapped (one table, applied to web and phone alike by
+`artifacts/rebrand-colors.py`, so `tests/mobile-tokens.test.mjs` stays
+green): warm black → navy, warm greys → cool greys, the green "positive"
+accents (`--rp-green-*` tokens, names kept) → brand blue / celeste, mint →
+celeste tint. **Red (danger; auth errors via `ember-2` / `ember-soft`) and
+amber (warning) keep their meaning.** Platform buttons stay monochrome (navy
+in light mode, white in dark mode).
 
-Icons and share card, all made from images the user supplied (resized only,
-never redrawn):
+**Icons and share card** (`artifacts/brand-icons.py` builds them all): the
+white "rp" on a soft blue gradient with film grain (deep blue top left,
+celeste bottom right, pale highlight top right), after the user's
+`RPlogofavicon.jpeg`. Web: `public/favicon.ico`, `app/icon.png`,
+`apple-touch-icon.png`, `icon-192/512.png`, `icon-maskable-512.png` (mark
+inside the 80% safe zone). Phone app: `mobile/assets/images/icon.png`
+(1024), `favicon.png`, Android adaptive foreground and splash (white mark on
+transparent, over `#0066CC` set in `mobile/app.json`). Share card
+`public/share-rp.jpg` (1200×630, white lockup on the gradient), declared in
+`lib/share.ts`; rename it if it changes (WhatsApp/Facebook/X cache by URL).
+`theme-color` is white (light) / navy (dark); the PWA manifest launches on
+`#0066CC` with a white theme colour. `public/offline.html` is rebranded and
+the service worker cache is now `rideperks-static-v2`.
 
-- Browser tab (`app/icon.png`, `public/favicon.ico`): the mint "RP" circle cut
-  out on a **transparent** background (the user asked for no black square).
-- `apple-touch-icon.png`, `icon-192/512.png`: same art on its black field (iOS
-  fills transparency with black anyway). `icon-maskable-512.png` shrinks the
-  circle into Android's 80% safe zone.
-- `app/layout.tsx` declares every icon link explicitly: setting `icons` in
-  metadata suppresses Next's automatic link for `app/icon.png`.
-- Share card: `public/share.jpg` (970×610, wordmark on the dot matrix), declared
-  once in `lib/share.ts` and used by `/` and `/about`. Rename the file if it
-  changes again: WhatsApp/Facebook/X cache by URL.
-- `theme-color` is mint in light / black in dark; manifest colors are black.
+**Phone screenshots** on the landing (`public/brand/screens/app-*.png`) are
+the user's original screens recoloured by `artifacts/recolor-screens.py`
+(badges blue with white letters, "Abierto" and icons blue, navy instead of
+warm black, the new icon in the notification). The green originals stay in
+`public/landing/` at the user's request (nothing uses them now).
+
+**Sign-in screens**: white, navy buttons; the side panel (`bg-navy`,
+re-pointed inside `.rp-auth`) is the brand blue with a celeste/white dot
+matrix.
+
+**Admin portal**: the platform's colours, plus the open section tile on
+Plataforma wears the blue gradient of the landing's featured plan.
+
+**Recovery email** (`supabase/email-templates/recovery.html`) rebuilt in the
+new style (white card, navy pill button with a blue arrow circle, blue
+manifesto band, navy lockup image). **The user must paste it into Supabase
+again** (§13).
 
 Motion follows Emil Kowalski's guidance (`/emil-design-eng` skill): buttons
 scale to 0.97 on press in 160ms with `ease-snappy`
@@ -293,18 +337,17 @@ tokens in `app/globals.css`. The app mirrors them (`PressScale`, `Enter`).
 
 ## 7. Web: three styling systems (don't cross them by accident)
 
-1. **Landing** (`/`, `/about`) — Tailwind + CSS variables `--lp-*` scoped to
-   `.lp` (see `components/landing/LandingShell.tsx`). **Light only** (the
-   user removed the theme switcher and the dark/dim themes on November 11,
-   2026). `ThemeSync` sets `html[data-lp-theme="light"]` (mint body
-   background for overscroll) and removes it when leaving the landing.
-   Tokens live in `app/globals.css`; use `bg-lp-bg`, `text-lp-fg`,
-   `bg-lp-accent`, etc.
+1. **Public site** (`/`, `/about`) — `components/site/`: `SiteShell` (Plus
+   Jakarta Sans, header, footer, scroll reveals) and `site.css`, every rule
+   scoped to `.rpx` with its own tokens (`--ink`, `--iris` = `#0066CC`,
+   `--ultra`, `--sky`, `--mist`, `--surface`, `--muted`, `--line`). Light
+   only, white page. Tailwind classes read those variables
+   (`text-[var(--iris)]`, `bg-[var(--surface)]`).
 2. **Auth screens** (`/login`, `/register`, `/recover`, business login/register,
    `/admin/login`, the `/pin` entry) — `components/ui/sign-in.tsx` `AuthShell`
    with class `.rp-auth`, which re-points the shadcn-style Tailwind tokens to
-   a white background (mint until November 20, 2026, changed at the user's
-   request; the app's `auth` tokens match), with black buttons (no green).
+   a white background (the app's `auth` tokens match), navy buttons and the
+   side panel in the brand blue.
    Their legacy controls (`.rp-field`, `.rp-button`, `.rp-access-switch`…)
    live in `app/auth.css`, every rule scoped to `.rp-auth`. Otherwise **the
    user asked to leave these screens as they are.**
@@ -314,14 +357,14 @@ tokens in `app/globals.css`. The app mirrors them (`PressScale`, `Enter`).
    background, soft gray cards with no borders, one big number or title per
    screen, few icons, monochrome base**, black hero card for the key number.
    Actions (buttons) are black in light mode, white in dark mode. **Soft
-   green accents** (tokens `--rp-green-soft/-text/-line/-fill` in
-   `platform.css`) only for what is positive: savings amounts, success
+   blue accents** (tokens `--rp-green-soft/-text/-line/-fill` in
+   `platform.css`; the names predate the rebrand) only for what is positive: savings amounts, success
    badges/messages, progress bars, confirmation checks, avatar, category
    icons, numbered steps and the dock's active-tab bar. **Never on buttons.**
    Plain CSS in `app/platform.css`, every rule scoped to `.rp-app` (CSS stays
    loaded across client navigation, so unscoped rules would leak into the
    auth screens). **Class names are the platform's API** — restyle there,
-   don't rename. Dark mode = black (`#100B00`) with white text, chosen only
+   don't rename. Dark mode = navy (`#0B1220`) with white text, chosen only
    in Cuenta → Apariencia (`ThemeSetting` in `components/platform/theme.tsx`;
    `localStorage` `rp_app_theme`; default light, the OS preference is
    ignored on purpose). No theme toggle in headers.
@@ -365,45 +408,60 @@ tokens in `app/globals.css`. The app mirrors them (`PressScale`, `Enter`).
 
 ---
 
-## 8. Landing
+## 8. Landing (new design since November 25, 2026)
 
-`app/page.tsx`: Nav, Hero (the app's home screen in a phone and two floating
-cards), Benefits, HowItWorks, AppShowcase (`#app`, four real screens),
-SavingsBand (dark band with the notification screen), Manifesto, Pricing,
-JoinCTA (`#unete`), Footer, MobileCTA. Under the headline, the Hero says
-plainly what RidePerks is ("La plataforma de beneficios y descuentos para
-conductores de apps de transporte y delivery en Panamá", asked for on
-November 24, 2026); keep that sentence in any redesign. **No loading animation**: the splash
-screen was removed on November 20, 2026 at the user's request (the marquee
-and hero tag went in `170c20e`).
+Designed with the user over several rounds as a demo at `/demo` and promoted
+to `/` once approved. References they gave: Payno, Runcycle, an
+Ironclad-style footer; a "Silk Blend" gradient and a dithered footer from
+21st.dev. Rules they set along the way: white page (no mint, no black
+backgrounds), no eyebrow pills above headings, **copy only from the old
+landing** (don't invent text; the pricing heading is just "Planes"), no em
+dashes, everything fluid (no hard cut from a colour band to white), and it
+must not lag.
 
-- **Footer** (`components/sections/Footer.tsx`, black band): logo,
-  **"Contáctanos"** (`mailto:` `SUPPORT_EMAIL`, falling back to
-  `soporte@rideperks.app`) and Instagram, then the link columns.
-- **App screenshots**: `public/landing/app-*.png` (1170×2532, supplied by the
-  user), shown with `components/landing/PhoneFrame.tsx`. The businesses and
-  amounts in them are examples; AppShowcase says so in a note under the
-  screens. Keep that note if the screens change.
-- **Pricing** (`components/ui/pricing-section.tsx`, adapted from a 21st.dev
-  component the user supplied): Mensual/Anual switch, NumberFlow price, two
-  plans (Gratis, Membresía). Helpers `ui/card`, `ui/vertical-cut-reveal`,
-  `ui/timeline-animation` use `framer-motion` and render statically with
-  reduced motion. "¿Ya tienes cuenta?" links to
-  `/driver/membership?plan=monthly|annual`, which preselects the plan.
-- `components/Nav.tsx` (client): logo, pill nav whose shaded indicator slides
-  to the clicked link (plus scroll-spy on `/`), "Comercios", "Iniciar
-  sesión". Once the page scrolls the header becomes a glass tab (`.lp-tab`).
-- `components/landing/InfoCard.tsx`: card with icon + title; tapping slides
-  up a detail panel. Used by Benefits (links to
-  `/driver/benefits?category=…`) and HowItWorks. Icons must be passed as
-  rendered elements. Front and panel share one grid cell, so the card is as
-  tall as the longer of the two.
-- `components/landing/PillLink.tsx`: the one CTA shape (pill + arrow circle).
-- The funnel is **create account**, not the waitlist. `Waitlist.tsx`,
-  `WaitlistForm.tsx`, `Counter.tsx` are unused but kept; `/api/waitlist`
-  still works.
-- `/about` has the long-form content: what RidePerks is, drivers vs.
-  businesses (`AboutAudiences`), how a redemption works, the four areas, FAQ.
+`app/page.tsx` (sections) on `components/site/`:
+
+- **Hero** (`#top`): full screen (`100svh` from tablet up; on phones it grows
+  with its content so the phone screenshot shows). "Tu trabajo / rinde
+  más." (second line in brand blue; `leading-[1.08]` so the accent of "más"
+  clears the "j" above), the sentence "La plataforma de beneficios y
+  descuentos para conductores de apps de transporte y delivery en Panamá."
+  (keep it), CTAs, the home screen in a phone rising from the blue, two
+  floating cards (one on phones). The bottom fades to white.
+- **Silk gradient** (`components/site/SilkGradient.tsx`): white → celeste →
+  mid blue → brand blue at 191°, swaying ±5° on an 18 s cycle (the user asked
+  for slower and less than the original spec). **Performance:** the colours
+  are painted once into a 2×128 canvas stretched over a square, and the sway
+  is a CSS `rotate` animation, so the browser runs it on the GPU with no
+  JavaScript, style or paint per frame; it pauses off screen. Grain is white
+  specks with no blend mode. Don't bring back a per-frame canvas or
+  `mix-blend-mode`: the user reported lag with them.
+- Manifesto (the "rp" mark in a blue gradient + "Tú manejas para ganar más.
+  Nosotros te ayudamos a gastar menos."), Beneficios (three cards linking to
+  `/driver/benefits?category=…` + "¿Tienes un comercio?"), Cómo funciona
+  (three steps + QR screen), La app (four screens; keep the note "Pantallas
+  de ejemplo…"), Ahorro (notification screen), Planes (Gratis, Anual
+  featured in blue with "2 meses gratis", Mensual), and the closing "Crea tu
+  cuenta gratis." panel on the same gradient (`JoinCta` in
+  `components/site/ui.tsx`, shared with About).
+- **Header** (`SiteNav.tsx`): same structure as the old nav (logo, sliding
+  pill of section links, Comercios, Iniciar sesión / "Entrar" on phones);
+  becomes a white tab on scroll; section links point to `/#…` off the home
+  page. No backdrop blur (the hero is animated).
+- **Footer** (`SiteFooter.tsx`): logo, Contáctanos (`soporte@rideperks.app`),
+  Instagram, columns Club / Cuenta / Legal, then a **static** dithered scene
+  of a road running to the Panama City skyline in the brand blues (drawn
+  once on a canvas, redrawn only when the width changes). The user asked for
+  no animation there.
+- **About** (`app/about/page.tsx`) rebuilt in the same design with its
+  original copy: hero on the gradient, the story in a blue panel, the two
+  audiences, how a redemption works, the four areas, FAQ, closing panel.
+- The old landing components (`components/sections/*`, `components/Nav.tsx`,
+  `components/landing/*`, the pricing section and its helpers) were deleted.
+- To test the site on the iPhone over Wi-Fi, `next.config.mjs` lists the PC's
+  LAN address in `allowedDevOrigins` (dev only); without it Next blocks the
+  dev scripts and nothing interactive works on the phone. Update the IP if
+  it changes.
 
 ---
 
@@ -684,7 +742,8 @@ about the deleted route). For the phone app use the scripts in §10.
   `page.evaluate` (and wait ~300ms, or the screenshot catches the transition).
 - The user reviews on an iPhone: check the iPhone 15 and iPhone SE (320px)
   viewports, light and dark.
-- `next dev` shows an "N" / "Issue" badge bottom-left; it's dev-only.
+- The dev "N" badge is off (`devIndicators: false` in `next.config.mjs`);
+  compile and runtime errors still show.
 
 Serving locally: `npm run build && npx next start -p 3100` (or `next dev`).
 When restarting, kill whatever still listens on 3100 first (PowerShell:
@@ -698,7 +757,8 @@ otherwise the old build keeps being served.
 **Phone app:** everything in §2 and §3.
 
 **By the user (one-time):**
-- Paste the new `recovery.html` into Supabase.
+- Paste the new `recovery.html` (rebranded November 25, 2026) into Supabase
+  (Authentication → Email Templates → Reset password).
 - Enroll in `rp_admin_users` (`/admin/access`).
 - Turn on `catalog_live` once there are approved benefits.
 
@@ -709,10 +769,10 @@ otherwise the old build keeps being served.
 - Enforce the CSP (§9).
 - Confirm the "Contáctanos" inbox receives mail (`SUPPORT_EMAIL` on Vercel,
   else `soporte@rideperks.app`, which today is a Resend sender address).
-- `public/offline.html` (PWA offline page) still uses the old navy/ember
-  colors; the user was told and hasn't asked for it yet.
-- `PRODUCT.md` and `README.md` still describe the old navy/ember identity and
-  waitlist-first funnel; update them if they matter to the next task.
+- `PRODUCT.md` still describes an old identity and the waitlist-first
+  funnel; update it if it matters to the next task.
+- The new phone-app icon and splash reach phones only with a new store build
+  (they are native assets).
 
 **Ideas pending by the user's choice (October 20, 2026)**, in order of
 interest: the driver's own location on the map ("cerca de ti", distance
@@ -730,6 +790,12 @@ staging environment, offline mode.
 
 ## 14. Session history
 
+- **November 25, 2026** — **New brand identity**, everywhere: "rp" logo,
+  brand blue `#0066CC` with navy and celeste, Plus Jakarta Sans on the
+  public site. The landing demo was approved and became `/` (About rebuilt
+  to match); web app, sign-in, admin, phone app tokens, icons, favicon,
+  share card, offline page and recovery email recoloured; phone screenshots
+  recoloured; the old landing code deleted. Details in §6 and §8.
 - **November 24, 2026** — Hero subtitle now states what RidePerks is
   (benefits and discounts platform for ride-hailing and delivery drivers in
   Panama). Started a landing redesign demo (white base, soft glow, glass

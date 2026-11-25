@@ -175,7 +175,7 @@ export function Select<T extends string>({
         <Pressable
           accessibilityLabel="Cerrar"
           onPress={() => setOpen(false)}
-          style={{ flex: 1, backgroundColor: "rgba(16, 11, 0, 0.4)" }}
+          style={{ flex: 1, backgroundColor: "rgba(11, 18, 32, 0.4)" }}
         />
         <View
           style={{

@@ -18,6 +18,10 @@ const csp = [
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // No floating "N" route badge in development (errors still show).
+  devIndicators: false,
+  // Lets a phone on the same Wi-Fi load the dev server's scripts (dev only).
+  allowedDevOrigins: ["192.168.1.11"],
   experimental: {
     serverActions: { bodySizeLimit: "6mb" },
     // Keep visited screens in the client cache for 30s so moving between

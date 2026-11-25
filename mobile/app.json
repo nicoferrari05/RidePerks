@@ -15,7 +15,7 @@
     "android": {
       "package": "app.rideperks",
       "adaptiveIcon": {
-        "backgroundColor": "#100b00",
+        "backgroundColor": "#0066cc",
         "foregroundImage": "./assets/images/android-icon-foreground.png"
       },
       "predictiveBackGestureEnabled": false
@@ -29,7 +29,7 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#100b00",
+          "backgroundColor": "#0066cc",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 160
         }
